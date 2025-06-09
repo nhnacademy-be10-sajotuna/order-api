@@ -1,4 +1,4 @@
-package shop.nhnteam04.order;
+package shop.sajotuna.order;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

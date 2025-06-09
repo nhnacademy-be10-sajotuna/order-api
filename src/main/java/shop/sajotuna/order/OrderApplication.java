@@ -1,4 +1,4 @@
-package shop.nhnteam04.order;
+package shop.sajotuna.order;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
