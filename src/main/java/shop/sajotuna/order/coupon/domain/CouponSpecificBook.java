@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.validator.constraints.ISBN;
 
 @Getter
 @Setter
@@ -15,13 +14,12 @@ import org.hibernate.validator.constraints.ISBN;
 public class CouponSpecificBook {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int bookCouponId;
+    private Long bookCouponId;
 
     @Column(nullable = false)
     private String isbn;
 
-
     @ManyToOne
+    @JoinColumn(name = "coupon_id", nullable = false)
     private Coupon coupon;
-
 }

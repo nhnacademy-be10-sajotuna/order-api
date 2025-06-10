@@ -19,13 +19,13 @@ public class Coupon {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "coupon_id")
-    private int couponId;
+    private Long couponId;
 
     @Column(nullable = false)
     private LocalDate expiredAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "policy_id", nullable = false)
+    @JoinColumn(nullable = false)
     private CouponPolicy policy;
 
 }

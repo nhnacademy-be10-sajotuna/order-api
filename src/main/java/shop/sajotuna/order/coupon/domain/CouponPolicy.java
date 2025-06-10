@@ -15,18 +15,18 @@ import lombok.Setter;
 public class CouponPolicy {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int couponPolicyId;
+    private Long couponPolicyId;
 
-    @Column(nullable = false)
+    @Column(name = "type", nullable = false)
     private CouponType couponType;
 
-    @Column(nullable = false)
-    private int discountAmount;
+    @Column(name = "discount_amount", nullable = false)
+    private Integer discountAmount;
 
-    @Column(nullable = false)
-    private int minOrderAmount;
+    @Column(name = "min_order_amount", nullable = false)
+    private Integer minOrderAmount;
 
-    @Column(nullable = false)
-    private int maxOrderAmount;
+    @Column(name = "max_order_amount", nullable = false)
+    private Integer maxOrderAmount;
 
 }

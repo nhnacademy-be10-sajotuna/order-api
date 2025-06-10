@@ -1,9 +1,6 @@
 package shop.sajotuna.order.coupon.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,20 +13,24 @@ import java.time.LocalDate;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "coupon_history")
 public class CouponHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int historyId;
+    private Long id;
 
+    @Column(nullable = false)
+    private Integer couponId;
 
-    private int couponId;
-
+    @Column(nullable = false)
     private LocalDate issuedAt;
 
+    @Column(nullable = false)
     private CouponHistoryType couponHistoryType;
 
-    private int memberId;
+    @Column(nullable = false)
+    private Integer userId;
 
 
 }
