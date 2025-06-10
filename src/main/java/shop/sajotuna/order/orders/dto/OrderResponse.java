@@ -6,7 +6,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class OrderResponse {
-    private String orderId;
+    private Long orderId;
     private int finalPrice;
-    private String message;
 }

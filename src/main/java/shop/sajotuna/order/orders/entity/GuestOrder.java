@@ -16,19 +16,19 @@ public class GuestOrder {
 
     @OneToOne
     @JoinColumn(name = "order_id")
-    private Orders orders;
+    private Order order;
 
-    @Column(name = "name", nullable = false)
+    @Column(nullable = false)
     private String name;
 
-    @Column(name = "phone_number", nullable = false)
+    @Column(nullable = false)
     private String phoneNumber;
 
-    @Column(name = "email", nullable = false)
+    @Column(nullable = false)
     private String email;
 
-    public GuestOrder(Orders orders, String name, String phoneNumber, String email) {
-        this.orders = orders;
+    public GuestOrder(Order order, String name, String phoneNumber, String email) {
+        this.order = order;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.email = email;

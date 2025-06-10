@@ -14,40 +14,40 @@ import shop.sajotuna.order.orders.dto.OrderProductRequest;
 public class OrderProduct {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @NotNull
     @ManyToOne
     @JoinColumn(name = "order_id", nullable = false)
-    private Orders orders;
+    private Order order;
 
-    @Column(name = "isbn", length = 20, nullable = false)
+    @Column(length = 20, nullable = false)
     private String isbn;
 
     @ManyToOne
     @JoinColumn(name = "order_packaging_id")
     private OrderPackaging orderPackaging;
 
-    @Column(name = "qty", nullable = false)
+    @Column(nullable = false)
     private Integer qty;
 
-    @Column(name = "amount", nullable = false)
+    @Column(nullable = false)
     private Integer amount;
 
     @Enumerated(value = EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private OrderStatus orderStatus;
+    @Column(nullable = false)
+    private OrderStatus status;
 
-    @Column(name = "packaging_request", nullable = false)
+    @Column(nullable = false)
     private Boolean packagingRequest;
 
-    public OrderProduct(Orders orders, OrderProductRequest orderProductRequest, OrderPackaging orderPackaging) {
-        this.orders = orders;
+    public OrderProduct(Order order, OrderProductRequest orderProductRequest, OrderPackaging orderPackaging) {
+        this.order = order;
         this.isbn = orderProductRequest.getIsbn();
         this.orderPackaging = orderPackaging;
         this.qty = orderProductRequest.getQty();
         this.amount = orderProductRequest.getAmount();
-        this.packagingRequest = orderProductRequest.getPackaging_request();
-        this.orderStatus = OrderStatus.pending;
+        this.packagingRequest = orderProductRequest.getPackagingRequest();
+        this.status = OrderStatus.PENDING;
     }
 }

@@ -14,11 +14,11 @@ import lombok.Setter;
 public class OrderPackaging {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
-    @Column(name = "packaging", nullable = false)
+    @Column(nullable = false)
     private String packaging;
 
-    @Column(name = "price", nullable = false)
+    @Column(nullable = false)
     private Integer price;
 }

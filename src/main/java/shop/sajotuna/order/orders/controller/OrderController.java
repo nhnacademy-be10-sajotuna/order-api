@@ -3,31 +3,21 @@ package shop.sajotuna.order.orders.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import shop.sajotuna.order.orders.dto.OrderResponse;
-import shop.sajotuna.order.orders.entity.Orders;
 import shop.sajotuna.order.orders.dto.OrderRequest;
 import shop.sajotuna.order.orders.dto.GuestOrderRequest;
-import shop.sajotuna.order.orders.service.OrdersService;
-
-import java.util.List;
+import shop.sajotuna.order.orders.service.OrderService;
 
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
 public class OrderController {
 
-    private final OrdersService orderService;
+    private final OrderService orderService;
 
     // 주문 조회
     @GetMapping("/{orderId}")
-    public Orders getOrders(@PathVariable String orderId){
-        return orderService.getOrders(orderId);
-    }
-
-    // 회원의 주문내역들 조회
-    @GetMapping("/user")
-    public List<Orders> getOrdersByUserId(@RequestParam int userId) {
-        return orderService.findOrdersByMemberId(userId);
+    public ResponseEntity<?> getOrders(@PathVariable String orderId){
+        return null;
     }
 
     // 회원 주문

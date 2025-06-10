@@ -9,5 +9,5 @@ public class OrderProductRequest {
     private String productId;
     private int qty;
     private int amount;
-    private Boolean packaging_request;
+    private Boolean packagingRequest;
 }
