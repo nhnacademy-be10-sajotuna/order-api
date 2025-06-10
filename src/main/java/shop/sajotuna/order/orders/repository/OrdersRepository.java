@@ -6,8 +6,11 @@ import shop.sajotuna.order.orders.domain.Orders;
 
 import java.util.List;
 
-public interface OrdersRepository extends JpaRepository<Orders, Long> {
+public interface OrdersRepository extends JpaRepository<Orders, String> {
 
     @Query("select mo.orders from MemberOrder mo where mo.memberId = :memberId")
-    List<Orders> findOrdersByMemberId(String memberId);
+    List<Orders> findOrdersByMemberId(int memberId);
+
+
+    Orders getOrdersById(String id);
 }

@@ -1,7 +1,6 @@
 package shop.sajotuna.order.orders.domain;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +16,7 @@ import java.time.LocalDateTime;
 public class ReturnsExchanges {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
     @ManyToOne
     @JoinColumn(name = "order_product_id", nullable = false)
@@ -31,4 +30,6 @@ public class ReturnsExchanges {
 
     @Column(name = "requested_at", nullable = false)
     private LocalDateTime requestedAt;
+
+
 }
