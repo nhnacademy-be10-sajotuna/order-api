@@ -42,7 +42,7 @@ server:
 eureka:
   client:
     service-url:
-      defaultZone: http://eureka-server:10372/eureka/
+      defaultZone: http://localhost:10372/eureka/
     healthcheck:
       enabled: true
   instance:
