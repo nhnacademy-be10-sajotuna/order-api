@@ -1,4 +1,4 @@
-package shop.sajotuna.order.orders.domain;
+package shop.sajotuna.order.orders.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -14,11 +14,11 @@ import lombok.Setter;
 public class OrderPackaging {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(name = "packaging", nullable = false)
     private String packaging;
 
     @Column(name = "price", nullable = false)
-    private int price;
+    private Integer price;
 }

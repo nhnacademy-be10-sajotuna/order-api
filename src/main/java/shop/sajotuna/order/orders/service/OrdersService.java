@@ -1,14 +1,11 @@
 package shop.sajotuna.order.orders.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import shop.sajotuna.order.orders.domain.MemberOrder;
-import shop.sajotuna.order.orders.domain.Orders;
-import shop.sajotuna.order.orders.domain.OrdersRequest;
-import shop.sajotuna.order.orders.exception.NotFoundException;
-import shop.sajotuna.order.orders.repository.MemberOrderRepository;
-import shop.sajotuna.order.orders.repository.OrderProductRepository;
-import shop.sajotuna.order.orders.repository.OrdersRepository;
+import shop.sajotuna.order.orders.dto.*;
+import shop.sajotuna.order.orders.entity.*;
+import shop.sajotuna.order.orders.repository.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -20,16 +17,13 @@ import java.util.concurrent.ThreadLocalRandom;
 public class OrdersService {
     private final OrdersRepository ordersRepository;
     private final OrderProductRepository orderProductRepository;
-    private final MemberOrderRepository memberOrderRepository;
+    private final UserOrderRepository userOrderRepository;
+    private final GuestOrderRepository guestOrderRepository;
+    private final OrderPackagingRepository orderPackagingRepository;
 
     // 주문내역 존재 확인
-    public boolean isExistOrders(String orderId){
-        return ordersRepository.existsById(orderId);
-    }
-
-    // 주문상품 존재 확인
-    public boolean isExistOrderProduct(int orderProductId){
-        return orderProductRepository.existsById(orderProductId);
+    public boolean isNotExistOrders(String orderId){
+        return !ordersRepository.existsById(orderId);
     }
 
     // 주문 조회
@@ -42,43 +36,44 @@ public class OrdersService {
         return ordersRepository.findOrdersByMemberId(memberId);
     }
 
-    // 주문 생성
-    public Orders createOrders(OrdersRequest ordersRequest){
-        Orders orders = new Orders(ordersRequest, getRandomId());
+    // 주문, 주문상품들 저장 - 결제, 포인트도 한번에 처리하도록 구현해야 함
+    public OrderResponse createOrders(OrderRequest orderRequest){
+        Orders orders = ordersRepository.save(new Orders(orderRequest, getRandomId()));
 
-        return ordersRepository.saveAndFlush(orders);
+        for(OrderProductRequest item: orderRequest.getItems()){
+            if(!orderPackagingRepository.existsById(item.getOrderPackingId())){
+                throw new EntityNotFoundException("orderPackaging not found");
+            }
+            OrderPackaging packaging = orderPackagingRepository.findById(item.getOrderPackingId()).orElse(null);
+            OrderProduct orderProduct = new OrderProduct(orders, item, packaging);
+            orderProductRepository.save(orderProduct);
+        }
+
+        return new OrderResponse(orders.getId(), orders.getTotalPrice(), "결제가 완료되었습니다");
     }
 
-    // 회원주문 생성
-    public void createMemberOrders(int memberId, String orderId) {
-        if(!isExistOrders(orderId)) {
-            throw new NotFoundException("orders not found");
+    // 회원 주문 저장
+    public void createUserOrders(int memberId, String orderId) {
+        if(isNotExistOrders(orderId)) {
+            throw new EntityNotFoundException("orders not found");
         }
         Orders orders = ordersRepository.getReferenceById(orderId);
-        MemberOrder memberOrder = new MemberOrder(orders, memberId);
+        UserOrder memberOrder = new UserOrder(orders, memberId);
 
-        memberOrderRepository.saveAndFlush(memberOrder);
+        userOrderRepository.save(memberOrder);
     }
 
-    // 비회원주문 정보 조회
+    // 비회원 주문 저장
+    public void createGuestOrders(String orderId, String name, String phoneNumber, String email){
+        if(isNotExistOrders(orderId)) {
+            throw new EntityNotFoundException("orders not found");
+        }
+        Orders orders = ordersRepository.getReferenceById(orderId);
+        GuestOrder guestOrder = new GuestOrder(orders, name, phoneNumber, email);
+        guestOrderRepository.save(guestOrder);
+    }
 
-
-    // 비회원주문 생성
-
-
-    // 포장 목록 조회
-
-    // 포장 수정
-
-    // 주문내역 생성
-
-    // 주문번호의 상품들 조회
-
-    // 주문상품 상태 변경
-
-    // 교환 및 반품 생성
-
-    // Orders 아이디 생성
+    // Orders 랜덤 아이디 생성
     private String getRandomId(){
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");

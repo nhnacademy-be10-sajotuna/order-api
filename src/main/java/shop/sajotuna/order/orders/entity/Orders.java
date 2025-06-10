@@ -1,13 +1,13 @@
-package shop.sajotuna.order.orders.domain;
+package shop.sajotuna.order.orders.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
+import shop.sajotuna.order.orders.dto.OrderRequest;
 
 import java.time.LocalDateTime;
 
@@ -35,15 +35,15 @@ public class Orders {
     private String detailedAddress;
 
     @Column(name = "delivery_price", nullable = false)
-    private int deliveryPrice;
+    private Integer deliveryPrice;
 
     @Column(name = "total_price", nullable = false)
-    private int totalPrice;
+    private Integer totalPrice;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    public Orders(OrdersRequest request, String id) {
+    public Orders(OrderRequest request, String id) {
         this.id = id;
         this.isMember = request.getIsMember();
         this.shippingDate = request.getShippingDate();

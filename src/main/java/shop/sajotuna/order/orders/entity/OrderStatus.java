@@ -1,4 +1,4 @@
-package shop.sajotuna.order.orders.domain;
+package shop.sajotuna.order.orders.entity;
 
 public enum OrderStatus {
     pending,

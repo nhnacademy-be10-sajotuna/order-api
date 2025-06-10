@@ -1,4 +1,4 @@
-package shop.sajotuna.order.orders.domain;
+package shop.sajotuna.order.orders.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
-@Table(name = "member_order")
-public class MemberOrder {
+@Table(name = "user_order")
+public class UserOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -18,11 +18,11 @@ public class MemberOrder {
     @JoinColumn(name = "order_id")
     private Orders orders;
 
-    @Column(name = "member_id", nullable = false)
-    private int memberId;
+    @Column(name = "user_id", nullable = false)
+    private Integer userId;
 
-    public MemberOrder(Orders orders, int memberId) {
+    public UserOrder(Orders orders, int userId) {
         this.orders = orders;
-        this.memberId = memberId;
+        this.userId = userId;
     }
 }

@@ -1,4 +1,4 @@
-package shop.sajotuna.order.orders.domain;
+package shop.sajotuna.order.orders.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -26,4 +26,11 @@ public class GuestOrder {
 
     @Column(name = "email", nullable = false)
     private String email;
+
+    public GuestOrder(Orders orders, String name, String phoneNumber, String email) {
+        this.orders = orders;
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+    }
 }
