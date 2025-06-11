@@ -11,7 +11,7 @@ import shop.sajotuna.order.orders.service.PackageService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/order-api/package")
+@RequestMapping("/api/orders/package")
 @RequiredArgsConstructor
 public class PackageController {
     private final PackageService packageService;

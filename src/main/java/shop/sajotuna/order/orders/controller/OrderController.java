@@ -8,7 +8,7 @@ import shop.sajotuna.order.orders.dto.GuestOrderRequest;
 import shop.sajotuna.order.orders.service.OrderService;
 
 @RestController
-@RequestMapping("/order-api/order")
+@RequestMapping("/api/orders")
 @RequiredArgsConstructor
 public class OrderController {
 
