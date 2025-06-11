@@ -8,7 +8,7 @@ import shop.sajotuna.order.orders.dto.GuestOrderRequest;
 import shop.sajotuna.order.orders.service.OrderService;
 
 @RestController
-@RequestMapping("/api/orders")
+@RequestMapping("/order-api/order")
 @RequiredArgsConstructor
 public class OrderController {
 
@@ -16,14 +16,19 @@ public class OrderController {
 
     // 주문 조회
     @GetMapping("/{orderId}")
-    public ResponseEntity<?> getOrders(@PathVariable String orderId){
+    public ResponseEntity<?> getOrder(@PathVariable Long orderId){
+        return null;
+    }
+
+    // 회원의 주문내역 조회
+    @GetMapping("/user")
+    public ResponseEntity<?> getUserOrder(@RequestParam String userId){
         return null;
     }
 
     // 회원 주문
     @PostMapping("/user")
     public ResponseEntity<?> createUserOrders(@RequestBody OrderRequest request) {
-
         return null;
     }
 

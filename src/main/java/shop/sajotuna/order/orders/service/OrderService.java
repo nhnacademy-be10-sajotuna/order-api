@@ -1,6 +1,7 @@
 package shop.sajotuna.order.orders.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import shop.sajotuna.order.orders.dto.*;
@@ -32,8 +33,8 @@ public class OrderService {
         return orderRepository.findByUserId(userId);
     }
 
-
     // 주문, 주문상품들 저장 - 결제, 포인트도 한번에 처리하도록 구현해야 함
+    @Transactional
     public OrderResponse createOrder(OrderRequest orderRequest){
         Order order = orderRepository.save(new Order(orderRequest));
 
