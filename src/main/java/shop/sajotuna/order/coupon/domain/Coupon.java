@@ -6,8 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -18,14 +17,27 @@ import java.time.ZonedDateTime;
 public class Coupon {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "coupon_id")
-    private Long couponId;
+    @Column()
+    private Long id;
 
     @Column(nullable = false)
-    private LocalDate expiredAt;
+    private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false)
-    private CouponPolicy policy;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CouponType type;
+
+    @Column(nullable = false)
+    private Integer discountAmount;
+
+    @Column(nullable = false)
+    private Integer minOrderAmount;
+
+    @Column(nullable = false)
+    private Integer maxDiscountAmount;
+
+    @Column(nullable = false)
+    private Integer validDays;
+
 
 }

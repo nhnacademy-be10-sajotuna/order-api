@@ -14,7 +14,7 @@ import lombok.Setter;
 public class CouponSpecificBook {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long bookCouponId;
+    private Long Id;
 
     @Column(nullable = false)
     private String isbn;

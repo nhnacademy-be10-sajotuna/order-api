@@ -14,23 +14,29 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "coupon_history")
-public class CouponHistory {
+public class UserCoupon {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Integer couponId;
 
     @Column(nullable = false)
     private LocalDate issuedAt;
 
     @Column(nullable = false)
-    private CouponHistoryType couponHistoryType;
+    private LocalDate expiresAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserCouponType type;
 
     @Column(nullable = false)
-    private Integer userId;
+    private Long userId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "coupon_id", nullable = false)
+    private Coupon coupon;
 
 
 }

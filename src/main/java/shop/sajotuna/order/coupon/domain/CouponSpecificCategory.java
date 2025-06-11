@@ -14,15 +14,13 @@ import lombok.Setter;
 public class CouponSpecificCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long categoryCouponId;
+    private Long Id;
 
     @Column(nullable = false)
-    private Integer categoryId;
+    private Long categoryId;
 
     @ManyToOne
     @JoinColumn(name = "coupon_id", nullable = false)
     private Coupon coupon;
-
-
 
 }
