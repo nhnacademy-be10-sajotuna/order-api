@@ -39,12 +39,14 @@ public class Order {
 
     private Long userId;
 
-    public Order(OrderRequest request) {
-        this.isMember = request.getIsMember();
-        this.shippingDate = request.getShippingDate();
-        this.streetAddress = request.getStreetAddress();
-        this.deliveryPrice = request.getDeliveryPrice();
-        this.totalPrice = request.getTotalPrice();
+    public Order(Boolean isMember, LocalDateTime shippingDate, String streetAddress,
+                 Integer deliveryPrice, Integer totalPrice, Long userId) {
+        this.isMember = isMember;
+        this.shippingDate = shippingDate;
+        this.streetAddress = streetAddress;
+        this.deliveryPrice = deliveryPrice;
+        this.totalPrice = totalPrice;
         this.createdAt = LocalDateTime.now();
+        this.userId = userId;
     }
 }

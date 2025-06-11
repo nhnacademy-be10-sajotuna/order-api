@@ -11,8 +11,6 @@ import java.util.List;
 public class OrderRequest {
     private long userId;
 
-    private Boolean isMember;
-
     @JsonFormat(pattern = "yyyyMMddHHmmss")
     private LocalDateTime shippingDate;
 

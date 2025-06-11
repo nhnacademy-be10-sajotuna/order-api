@@ -14,8 +14,6 @@ public class GuestOrderRequest {
 
     private String email;
 
-    private Boolean isMember;
-
     @JsonFormat(pattern = "yyyyMMddHHmmss")
     private LocalDateTime shippingDate;
 

@@ -36,28 +36,44 @@ public class OrderService {
     // 주문, 주문상품들 저장 - 결제, 포인트도 한번에 처리하도록 구현해야 함
     @Transactional
     public OrderResponse createOrder(OrderRequest orderRequest){
-        Order order = orderRepository.save(new Order(orderRequest));
+        Order order = new Order(
+                true,
+                orderRequest.getShippingDate(),
+                orderRequest.getStreetAddress(),
+                orderRequest.getDeliveryPrice(),
+                orderRequest.getTotalPrice(),
+                orderRequest.getUserId()
+        );
+        Order savedOrder = orderRepository.save(order);
 
         for(OrderProductRequest item: orderRequest.getItems()){
             if(!orderPackagingRepository.existsById(item.getOrderPackingId())){
                 throw new EntityNotFoundException("orderPackaging not found");
             }
             OrderPackaging packaging = orderPackagingRepository.findById(item.getOrderPackingId()).orElse(null);
-            OrderProduct orderProduct = new OrderProduct(order, item, packaging);
+            OrderProduct orderProduct = new OrderProduct(savedOrder, item, packaging);
             orderProductRepository.save(orderProduct);
         }
 
-        return new OrderResponse(order.getId(), order.getTotalPrice());
+        return new OrderResponse(savedOrder.getId(), savedOrder.getTotalPrice());
     }
 
-
     // 비회원 주문 저장
-    public void createGuestOrder(long orderId, String name, String phoneNumber, String email){
-        if(isNotExistOrder(orderId)) {
-            throw new EntityNotFoundException("orders not found");
-        }
-        Order order = orderRepository.getReferenceById(orderId);
-        GuestOrder guestOrder = new GuestOrder(order, name, phoneNumber, email);
+    @Transactional
+    public OrderResponse createGuestOrder(GuestOrderRequest request){
+        Order order = new Order(
+                false,
+                request.getShippingDate(),
+                request.getStreetAddress(),
+                request.getDeliveryPrice(),
+                request.getTotalPrice(),
+                null
+        );
+        Order savedOrder = orderRepository.save(order);
+
+        GuestOrder guestOrder = new GuestOrder(savedOrder, request.getName(), request.getPhoneNumber(), request.getEmail());
         guestOrderRepository.save(guestOrder);
+
+        return new OrderResponse(savedOrder.getId(), savedOrder.getTotalPrice());
     }
 }
