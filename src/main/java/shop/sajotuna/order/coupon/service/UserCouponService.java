@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class UserCouponService {
-    private final CouponRepository couponRepository;
     private final UserCouponRepository userCouponRepository;
 
 

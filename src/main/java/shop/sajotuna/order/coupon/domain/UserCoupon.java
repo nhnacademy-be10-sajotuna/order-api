@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -22,10 +22,10 @@ public class UserCoupon {
 
 
     @Column(nullable = false)
-    private LocalDate issuedAt;
+    private LocalDateTime issuedAt;
 
     @Column(nullable = false)
-    private LocalDate expiresAt;
+    private LocalDateTime expiresAt;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

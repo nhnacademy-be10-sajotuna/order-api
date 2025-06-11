@@ -5,8 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import shop.sajotuna.order.coupon.domain.CouponType;
 import shop.sajotuna.order.coupon.domain.UserCouponType;
-
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -18,8 +17,8 @@ public class UserCouponResponse {
     private Integer discountAmount;
     private Integer minOrderAmount;
     private Integer maxDiscountAmount;
-    private LocalDate issuedAt;
-    private LocalDate expiresDate;
+    private LocalDateTime issuedAt;
+    private LocalDateTime expiresDate;
     private UserCouponType UserCoupontype;
 
 
