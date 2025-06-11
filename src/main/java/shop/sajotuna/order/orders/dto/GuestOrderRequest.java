@@ -21,8 +21,6 @@ public class GuestOrderRequest {
 
     private String streetAddress;
 
-    private String detailedAddress;
-
     private int deliveryPrice;
 
     private int totalPrice;

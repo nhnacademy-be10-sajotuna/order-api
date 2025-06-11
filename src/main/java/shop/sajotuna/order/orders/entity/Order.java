@@ -28,8 +28,6 @@ public class Order {
     @Column(nullable = false)
     private String streetAddress;
 
-    private String detailedAddress;
-
     @Column(nullable = false)
     private Integer deliveryPrice;
 
@@ -39,13 +37,12 @@ public class Order {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    private Integer userId;
+    private Long userId;
 
     public Order(OrderRequest request) {
         this.isMember = request.getIsMember();
         this.shippingDate = request.getShippingDate();
         this.streetAddress = request.getStreetAddress();
-        this.detailedAddress = request.getDetailedAddress();
         this.deliveryPrice = request.getDeliveryPrice();
         this.totalPrice = request.getTotalPrice();
         this.createdAt = LocalDateTime.now();

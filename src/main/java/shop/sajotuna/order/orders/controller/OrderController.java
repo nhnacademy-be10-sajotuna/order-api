@@ -22,7 +22,7 @@ public class OrderController {
 
     // 회원의 주문내역 조회
     @GetMapping("/user")
-    public ResponseEntity<?> getUserOrder(@RequestParam String userId){
+    public ResponseEntity<?> getUserOrder(@RequestParam Long userId){
         return null;
     }
 

@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 public class OrderRequest {
-    private Integer userId;
+    private long userId;
 
     private Boolean isMember;
 
@@ -16,8 +16,6 @@ public class OrderRequest {
     private LocalDateTime shippingDate;
 
     private String streetAddress;
-
-    private String detailedAddress;
 
     private int deliveryPrice;
 
