@@ -49,12 +49,7 @@ public class PackageService {
     // package 목록 조회
     public List<PackageResponse> getPackages(){
         List<OrderPackaging> orderPackages = orderPackagingRepository.findAll();
-        List<PackageResponse> packages = new ArrayList<>();
 
-        for (OrderPackaging orderPackaging : orderPackages) {
-            PackageResponse response = new PackageResponse(orderPackaging.getId(), orderPackaging.getPackaging(), orderPackaging.getPrice());
-            packages.add(response);
-        }
-        return packages;
+        return orderPackages.stream().map(PackageResponse::from).toList();
     }
 }

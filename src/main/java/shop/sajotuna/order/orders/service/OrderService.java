@@ -36,7 +36,7 @@ public class OrderService {
     // 회원 주문 저장 - 주문상품, 결제, 쿠폰, 포인트도 한번에 처리하도록 구현해야 함
     @Transactional
     public OrderResponse createUserOrder(OrderRequest orderRequest){
-        Order savedOrder = orderRepository.save(new Order(orderRequest));
+        Order savedOrder = orderRepository.save(orderRequest.toEntity());
 
         for(OrderProductRequest item: orderRequest.getItems()){
             if(!orderPackagingRepository.existsById(item.getOrderPackingId())){
@@ -53,7 +53,7 @@ public class OrderService {
     // 비회원 주문 저장
     @Transactional
     public OrderResponse createGuestOrder(GuestOrderRequest guestOrderRequest){
-        Order savedOrder = orderRepository.save(new Order(guestOrderRequest));
+        Order savedOrder = orderRepository.save(guestOrderRequest.toEntity());
 
         GuestOrder guestOrder = new GuestOrder(savedOrder, guestOrderRequest);
         guestOrderRepository.save(guestOrder);
