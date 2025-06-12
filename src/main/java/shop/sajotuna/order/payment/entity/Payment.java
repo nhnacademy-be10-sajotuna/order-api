@@ -19,6 +19,7 @@ public class Payment {
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
+    @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
     private PaymentMethod method;
 
