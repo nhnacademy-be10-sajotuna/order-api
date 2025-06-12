@@ -21,26 +21,24 @@ public class OrderController {
     // 주문 조회
     @GetMapping("/{orderId}")
     public ResponseEntity<OrderResponse> getOrder(@PathVariable Long orderId){
-        return new ResponseEntity<>(orderService.findOrder(orderId), HttpStatus.OK);
+        return ResponseEntity.ok(orderService.findOrder(orderId));
     }
 
     // 회원의 주문내역 조회
     @GetMapping("/user")
     public ResponseEntity<List<OrderResponse>> getUserOrder(@RequestParam Long userId){
-        return new ResponseEntity<>(orderService.findOrdersByUserId(userId), HttpStatus.OK);
+        return ResponseEntity.ok(orderService.findOrdersByUserId(userId));
     }
 
     // 회원 주문
     @PostMapping("/user")
     public ResponseEntity<OrderResponse> createUserOrders(@RequestBody OrderRequest request) {
-
-        return new ResponseEntity<>(orderService.createUserOrder(request), HttpStatus.OK);
+        return ResponseEntity.ok(orderService.createUserOrder(request));
     }
 
     // 비회원 주문
     @PostMapping("/guest")
     public ResponseEntity<OrderResponse> createGuestOrders(@RequestBody GuestOrderRequest request) {
-
-        return new ResponseEntity<>(orderService.createGuestOrder(request), HttpStatus.OK);
+        return ResponseEntity.ok(orderService.createGuestOrder(request));
     }
 }

@@ -1,4 +1,4 @@
-package shop.sajotuna.common.exception;
+package shop.sajotuna.order.common.exception;
 
 import org.springframework.http.HttpStatus;
 

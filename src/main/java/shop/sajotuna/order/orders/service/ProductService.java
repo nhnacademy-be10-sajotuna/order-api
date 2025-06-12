@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import shop.sajotuna.order.common.exception.OrderNotFoundException;
 import shop.sajotuna.order.orders.dto.OrderProductResponse;
 import shop.sajotuna.order.orders.dto.OrderProductUpdateRequest;
 import shop.sajotuna.order.orders.entity.OrderProduct;
@@ -22,10 +23,7 @@ public class ProductService {
 
     // 주문 상품 조회
     public OrderProductResponse findById(Long id) {
-        if(!orderProductRepository.existsById(id)){
-            throw new EntityNotFoundException("OrderProduct not found");
-        }
-        OrderProduct orderProduct = orderProductRepository.findById(id).orElse(null);
+        OrderProduct orderProduct = orderProductRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 
         return OrderProductResponse.from(Objects.requireNonNull(orderProduct));
     }
@@ -33,7 +31,7 @@ public class ProductService {
     // 주문 번호에 포함된 상품들 조회
     public List<OrderProductResponse> findByOrderId(Long orderId){
         if(!orderRepository.existsById(orderId)){
-            throw new EntityNotFoundException("Order not found");
+            throw new OrderNotFoundException();
         }
         List<OrderProduct> orderProducts = orderProductRepository.getOrderProductsByOrder_Id(orderId);
 
@@ -42,10 +40,8 @@ public class ProductService {
 
     @Transactional
     public void updateOrderProduct(Long id, OrderProductUpdateRequest request){
-        if(!orderProductRepository.existsById(id)){
-            throw new EntityNotFoundException("Product not found");
-        }
-        OrderProduct orderProduct = orderProductRepository.findById(id).orElse(null);
+        OrderProduct orderProduct = orderProductRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+
         Objects.requireNonNull(orderProduct).setStatus(request.getStatus());
     }
 
