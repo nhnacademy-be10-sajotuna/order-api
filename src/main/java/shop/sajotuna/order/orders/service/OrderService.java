@@ -33,18 +33,10 @@ public class OrderService {
         return orderRepository.findByUserId(userId);
     }
 
-    // 주문, 주문상품들 저장 - 결제, 포인트도 한번에 처리하도록 구현해야 함
+    // 회원 주문 저장 - 주문상품, 결제, 쿠폰, 포인트도 한번에 처리하도록 구현해야 함
     @Transactional
-    public OrderResponse createOrder(OrderRequest orderRequest){
-        Order order = new Order(
-                true,
-                orderRequest.getShippingDate(),
-                orderRequest.getStreetAddress(),
-                orderRequest.getDeliveryPrice(),
-                orderRequest.getTotalPrice(),
-                orderRequest.getUserId()
-        );
-        Order savedOrder = orderRepository.save(order);
+    public OrderResponse createUserOrder(OrderRequest orderRequest){
+        Order savedOrder = orderRepository.save(new Order(orderRequest));
 
         for(OrderProductRequest item: orderRequest.getItems()){
             if(!orderPackagingRepository.existsById(item.getOrderPackingId())){
@@ -60,20 +52,13 @@ public class OrderService {
 
     // 비회원 주문 저장
     @Transactional
-    public OrderResponse createGuestOrder(GuestOrderRequest request){
-        Order order = new Order(
-                false,
-                request.getShippingDate(),
-                request.getStreetAddress(),
-                request.getDeliveryPrice(),
-                request.getTotalPrice(),
-                null
-        );
-        Order savedOrder = orderRepository.save(order);
+    public OrderResponse createGuestOrder(GuestOrderRequest guestOrderRequest){
+        Order savedOrder = orderRepository.save(new Order(guestOrderRequest));
 
-        GuestOrder guestOrder = new GuestOrder(savedOrder, request.getName(), request.getPhoneNumber(), request.getEmail());
+        GuestOrder guestOrder = new GuestOrder(savedOrder, guestOrderRequest);
         guestOrderRepository.save(guestOrder);
 
         return new OrderResponse(savedOrder.getId(), savedOrder.getTotalPrice());
     }
+
 }

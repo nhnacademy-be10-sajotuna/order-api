@@ -11,6 +11,7 @@ import shop.sajotuna.order.orders.repository.OrderPackagingRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Service
@@ -19,7 +20,7 @@ public class PackageService {
 
     // package 생성
     public PackageResponse createPackage(PackageRequest request) {
-        OrderPackaging orderPackaging = orderPackagingRepository.save( new OrderPackaging(request.getPackaging(), request.getPrice()));
+        OrderPackaging orderPackaging = orderPackagingRepository.save(new OrderPackaging(request.getPackaging(), request.getPrice()));
 
         return new PackageResponse(orderPackaging.getId(), orderPackaging.getPackaging(), orderPackaging.getPrice());
     }
@@ -30,7 +31,10 @@ public class PackageService {
         if(!orderPackagingRepository.existsById(id)){
             throw new EntityNotFoundException("OrderPackaging not found");
         }
-        orderPackagingRepository.updateOrderPackaging(request.getPackaging(), request.getPrice(), id);
+        OrderPackaging orderPackaging = orderPackagingRepository.findById(id).orElse(null);
+
+        Objects.requireNonNull(orderPackaging).setPackaging(request.getPackaging());
+        orderPackaging.setPrice(request.getPrice());
     }
 
     // package 삭제
