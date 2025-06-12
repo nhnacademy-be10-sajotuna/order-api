@@ -1,4 +1,4 @@
-package shop.sajotuna.order.point.domain;
+package shop.sajotuna.order.point.exception;
 
 import org.springframework.http.HttpStatus;
 import shop.sajotuna.common.exception.ApiException;
