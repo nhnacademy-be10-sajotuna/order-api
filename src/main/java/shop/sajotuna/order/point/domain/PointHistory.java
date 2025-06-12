@@ -1,16 +1,18 @@
 package shop.sajotuna.order.point.domain;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Entity
-public class Point {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class PointHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,7 +23,7 @@ public class Point {
 
     @NotNull
     @PositiveOrZero
-    private Long amount;
+    private int amount;
 
     @Enumerated(value = EnumType.STRING)
     @NotNull
@@ -30,7 +32,10 @@ public class Point {
     @NotNull
     private LocalDateTime createdAt;
 
-    @NotNull
-    @PositiveOrZero
-    private Long remainPoint;
+    public PointHistory(Long userId, int amount, PointType type) {
+        this.userId = userId;
+        this.amount = amount;
+        this.type = type;
+        this.createdAt = LocalDateTime.now();
+    }
 }
