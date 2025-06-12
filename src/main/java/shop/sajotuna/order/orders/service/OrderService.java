@@ -3,7 +3,6 @@ package shop.sajotuna.order.orders.service;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import shop.sajotuna.order.orders.dto.*;
 import shop.sajotuna.order.orders.entity.*;
@@ -11,7 +10,6 @@ import shop.sajotuna.order.orders.repository.*;
 
 import java.util.List;
 
-@Slf4j
 @RequiredArgsConstructor
 @Service
 public class OrderService {
@@ -38,9 +36,11 @@ public class OrderService {
         Order savedOrder = orderRepository.save(orderRequest.toEntity());
         // 주문 상품 추가
         for(OrderProductRequest item: orderRequest.getItems()){
-            log.info("{}", item.getOrderPackagingId());
-            OrderPackaging packaging = orderPackagingRepository.findById(item.getOrderPackagingId()).orElse(null);
+            OrderPackaging packaging = null;
 
+            if(item.getPackagingRequest()){
+                packaging = orderPackagingRepository.findById(item.getOrderPackagingId()).orElse(null);
+            }
             orderProductRepository.save(item.toEntity(savedOrder, packaging));
         }
 
@@ -53,9 +53,11 @@ public class OrderService {
         Order savedOrder = orderRepository.save(guestOrderRequest.toEntity());
         // 주문 상품 추가
         for(OrderProductRequest item: guestOrderRequest.getItems()){
-            log.info("{}", item.getOrderPackagingId());
-            OrderPackaging packaging = orderPackagingRepository.findById(item.getOrderPackagingId()).orElse(null);
+            OrderPackaging packaging = null;
 
+            if(item.getPackagingRequest()){
+                packaging = orderPackagingRepository.findById(item.getOrderPackagingId()).orElse(null);
+            }
             orderProductRepository.save(item.toEntity(savedOrder, packaging));
         }
 
