@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.sajotuna.order.orders.dto.GuestOrderRequest;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -27,10 +28,10 @@ public class GuestOrder {
     @Column(nullable = false)
     private String email;
 
-    public GuestOrder(Order order, String name, String phoneNumber, String email) {
+    public GuestOrder(Order order, GuestOrderRequest guestOrderRequest) {
         this.order = order;
-        this.name = name;
-        this.phoneNumber = phoneNumber;
-        this.email = email;
+        this.name = guestOrderRequest.getName();
+        this.phoneNumber = guestOrderRequest.getPhoneNumber();
+        this.email = guestOrderRequest.getEmail();
     }
 }

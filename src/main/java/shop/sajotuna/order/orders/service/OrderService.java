@@ -1,6 +1,7 @@
 package shop.sajotuna.order.orders.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import shop.sajotuna.order.orders.dto.*;
@@ -32,31 +33,32 @@ public class OrderService {
         return orderRepository.findByUserId(userId);
     }
 
-
-    // 주문, 주문상품들 저장 - 결제, 포인트도 한번에 처리하도록 구현해야 함
-    public OrderResponse createOrder(OrderRequest orderRequest){
-        Order order = orderRepository.save(new Order(orderRequest));
+    // 회원 주문 저장 - 주문상품, 결제, 쿠폰, 포인트도 한번에 처리하도록 구현해야 함
+    @Transactional
+    public OrderResponse createUserOrder(OrderRequest orderRequest){
+        Order savedOrder = orderRepository.save(orderRequest.toEntity());
 
         for(OrderProductRequest item: orderRequest.getItems()){
             if(!orderPackagingRepository.existsById(item.getOrderPackingId())){
                 throw new EntityNotFoundException("orderPackaging not found");
             }
             OrderPackaging packaging = orderPackagingRepository.findById(item.getOrderPackingId()).orElse(null);
-            OrderProduct orderProduct = new OrderProduct(order, item, packaging);
+            OrderProduct orderProduct = new OrderProduct(savedOrder, item, packaging);
             orderProductRepository.save(orderProduct);
         }
 
-        return new OrderResponse(order.getId(), order.getTotalPrice());
+        return new OrderResponse(savedOrder.getId(), savedOrder.getTotalPrice());
     }
-
 
     // 비회원 주문 저장
-    public void createGuestOrder(long orderId, String name, String phoneNumber, String email){
-        if(isNotExistOrder(orderId)) {
-            throw new EntityNotFoundException("orders not found");
-        }
-        Order order = orderRepository.getReferenceById(orderId);
-        GuestOrder guestOrder = new GuestOrder(order, name, phoneNumber, email);
+    @Transactional
+    public OrderResponse createGuestOrder(GuestOrderRequest guestOrderRequest){
+        Order savedOrder = orderRepository.save(guestOrderRequest.toEntity());
+
+        GuestOrder guestOrder = new GuestOrder(savedOrder, guestOrderRequest);
         guestOrderRepository.save(guestOrder);
+
+        return new OrderResponse(savedOrder.getId(), savedOrder.getTotalPrice());
     }
+
 }

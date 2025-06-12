@@ -5,7 +5,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import shop.sajotuna.order.orders.dto.OrderRequest;
 
 import java.time.LocalDateTime;
 
@@ -28,8 +27,6 @@ public class Order {
     @Column(nullable = false)
     private String streetAddress;
 
-    private String detailedAddress;
-
     @Column(nullable = false)
     private Integer deliveryPrice;
 
@@ -39,15 +36,16 @@ public class Order {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    private Integer userId;
+    private Long userId;
 
-    public Order(OrderRequest request) {
-        this.isMember = request.getIsMember();
-        this.shippingDate = request.getShippingDate();
-        this.streetAddress = request.getStreetAddress();
-        this.detailedAddress = request.getDetailedAddress();
-        this.deliveryPrice = request.getDeliveryPrice();
-        this.totalPrice = request.getTotalPrice();
+    public Order(Boolean isMember, LocalDateTime shippingDate, String streetAddress,
+                 Integer deliveryPrice, Integer totalPrice, Long userId) {
+        this.isMember = isMember;
+        this.shippingDate = shippingDate;
+        this.streetAddress = streetAddress;
+        this.deliveryPrice = deliveryPrice;
+        this.totalPrice = totalPrice;
         this.createdAt = LocalDateTime.now();
+        this.userId = userId;
     }
 }

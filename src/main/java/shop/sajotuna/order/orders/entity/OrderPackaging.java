@@ -21,4 +21,9 @@ public class OrderPackaging {
 
     @Column(nullable = false)
     private Integer price;
+
+    public OrderPackaging(String packaging, Integer price) {
+        this.packaging = packaging;
+        this.price = price;
+    }
 }

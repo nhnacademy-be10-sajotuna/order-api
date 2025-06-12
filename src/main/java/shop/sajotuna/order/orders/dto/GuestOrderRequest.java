@@ -2,6 +2,7 @@ package shop.sajotuna.order.orders.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import shop.sajotuna.order.orders.entity.Order;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,18 +15,18 @@ public class GuestOrderRequest {
 
     private String email;
 
-    private Boolean isMember;
-
     @JsonFormat(pattern = "yyyyMMddHHmmss")
     private LocalDateTime shippingDate;
 
     private String streetAddress;
-
-    private String detailedAddress;
 
     private int deliveryPrice;
 
     private int totalPrice;
 
     private List<OrderProductRequest> items;
+
+    public Order toEntity(){
+        return new Order(false, shippingDate, streetAddress, deliveryPrice, totalPrice, null);
+    }
 }
