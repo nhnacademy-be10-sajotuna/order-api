@@ -20,11 +20,6 @@ public class OrderService {
     private final GuestOrderRepository guestOrderRepository;
     private final OrderPackagingRepository orderPackagingRepository;
 
-    // 주문내역 존재 확인
-    private boolean isNotExistOrder(long orderId){
-        return !orderRepository.existsById(orderId);
-    }
-
     // 주문 조회
     public OrderResponse findOrder(long orderId){
         Order order = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
