@@ -9,7 +9,6 @@ import shop.sajotuna.order.point.domain.PointHistory;
 import shop.sajotuna.order.point.domain.PointType;
 import shop.sajotuna.order.point.domain.UserPoint;
 import shop.sajotuna.order.point.repository.PointHistoryRepository;
-import shop.sajotuna.order.point.repository.PointPolicyRepository;
 import shop.sajotuna.order.point.repository.UserPointRepository;
 
 import java.util.List;
