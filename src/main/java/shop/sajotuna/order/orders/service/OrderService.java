@@ -46,6 +46,7 @@ public class OrderService {
             OrderPackaging packaging = null;
             log.info("{}", item.getOrderPackagingId());
             packaging = orderPackagingRepository.findById(item.getOrderPackagingId()).orElse(null);
+
             orderProductRepository.save(item.toEntity(savedOrder, packaging));
         }
 
