@@ -8,6 +8,7 @@ import shop.sajotuna.order.orders.dto.OrderProductResponse;
 import shop.sajotuna.order.orders.dto.OrderProductUpdateRequest;
 import shop.sajotuna.order.orders.entity.OrderProduct;
 import shop.sajotuna.order.orders.repository.OrderProductRepository;
+import shop.sajotuna.order.orders.repository.OrderRepository;
 
 import java.util.List;
 import java.util.Objects;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 @Service
 public class ProductService {
     private final OrderProductRepository orderProductRepository;
+    private final OrderRepository orderRepository;
 
     // 주문 상품 조회
     public OrderProductResponse findById(Long id) {
@@ -30,6 +32,9 @@ public class ProductService {
 
     // 주문 번호에 포함된 상품들 조회
     public List<OrderProductResponse> findByOrderId(Long orderId){
+        if(!orderRepository.existsById(orderId)){
+            throw new EntityNotFoundException("Order not found");
+        }
         List<OrderProduct> orderProducts = orderProductRepository.getOrderProductsByOrder_Id(orderId);
 
         return orderProducts.stream().map(OrderProductResponse::from).collect(Collectors.toList());
