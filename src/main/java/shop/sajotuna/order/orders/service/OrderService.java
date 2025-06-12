@@ -38,9 +38,8 @@ public class OrderService {
         Order savedOrder = orderRepository.save(orderRequest.toEntity());
         // 주문 상품 추가
         for(OrderProductRequest item: orderRequest.getItems()){
-            OrderPackaging packaging = null;
             log.info("{}", item.getOrderPackagingId());
-            packaging = orderPackagingRepository.findById(item.getOrderPackagingId()).orElse(null);
+            OrderPackaging packaging = orderPackagingRepository.findById(item.getOrderPackagingId()).orElse(null);
 
             orderProductRepository.save(item.toEntity(savedOrder, packaging));
         }
@@ -54,9 +53,8 @@ public class OrderService {
         Order savedOrder = orderRepository.save(guestOrderRequest.toEntity());
         // 주문 상품 추가
         for(OrderProductRequest item: guestOrderRequest.getItems()){
-            OrderPackaging packaging = null;
             log.info("{}", item.getOrderPackagingId());
-            packaging = orderPackagingRepository.findById(item.getOrderPackagingId()).orElse(null);
+            OrderPackaging packaging = orderPackagingRepository.findById(item.getOrderPackagingId()).orElse(null);
 
             orderProductRepository.save(item.toEntity(savedOrder, packaging));
         }
