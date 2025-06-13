@@ -4,7 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import shop.sajotuna.order.common.exception.OrderNotFoundException;
+import shop.sajotuna.order.point.exception.OrderNotFoundException;
 import shop.sajotuna.order.orders.dto.OrderProductResponse;
 import shop.sajotuna.order.orders.dto.OrderProductUpdateRequest;
 import shop.sajotuna.order.orders.entity.OrderProduct;
