@@ -25,4 +25,10 @@ public class Payment {
 
     @Column(nullable = false)
     private Integer amount;
+
+    public Payment(Order order, PaymentMethod method, Integer amount) {
+        this.order = order;
+        this.method = method;
+        this.amount = amount;
+    }
 }
