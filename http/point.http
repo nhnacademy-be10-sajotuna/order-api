@@ -1,0 +1,7 @@
+### 포인트 전체 조회
+GET localhost:10366/api/points
+X-User-Id: 1
+
+### 리뷰 또는 회원가입 포인트 지급
+POST localhost:10366/api/points?type=REGISTER
+X-User-Id: 1

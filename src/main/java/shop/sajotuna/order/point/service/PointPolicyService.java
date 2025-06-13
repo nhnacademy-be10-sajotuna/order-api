@@ -1,9 +1,8 @@
 package shop.sajotuna.order.point.service;
 
+import shop.sajotuna.order.point.domain.PointPolicy;
+import shop.sajotuna.order.point.domain.PointPolicyType;
+
 public interface PointPolicyService {
-    int getPurchasePoint(int totalPrice);
-
-    int getReviewPoint();
-
-    int getRegisterPoint();
+    PointPolicy getPointPolicy(PointPolicyType type);
 }

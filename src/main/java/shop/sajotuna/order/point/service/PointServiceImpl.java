@@ -5,9 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.point.exception.UserPointNotFoundException;
 import shop.sajotuna.order.point.controller.response.PointHistoryResponse;
-import shop.sajotuna.order.point.domain.PointHistory;
-import shop.sajotuna.order.point.domain.PointType;
-import shop.sajotuna.order.point.domain.UserPoint;
+import shop.sajotuna.order.point.domain.*;
 import shop.sajotuna.order.point.repository.PointHistoryRepository;
 import shop.sajotuna.order.point.repository.UserPointRepository;
 
@@ -23,6 +21,7 @@ public class PointServiceImpl implements PointService {
     private final UserPointRepository userPointRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public List<PointHistoryResponse> getPointsByUserId(Long userId) {
         return pointHistoryRepository.getPointHistoriesByUserId(userId).stream()
                 .map(PointHistoryResponse::from)
@@ -34,7 +33,8 @@ public class PointServiceImpl implements PointService {
         UserPoint userPoint = userPointRepository.findByUserId(userId)
                 .orElseThrow(UserPointNotFoundException::new);
 
-        int earnedPoints = pointPolicyService.getPurchasePoint(totalPrice);
+        PointPolicy pointPolicy = pointPolicyService.getPointPolicy(PointPolicyType.PURCHASE);
+        int earnedPoints = pointPolicy.calculatePoint(totalPrice);
 
         return getPointHistoryResponse(userId, userPoint, earnedPoints);
     }
@@ -50,21 +50,12 @@ public class PointServiceImpl implements PointService {
     }
 
     @Override
-    public PointHistoryResponse earnPointsForReview(Long userId) {
+    public PointHistoryResponse earnPointsByType(Long userId, PointPolicyType type) {
         UserPoint userPoint = userPointRepository.findByUserId(userId)
                 .orElseThrow(UserPointNotFoundException::new);
 
-        int earnedPoints = pointPolicyService.getReviewPoint();
-
-        return getPointHistoryResponse(userId, userPoint, earnedPoints);
-    }
-
-    @Override
-    public PointHistoryResponse earnPointsForRegistration(Long userId) {
-        UserPoint userPoint = userPointRepository.findByUserId(userId)
-                .orElseThrow(UserPointNotFoundException::new);
-
-        int earnedPoints = pointPolicyService.getRegisterPoint();
+        PointPolicy pointPolicy = pointPolicyService.getPointPolicy(type);
+        int earnedPoints = pointPolicy.getFixedPoint();
 
         return getPointHistoryResponse(userId, userPoint, earnedPoints);
     }
