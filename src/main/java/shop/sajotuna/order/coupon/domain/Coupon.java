@@ -1,18 +1,14 @@
 package shop.sajotuna.order.coupon.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.time.LocalDateTime;
+import lombok.*;
 
 @Getter
 @Setter
 @Entity
-@NoArgsConstructor
 @AllArgsConstructor
+@Builder
+@NoArgsConstructor
 @Table(name = "coupon")
 public class Coupon {
     @Id
@@ -37,6 +33,4 @@ public class Coupon {
 
     @Column(nullable = false)
     private Integer validDays;
-
-
 }

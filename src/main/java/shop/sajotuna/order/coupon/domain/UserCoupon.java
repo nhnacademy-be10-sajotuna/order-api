@@ -13,11 +13,12 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "coupon_history")
+@Table(name = "user_coupon")
 public class UserCoupon {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @Column(nullable = false)
@@ -37,5 +38,11 @@ public class UserCoupon {
     @JoinColumn(name = "coupon_id", nullable = false)
     private Coupon coupon;
 
-
+    public UserCoupon(Coupon coupon, Long userId, LocalDateTime issuedAt, Integer validDays) {
+        this.coupon = coupon;
+        this.userId = userId;
+        this.type = UserCouponType.AVAILABLE;
+        this.issuedAt = issuedAt;
+        this.expiresAt = issuedAt.plusDays(validDays);
+    }
 }

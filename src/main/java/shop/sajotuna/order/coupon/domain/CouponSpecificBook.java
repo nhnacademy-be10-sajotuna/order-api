@@ -9,6 +9,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 public class CouponSpecificBook {
@@ -22,4 +23,9 @@ public class CouponSpecificBook {
     @ManyToOne
     @JoinColumn(name = "coupon_id", nullable = false)
     private Coupon coupon;
+
+    public CouponSpecificBook(String isbn, Coupon coupon) {
+        this.isbn = isbn;
+        this.coupon = coupon;
+    }
 }
