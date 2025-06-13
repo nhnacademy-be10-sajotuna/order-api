@@ -34,6 +34,12 @@ public class CouponRequest {
     private Integer validDays;
 
     public Coupon toEntity() {
-        return new Coupon(name, type, discountAmount, minOrderAmount, maxDiscountAmount, validDays);
+        return Coupon.builder()
+                .name(name)
+                .type(type)
+                .discountAmount(discountAmount)
+                .minOrderAmount(minOrderAmount)
+                .maxDiscountAmount(maxDiscountAmount)
+                .validDays(validDays).build();
     }
 }

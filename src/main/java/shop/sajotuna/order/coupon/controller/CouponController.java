@@ -10,7 +10,7 @@ import shop.sajotuna.order.coupon.service.CouponService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/orders/coupon")
+@RequestMapping("/api/coupons")
 public class CouponController {
     private final CouponService couponService;
 
@@ -40,16 +40,16 @@ public class CouponController {
 
     // 쿠폰 수정
     @PutMapping("/{coupon-id}")
-    public ResponseEntity<String> updateCoupon(@PathVariable(name = "coupon-id") Long couponId, @RequestBody @Valid CouponRequest couponRequest) {
-        return ResponseEntity.ok("정상적으로 동작되었습니다");
+    public ResponseEntity<Void> updateCoupon(@PathVariable(name = "coupon-id") Long couponId, @RequestBody @Valid CouponRequest couponRequest) {
+        return ResponseEntity.noContent().build();
     }
 
     // 쿠폰 삭제
     @DeleteMapping("/{coupon-id}")
-    public ResponseEntity<String> deleteCouponById(@PathVariable(name = "coupon-id") Long couponId) {
+    public ResponseEntity<Void> deleteCouponById(@PathVariable(name = "coupon-id") Long couponId) {
         couponService.deleteCoupon(couponId);
 
-        return ResponseEntity.ok("정상적으로 동작되었습니다");
+        return ResponseEntity.noContent().build();
     }
 
 }
