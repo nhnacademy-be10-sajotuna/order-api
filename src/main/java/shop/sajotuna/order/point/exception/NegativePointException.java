@@ -1,7 +1,7 @@
 package shop.sajotuna.order.point.exception;
 
 import org.springframework.http.HttpStatus;
-import shop.sajotuna.common.exception.ApiException;
+import shop.sajotuna.order.common.exception.ApiException;
 
 public class NegativePointException extends ApiException {
     private static final String MESSAGE = "포인트는 음수로 설정할 수 없습니다.";

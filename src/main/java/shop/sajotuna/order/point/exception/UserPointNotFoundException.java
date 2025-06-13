@@ -1,7 +1,7 @@
 package shop.sajotuna.order.point.exception;
 
 import org.springframework.http.HttpStatus;
-import shop.sajotuna.common.exception.ApiException;
+import shop.sajotuna.order.common.exception.ApiException;
 
 public class UserPointNotFoundException extends ApiException {
 
