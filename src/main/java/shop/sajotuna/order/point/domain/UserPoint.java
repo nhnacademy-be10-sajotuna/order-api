@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
+import shop.sajotuna.order.point.exception.InsufficientPointException;
 import shop.sajotuna.order.point.exception.NegativePointException;
 
 @Entity
