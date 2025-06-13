@@ -2,7 +2,7 @@ package shop.sajotuna.order.point.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
+import lombok.*;
 import shop.sajotuna.order.point.exception.InvalidPriceException;
 
 import java.math.BigDecimal;
@@ -10,6 +10,9 @@ import java.math.RoundingMode;
 
 @Entity
 @Getter
+@AllArgsConstructor
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PointPolicy {
 
     @Id

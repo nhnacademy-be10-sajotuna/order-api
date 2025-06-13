@@ -17,7 +17,7 @@ public class PointController {
     private final PointService pointService;
 
     @GetMapping
-    public ResponseEntity<List<PointHistoryResponse>> getPointsByUserId(@RequestHeader("X-USER-ID") Long userId) {
+    public ResponseEntity<List<PointHistoryResponse>> getPointsByUserId(@RequestHeader("X-User-Id") Long userId) {
         return ResponseEntity.ok(pointService.getPointsByUserId(userId));
     }
 
@@ -26,7 +26,7 @@ public class PointController {
      * 호출 시 RequestParam으로 PointPolicyType을 전달받아 해당 정책에 따라 포인트를 적립합니다.
      */
     @PostMapping
-    public ResponseEntity<PointHistoryResponse> getPointsByType(@RequestHeader("X-USER-ID") Long userId, @RequestParam PointPolicyType type) {
+    public ResponseEntity<PointHistoryResponse> getPointsByType(@RequestHeader("X-User-Id") Long userId, @RequestParam PointPolicyType type) {
         return ResponseEntity.ok(pointService.earnPointsByType(userId, type));
     }
 }

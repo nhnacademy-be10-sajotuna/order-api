@@ -21,6 +21,7 @@ public class PointServiceImpl implements PointService {
     private final UserPointRepository userPointRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public List<PointHistoryResponse> getPointsByUserId(Long userId) {
         return pointHistoryRepository.getPointHistoriesByUserId(userId).stream()
                 .map(PointHistoryResponse::from)
@@ -29,11 +30,12 @@ public class PointServiceImpl implements PointService {
 
     @Override
     public PointHistoryResponse earnPointsForPurchase(Long userId, int totalPrice) {
+        UserPoint userPoint = userPointRepository.findByUserId(userId)
+                .orElseThrow(UserPointNotFoundException::new);
+
         PointPolicy pointPolicy = pointPolicyService.getPointPolicy(PointPolicyType.PURCHASE);
         int earnedPoints = pointPolicy.calculatePoint(totalPrice);
 
-        UserPoint userPoint = userPointRepository.findByUserId(userId)
-                .orElseThrow(UserPointNotFoundException::new);
         return getPointHistoryResponse(userId, userPoint, earnedPoints);
     }
 
@@ -49,11 +51,12 @@ public class PointServiceImpl implements PointService {
 
     @Override
     public PointHistoryResponse earnPointsByType(Long userId, PointPolicyType type) {
+        UserPoint userPoint = userPointRepository.findByUserId(userId)
+                .orElseThrow(UserPointNotFoundException::new);
+
         PointPolicy pointPolicy = pointPolicyService.getPointPolicy(type);
         int earnedPoints = pointPolicy.getFixedPoint();
 
-        UserPoint userPoint = userPointRepository.findByUserId(userId)
-                .orElseThrow(UserPointNotFoundException::new);
         return getPointHistoryResponse(userId, userPoint, earnedPoints);
     }
 
