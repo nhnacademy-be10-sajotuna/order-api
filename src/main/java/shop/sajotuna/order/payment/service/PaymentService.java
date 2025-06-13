@@ -18,6 +18,9 @@ public class PaymentService {
 
     // 주문 번호에 맞춰 결제 정보 조회
     public PaymentResponse getPaymentByOrderId(Long orderId) {
+        if(paymentRepository.existsByOrder_Id(orderId)) {
+            throw new EntityNotFoundException("Payment not found");
+        }
         Payment payment = paymentRepository.getPaymentByOrder_Id(orderId);
 
         return PaymentResponse.from(payment);
