@@ -1,5 +1,6 @@
 package shop.sajotuna.order.orders.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,25 +26,25 @@ public class PackageController {
 
     // 포장 생성
     @PostMapping
-    public ResponseEntity<PackageResponse> createPackage(@RequestBody PackageRequest request) {
+    public ResponseEntity<PackageResponse> createPackage(@RequestBody @Valid PackageRequest request) {
         PackageResponse packageResponse = packageService.createPackage(request);
 
         return new ResponseEntity<>(packageResponse, HttpStatus.CREATED);
     }
 
     // 포장 수정
-    @PutMapping("/{packageId}")
-    public ResponseEntity<String> updatePackage(@PathVariable Long packageId, @RequestBody PackageRequest request) {
+    @PutMapping("/{package-id}")
+    public ResponseEntity<Void> updatePackage(@PathVariable("package-id") Long packageId, @RequestBody @Valid PackageRequest request) {
         packageService.updatePackage(packageId, request);
 
-        return new ResponseEntity<>("정상적으로 동작되었습니다", HttpStatus.OK);
+        return ResponseEntity.noContent().build();
     }
 
     // 포장 삭제
-    @DeleteMapping("/{packageId}")
-    public ResponseEntity<String> deletePackage(@PathVariable Long packageId){
+    @DeleteMapping("/{package-id}")
+    public ResponseEntity<Void> deletePackage(@PathVariable("package-id") Long packageId){
         packageService.deletePackage(packageId);
 
-        return new ResponseEntity<>("정상적으로 동작되었습니다", HttpStatus.OK);
+        return ResponseEntity.noContent().build();
     }
 }

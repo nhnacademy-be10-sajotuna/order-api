@@ -1,6 +1,8 @@
 package shop.sajotuna.order.orders.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import shop.sajotuna.order.orders.dto.OrderRequest;
@@ -10,6 +12,7 @@ import shop.sajotuna.order.orders.service.OrderService;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
@@ -18,26 +21,28 @@ public class OrderController {
     private final OrderService orderService;
 
     // 주문 조회
-    @GetMapping("/{orderId}")
-    public ResponseEntity<OrderResponse> getOrder(@PathVariable Long orderId){
+    @GetMapping("/{order-id}")
+    public ResponseEntity<OrderResponse> getOrder(@PathVariable("order-id") Long orderId){
         return ResponseEntity.ok(orderService.findOrder(orderId));
     }
 
     // 회원의 주문내역 조회
     @GetMapping("/user")
-    public ResponseEntity<List<OrderResponse>> getUserOrder(@RequestParam Long userId){
+    public ResponseEntity<List<OrderResponse>> getUserOrder(@RequestHeader("X-User-Id") Long userId){
         return ResponseEntity.ok(orderService.findOrdersByUserId(userId));
     }
 
     // 회원 주문
     @PostMapping("/user")
-    public ResponseEntity<OrderResponse> createUserOrders(@RequestBody OrderRequest request) {
-        return ResponseEntity.ok(orderService.createUserOrder(request));
+    public ResponseEntity<OrderResponse> createUserOrders(@RequestHeader("X-User-Id") Long userId, @RequestBody @Valid OrderRequest request) {
+        log.info("createUserOrders: userId = {}, request = {}", userId, request.getUsedUserCoupon());
+
+        return ResponseEntity.ok(orderService.createUserOrder(request, userId));
     }
 
     // 비회원 주문
     @PostMapping("/guest")
-    public ResponseEntity<OrderResponse> createGuestOrders(@RequestBody GuestOrderRequest request) {
+    public ResponseEntity<OrderResponse> createGuestOrders(@RequestBody @Valid GuestOrderRequest request) {
         return ResponseEntity.ok(orderService.createGuestOrder(request));
     }
 }

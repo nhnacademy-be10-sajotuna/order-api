@@ -1,5 +1,6 @@
 package shop.sajotuna.order.orders.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,9 +31,9 @@ public class OrderProductController {
 
     // 주문 상품의 배송 상태 수정
     @PutMapping("/{orderProductId}")
-    public ResponseEntity<String> updateOrderProduct(@PathVariable Long orderProductId, @RequestBody OrderProductUpdateRequest request){
+    public ResponseEntity<Void> updateOrderProduct(@PathVariable Long orderProductId, @RequestBody @Valid OrderProductUpdateRequest request){
         productService.updateOrderProduct(orderProductId, request);
 
-        return new ResponseEntity<>("정상적으로 동작되었습니다", HttpStatus.OK);
+        return ResponseEntity.noContent().build();
     }
 }
