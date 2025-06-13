@@ -2,6 +2,7 @@ package shop.sajotuna.order.point.service;
 
 
 import shop.sajotuna.order.point.controller.response.PointHistoryResponse;
+import shop.sajotuna.order.point.domain.PointPolicyType;
 
 import java.util.List;
 
@@ -12,7 +13,5 @@ public interface PointService {
 
     PointHistoryResponse redeemPoints(Long userId, int pointAmount);
 
-    PointHistoryResponse earnPointsForReview(Long userId);
-
-    PointHistoryResponse earnPointsForRegistration(Long userId);
+    PointHistoryResponse earnPointsByType(Long userId, PointPolicyType type);
 }

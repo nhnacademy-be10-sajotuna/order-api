@@ -5,10 +5,11 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import shop.sajotuna.order.orders.dto.OrderProductRequest;
+import lombok.Setter;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Setter
 @Entity
 @Table(name = "order_product")
 public class OrderProduct {
@@ -41,13 +42,13 @@ public class OrderProduct {
     @Column(nullable = false)
     private Boolean packagingRequest;
 
-    public OrderProduct(Order order, OrderProductRequest orderProductRequest, OrderPackaging orderPackaging) {
-        this.order = order;
-        this.isbn = orderProductRequest.getIsbn();
-        this.orderPackaging = orderPackaging;
-        this.qty = orderProductRequest.getQty();
-        this.amount = orderProductRequest.getAmount();
-        this.packagingRequest = orderProductRequest.getPackagingRequest();
+    public OrderProduct(String isbn, Integer qty, Integer amount, Boolean packagingRequest, Order order, OrderPackaging orderPackaging) {
+        this.isbn = isbn;
+        this.qty = qty;
+        this.amount = amount;
         this.status = OrderStatus.PENDING;
+        this.packagingRequest = packagingRequest;
+        this.order = order;
+        this.orderPackaging = orderPackaging;
     }
 }

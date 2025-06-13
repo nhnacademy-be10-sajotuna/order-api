@@ -1,0 +1,100 @@
+### 주문 조회
+GET localhost:10366/api/orders/1
+
+### 회원의 주문내역 조회
+GET localhost:10366/api/orders/user?userId=1
+
+### 회원 주문
+POST localhost:10366/api/orders/user
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "shippingDate": "20250612123456",
+  "streetAddress": "test",
+  "deliveryPrice": 1000,
+  "totalPrice": 100000,
+  "items": [
+    {
+      "orderPackagingId": 1,
+      "isbn": "test",
+      "qty": 2,
+      "amount": 10000,
+      "packagingRequest": true
+    },
+    {
+      "isbn": "test2",
+      "qty": 1,
+      "amount": 5990,
+      "packagingRequest": false
+    }
+  ]
+}
+
+### 비회원 주문
+POST localhost:10366/api/orders/guest
+Content-Type: application/json
+
+{
+  "name": "test",
+  "phoneNumber": "010-1234-5678",
+  "email": "test@gmail.com",
+  "shippingDate": "20250612000000",
+  "streetAddress": "test",
+  "deliveryPrice": 1000,
+  "totalPrice": 100000,
+  "items": [
+    {
+      "orderPackagingId": 1,
+      "isbn": "test",
+      "qty": 2,
+      "amount": 10000,
+      "packagingRequest": true
+    },
+    {
+      "isbn": "test2",
+      "qty": 1,
+      "amount": 5990,
+      "packagingRequest": false
+    }
+  ]
+}
+
+
+
+### 주문 상품 조회
+GET localhost:10366/api/orders/product/1
+
+### 주문 번호에 포함된 상품들 조회
+GET localhost:10366/api/orders/product/list/1
+
+### 주문 상품의 배송 상태 수정
+PUT localhost:10366/api/orders/product/1
+Content-Type: application/json
+
+{
+  "status": "SHIPPED"
+}
+
+
+
+### package 목록 조회
+GET localhost:10366/api/orders/package
+
+### package 추가
+POST localhost:10366/api/orders/package
+Content-Type: application/json
+
+{
+  "packaging": "test",
+  "price": 10020
+}
+
+### package 수정
+PUT localhost:10366/api/orders/package/1
+Content-Type: application/json
+
+{
+  "packaging": "change",
+  "price": 5400
+}

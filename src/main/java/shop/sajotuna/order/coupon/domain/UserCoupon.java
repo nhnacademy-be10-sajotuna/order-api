@@ -13,24 +13,12 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "user_coupon")
+@Table(name = "coupon_history")
 public class UserCoupon {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "coupon_id", nullable = false)
-    private Coupon coupon;
-
-    @Column(nullable = false)
-    private Long userId;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private UserCouponType type;
 
     @Column(nullable = false)
     private LocalDateTime issuedAt;
@@ -38,11 +26,16 @@ public class UserCoupon {
     @Column(nullable = false)
     private LocalDateTime expiresAt;
 
-    public UserCoupon(Coupon coupon, Long userId, LocalDateTime issuedAt, Integer validDays) {
-        this.coupon = coupon;
-        this.userId = userId;
-        this.type = UserCouponType.AVAILABLE;
-        this.issuedAt = issuedAt;
-        this.expiresAt = issuedAt.plusDays(validDays);
-    }
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserCouponType type;
+
+    @Column(nullable = false)
+    private Long userId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "coupon_id", nullable = false)
+    private Coupon coupon;
+
+
 }

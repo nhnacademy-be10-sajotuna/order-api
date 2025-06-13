@@ -19,9 +19,16 @@ public class Payment {
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
+    @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
     private PaymentMethod method;
 
     @Column(nullable = false)
     private Integer amount;
+
+    public Payment(Order order, PaymentMethod method, Integer amount) {
+        this.order = order;
+        this.method = method;
+        this.amount = amount;
+    }
 }
