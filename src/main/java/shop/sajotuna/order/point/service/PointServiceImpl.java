@@ -3,7 +3,7 @@ package shop.sajotuna.order.point.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import shop.sajotuna.common.exception.UserPointNotFoundException;
+import shop.sajotuna.order.common.exception.UserPointNotFoundException;
 import shop.sajotuna.order.point.controller.response.PointHistoryResponse;
 import shop.sajotuna.order.point.domain.PointHistory;
 import shop.sajotuna.order.point.domain.PointType;

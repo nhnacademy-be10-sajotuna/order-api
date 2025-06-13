@@ -2,10 +2,19 @@ package shop.sajotuna.order.orders.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import shop.sajotuna.order.orders.entity.Order;
+
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
 public class OrderResponse {
     private Long orderId;
-    private int finalPrice;
+    private LocalDateTime shippingDate;
+    private LocalDateTime createdAt;
+    private int TotalPrice;
+
+    public static OrderResponse from(Order order) {
+        return new OrderResponse(order.getId(), order.getShippingDate(), order.getCreatedAt(), order.getTotalPrice());
+    }
 }
