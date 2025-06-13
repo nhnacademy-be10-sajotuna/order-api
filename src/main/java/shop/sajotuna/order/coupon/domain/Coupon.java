@@ -1,18 +1,14 @@
 package shop.sajotuna.order.coupon.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @Entity
 @NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "coupon")
 public class Coupon {
     @Id
@@ -38,5 +34,12 @@ public class Coupon {
     @Column(nullable = false)
     private Integer validDays;
 
-
+    public Coupon(String name, CouponType type, Integer discountAmount, Integer minOrderAmount, Integer maxDiscountAmount, Integer validDays) {
+        this.name = name;
+        this.type = type;
+        this.discountAmount = discountAmount;
+        this.minOrderAmount = minOrderAmount;
+        this.maxDiscountAmount = maxDiscountAmount;
+        this.validDays = validDays;
+    }
 }

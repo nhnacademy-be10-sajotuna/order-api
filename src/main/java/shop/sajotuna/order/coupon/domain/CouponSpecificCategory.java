@@ -23,4 +23,8 @@ public class CouponSpecificCategory {
     @JoinColumn(name = "coupon_id", nullable = false)
     private Coupon coupon;
 
+    public CouponSpecificCategory(Long categoryId, Coupon coupon) {
+        this.categoryId = categoryId;
+        this.coupon = coupon;
+    }
 }

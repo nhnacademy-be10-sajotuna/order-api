@@ -1,26 +1,30 @@
 package shop.sajotuna.order.coupon.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import shop.sajotuna.order.coupon.dto.UserCouponRequest;
 import shop.sajotuna.order.coupon.dto.UserCouponResponse;
-import shop.sajotuna.order.coupon.repository.UserCouponRepository;
 import shop.sajotuna.order.coupon.service.UserCouponService;
 
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/orders")
+@RequestMapping("/api/orders/coupon/user")
 public class UserCouponController {
     private final UserCouponService userCouponService;
 
-    @GetMapping("/{userId}/coupons")
-    public ResponseEntity<List<UserCouponResponse>> getUserCoupons(@PathVariable Long userId) {
+    // 유저가 가진 쿠폰 목록 조회
+    @GetMapping
+    public ResponseEntity<List<UserCouponResponse>> getUserCoupons(@RequestHeader(name = "X-User-Id") Long userId) {
         return ResponseEntity.ok(userCouponService.getUserCoupons(userId));
     }
 
+    // 유저 쿠폰 발급
+    @PostMapping
+    public ResponseEntity<UserCouponResponse> createUserCoupon(@RequestBody @Valid UserCouponRequest userCouponRequest) {
+        return ResponseEntity.ok(userCouponService.saveUserCoupon(userCouponRequest));
+    }
 }

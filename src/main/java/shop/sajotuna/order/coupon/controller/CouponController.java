@@ -1,14 +1,55 @@
 package shop.sajotuna.order.coupon.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import shop.sajotuna.order.coupon.repository.CouponRepository;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import shop.sajotuna.order.coupon.dto.CouponRequest;
+import shop.sajotuna.order.coupon.dto.CouponResponse;
 import shop.sajotuna.order.coupon.service.CouponService;
 
-@RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/order")
+@RequiredArgsConstructor
+@RequestMapping("/api/orders/coupon")
 public class CouponController {
     private final CouponService couponService;
+
+    // 쿠폰 조회
+    @GetMapping("/{coupon-id}")
+    public ResponseEntity<CouponResponse> getCouponById(@PathVariable(name = "coupon-id") Long couponId) {
+        return ResponseEntity.ok(couponService.findCoupon(couponId));
+    }
+
+    // 쿠폰 생성
+    @PostMapping
+    public ResponseEntity<CouponResponse> createCoupon(@RequestBody @Valid CouponRequest couponRequest) {
+        return ResponseEntity.ok(couponService.saveCoupon(couponRequest));
+    }
+
+    // 책 쿠폰 생성
+    @PostMapping("/book")
+    public ResponseEntity<CouponResponse> createBookCoupon(@RequestParam String isbn, @RequestBody @Valid CouponRequest couponRequest) {
+        return ResponseEntity.ok(couponService.saveBookCoupon(isbn, couponRequest));
+    }
+
+    // 카테고리 쿠폰 생성
+    @PostMapping("/category")
+    public ResponseEntity<CouponResponse> createCategoryCoupon(@RequestParam Long categoryId, @RequestBody @Valid CouponRequest couponRequest) {
+        return ResponseEntity.ok(couponService.saveCategoryCoupon(categoryId, couponRequest));
+    }
+
+    // 쿠폰 수정
+    @PutMapping("/{coupon-id}")
+    public ResponseEntity<String> updateCoupon(@PathVariable(name = "coupon-id") Long couponId, @RequestBody @Valid CouponRequest couponRequest) {
+        return ResponseEntity.ok("정상적으로 동작되었습니다");
+    }
+
+    // 쿠폰 삭제
+    @DeleteMapping("/{coupon-id}")
+    public ResponseEntity<String> deleteCouponById(@PathVariable(name = "coupon-id") Long couponId) {
+        couponService.deleteCoupon(couponId);
+
+        return ResponseEntity.ok("정상적으로 동작되었습니다");
+    }
+
 }
