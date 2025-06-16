@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import shop.sajotuna.order.coupon.exception.ExpiredCouponException;
+import shop.sajotuna.order.coupon.exception.AlreadyUsedCouponException;
 
 import java.time.LocalDateTime;
 
@@ -44,5 +46,16 @@ public class UserCoupon {
         this.type = UserCouponType.AVAILABLE;
         this.issuedAt = issuedAt;
         this.expiresAt = issuedAt.plusDays(validDays);
+    }
+
+    public void useCoupon() {
+        if (type == UserCouponType.USED || type == UserCouponType.EXPIRED) {
+            throw new AlreadyUsedCouponException();
+        }
+        if (LocalDateTime.now().isAfter(expiresAt)) {
+            type = UserCouponType.EXPIRED;
+            throw new ExpiredCouponException();
+        }
+        this.type = UserCouponType.USED;
     }
 }
