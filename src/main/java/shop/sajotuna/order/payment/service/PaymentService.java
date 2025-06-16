@@ -20,18 +20,15 @@ public class PaymentService {
     private final OrderRepository orderRepository;
 
     // 주문 번호에 맞춰 결제 정보 조회
-    public PaymentResponse getPaymentByOrderId(Long orderId) {
-        if(!paymentRepository.existsByOrder_Id(orderId)) {
-            throw new EntityNotFoundException("Payment not found");
-        }
-        Payment payment = paymentRepository.getPaymentByOrder_Id(orderId);
+    public PaymentResponse getPayment(Long paymentId) {
+        Payment payment = paymentRepository.findById(paymentId).orElseThrow(EntityNotFoundException::new);
 
         return PaymentResponse.from(payment);
     }
 
-    // 유저의 결제 내역 조회
-    public List<PaymentResponse> getPaymentByUserId(Long userId) {
-        return paymentRepository.getPaymentsByOrder_UserId(userId).stream().map(PaymentResponse::from).collect(Collectors.toList());
+    // 모든 결제 정보 조회
+    public List<PaymentResponse> getAllPayments() {
+        return paymentRepository.findAll().stream().map(PaymentResponse::from).collect(Collectors.toList());
     }
 
     // 결제 정보 추가
