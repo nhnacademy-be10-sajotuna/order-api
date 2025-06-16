@@ -1,10 +1,13 @@
 package shop.sajotuna.order.payment.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.sajotuna.order.orders.entity.Order;
+
+import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -26,9 +29,13 @@ public class Payment {
     @Column(nullable = false)
     private Integer amount;
 
+    @NotNull
+    private LocalDateTime createdAt;
+
     public Payment(Order order, PaymentMethod method, Integer amount) {
         this.order = order;
         this.method = method;
         this.amount = amount;
+        this.createdAt = LocalDateTime.now();
     }
 }
