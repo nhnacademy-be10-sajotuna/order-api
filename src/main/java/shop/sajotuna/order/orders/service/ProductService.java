@@ -1,9 +1,9 @@
 package shop.sajotuna.order.orders.service;
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.point.exception.OrderNotFoundException;
 import shop.sajotuna.order.orders.dto.OrderProductResponse;
 import shop.sajotuna.order.orders.dto.OrderProductUpdateRequest;
@@ -22,6 +22,7 @@ public class ProductService {
     private final OrderRepository orderRepository;
 
     // 주문 상품 조회
+    @Transactional(readOnly = true)
     public OrderProductResponse findById(Long id) {
         OrderProduct orderProduct = orderProductRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 
@@ -29,6 +30,7 @@ public class ProductService {
     }
 
     // 주문 번호에 포함된 상품들 조회
+    @Transactional(readOnly = true)
     public List<OrderProductResponse> findByOrderId(Long orderId){
         if(!orderRepository.existsById(orderId)){
             throw new OrderNotFoundException();
@@ -38,7 +40,6 @@ public class ProductService {
         return orderProducts.stream().map(OrderProductResponse::from).collect(Collectors.toList());
     }
 
-    @Transactional
     public void updateOrderProduct(Long id, OrderProductUpdateRequest request){
         OrderProduct orderProduct = orderProductRepository.findById(id).orElseThrow(EntityNotFoundException::new);
 

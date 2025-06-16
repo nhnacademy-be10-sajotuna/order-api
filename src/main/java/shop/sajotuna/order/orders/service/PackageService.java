@@ -1,15 +1,13 @@
 package shop.sajotuna.order.orders.service;
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.orders.dto.PackageRequest;
 import shop.sajotuna.order.orders.dto.PackageResponse;
 import shop.sajotuna.order.orders.entity.OrderPackaging;
 import shop.sajotuna.order.orders.repository.OrderPackagingRepository;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,7 +24,6 @@ public class PackageService {
     }
 
     // package 수정
-    @Transactional
     public void updatePackage(long id, PackageRequest request) {
         if(!orderPackagingRepository.existsById(id)){
             throw new EntityNotFoundException("OrderPackaging not found");
@@ -38,7 +35,6 @@ public class PackageService {
     }
 
     // package 삭제
-    @Transactional
     public void deletePackage(long id) {
         if(!orderPackagingRepository.existsById(id)){
             throw new EntityNotFoundException("OrderPackaging not found");
@@ -47,6 +43,7 @@ public class PackageService {
     }
 
     // package 목록 조회
+    @Transactional(readOnly = true)
     public List<PackageResponse> getPackages(){
         List<OrderPackaging> orderPackages = orderPackagingRepository.findAll();
 

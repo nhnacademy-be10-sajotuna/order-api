@@ -2,18 +2,22 @@
 GET localhost:10366/api/orders/1
 
 ### 회원의 주문내역 조회
-GET localhost:10366/api/orders/user?userId=1
+GET localhost:10366/api/orders/user
+X-User-Id: 1
 
 ### 회원 주문
 POST localhost:10366/api/orders/user
 Content-Type: application/json
+X-User-Id: 1
 
 {
-  "userId": 1,
   "shippingDate": "20250612123456",
   "streetAddress": "test",
   "deliveryPrice": 1000,
   "totalPrice": 100000,
+  "usedPoint": 1000,
+  "usedUserCoupon": 1,
+  "method": "CARD",
   "items": [
     {
       "orderPackagingId": 1,
@@ -39,10 +43,11 @@ Content-Type: application/json
   "name": "test",
   "phoneNumber": "010-1234-5678",
   "email": "test@gmail.com",
-  "shippingDate": "20250612000000",
+  "shippingDate": "20250612123456",
   "streetAddress": "test",
   "deliveryPrice": 1000,
   "totalPrice": 100000,
+  "method": "CARD",
   "items": [
     {
       "orderPackagingId": 1,

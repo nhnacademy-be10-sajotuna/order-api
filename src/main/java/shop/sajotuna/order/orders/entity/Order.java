@@ -1,16 +1,14 @@
 package shop.sajotuna.order.orders.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
-@Setter
+@AllArgsConstructor
+@Builder
+@Data
 @Entity
 @Table(name = "orders")
 public class Order {
@@ -37,15 +35,4 @@ public class Order {
     private LocalDateTime createdAt;
 
     private Long userId;
-
-    public Order(Boolean isMember, LocalDateTime shippingDate, String streetAddress,
-                 Integer deliveryPrice, Integer totalPrice, Long userId) {
-        this.isMember = isMember;
-        this.shippingDate = shippingDate;
-        this.streetAddress = streetAddress;
-        this.deliveryPrice = deliveryPrice;
-        this.totalPrice = totalPrice;
-        this.createdAt = LocalDateTime.now();
-        this.userId = userId;
-    }
 }

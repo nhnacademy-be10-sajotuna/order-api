@@ -2,14 +2,12 @@ package shop.sajotuna.order.orders.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
-@Setter
+@AllArgsConstructor
+@Data
+@Builder
 @Entity
 @Table(name = "order_product")
 public class OrderProduct {
@@ -41,14 +39,4 @@ public class OrderProduct {
 
     @Column(nullable = false)
     private Boolean packagingRequest;
-
-    public OrderProduct(String isbn, Integer qty, Integer amount, Boolean packagingRequest, Order order, OrderPackaging orderPackaging) {
-        this.isbn = isbn;
-        this.qty = qty;
-        this.amount = amount;
-        this.status = OrderStatus.PENDING;
-        this.packagingRequest = packagingRequest;
-        this.order = order;
-        this.orderPackaging = orderPackaging;
-    }
 }
