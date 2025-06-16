@@ -10,6 +10,9 @@ import shop.sajotuna.order.payment.dto.PaymentResponse;
 import shop.sajotuna.order.payment.entity.Payment;
 import shop.sajotuna.order.payment.repository.PaymentRepository;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RequiredArgsConstructor
 @Service
 public class PaymentService {
@@ -24,6 +27,11 @@ public class PaymentService {
         Payment payment = paymentRepository.getPaymentByOrder_Id(orderId);
 
         return PaymentResponse.from(payment);
+    }
+
+    // 유저의 결제 내역 조회
+    public List<PaymentResponse> getPaymentByUserId(Long userId) {
+        return paymentRepository.getPaymentsByOrder_UserId(userId).stream().map(PaymentResponse::from).collect(Collectors.toList());
     }
 
     // 결제 정보 추가
