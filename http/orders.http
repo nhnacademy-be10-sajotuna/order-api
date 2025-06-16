@@ -14,7 +14,6 @@ X-User-Id: 1
   "shippingDate": "20250612123456",
   "streetAddress": "test",
   "deliveryPrice": 1000,
-  "totalPrice": 100000,
   "usedPoint": 1000,
   "usedUserCoupon": 1,
   "method": "CARD",
