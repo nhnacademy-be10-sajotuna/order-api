@@ -32,10 +32,18 @@ public class PointHistory {
     @NotNull
     private LocalDateTime createdAt;
 
-    public PointHistory(Long userId, int amount, PointType type) {
+    private PointHistory(Long userId, int amount, PointType type) {
         this.userId = userId;
         this.amount = amount;
         this.type = type;
         this.createdAt = LocalDateTime.now();
+    }
+
+    public static PointHistory createRedeemHistory(Long userId, int amount) {
+        return new PointHistory(userId, amount, PointType.REDEEMED);
+    }
+
+    public static PointHistory createEarnHistory(Long userId, int amount) {
+        return new PointHistory(userId, amount, PointType.EARNED);
     }
 }

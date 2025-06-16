@@ -35,8 +35,9 @@ public class PointServiceImpl implements PointService {
 
         PointPolicy pointPolicy = pointPolicyService.getPointPolicy(PointPolicyType.PURCHASE);
         int earnedPoints = pointPolicy.calculatePoint(totalPrice);
+        userPoint.earnPoint(earnedPoints);
 
-        return getPointHistoryResponse(userId, userPoint, earnedPoints);
+        return getPointHistoryResponse(userId, earnedPoints);
     }
 
     @Override
@@ -45,24 +46,36 @@ public class PointServiceImpl implements PointService {
                 .orElseThrow(UserPointNotFoundException::new);
 
         userPoint.redeemPoint(pointAmount);
-        PointHistory pointHistory = pointHistoryRepository.save(new PointHistory(userId, pointAmount, PointType.REDEEMED));
+        PointHistory pointHistory = pointHistoryRepository.save(PointHistory.createRedeemHistory(userId, pointAmount));
         return PointHistoryResponse.from(pointHistory);
     }
 
     @Override
-    public PointHistoryResponse earnPointsByType(Long userId, PointPolicyType type) {
+    public PointHistoryResponse earnPointsByReview(Long userId, PointPolicyType type) {
         UserPoint userPoint = userPointRepository.findByUserId(userId)
                 .orElseThrow(UserPointNotFoundException::new);
 
         PointPolicy pointPolicy = pointPolicyService.getPointPolicy(type);
         int earnedPoints = pointPolicy.getFixedPoint();
+        userPoint.earnPoint(earnedPoints);
 
-        return getPointHistoryResponse(userId, userPoint, earnedPoints);
+        return getPointHistoryResponse(userId, earnedPoints);
     }
 
-    private PointHistoryResponse getPointHistoryResponse(Long userId, UserPoint userPoint, int earnedPoints) {
+    @Override
+    public PointHistoryResponse earnPointsByRegister(Long userId) {
+        UserPoint userPoint = UserPoint.create(userId);
+        userPointRepository.save(userPoint);
+
+        PointPolicy pointPolicy = pointPolicyService.getPointPolicy(PointPolicyType.REGISTER);
+        int earnedPoints = pointPolicy.getFixedPoint();
         userPoint.earnPoint(earnedPoints);
-        PointHistory pointHistory = pointHistoryRepository.save(new PointHistory(userId, earnedPoints, PointType.EARNED));
+
+        return getPointHistoryResponse(userId, earnedPoints);
+    }
+
+    private PointHistoryResponse getPointHistoryResponse(Long userId, int earnedPoints) {
+        PointHistory pointHistory = pointHistoryRepository.save(PointHistory.createEarnHistory(userId, earnedPoints));
         return PointHistoryResponse.from(pointHistory);
     }
 }
