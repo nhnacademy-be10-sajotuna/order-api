@@ -13,5 +13,7 @@ public interface PointService {
 
     PointHistoryResponse redeemPoints(Long userId, int pointAmount);
 
-    PointHistoryResponse earnPointsByType(Long userId, PointPolicyType type);
+    PointHistoryResponse earnPointsByReview(Long userId, PointPolicyType type);
+
+    PointHistoryResponse earnPointsByRegister(Long userId);
 }

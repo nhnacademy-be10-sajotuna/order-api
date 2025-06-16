@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.sajotuna.order.point.exception.InvalidUserIdException;
 import shop.sajotuna.order.point.exception.NegativePointException;
 import shop.sajotuna.order.point.exception.InsufficientPointException;
 
@@ -45,5 +46,12 @@ public class UserPoint {
             throw new NegativePointException();
         }
         this.remainPoint -= pointAmount;
+    }
+
+    public static UserPoint create(Long userId) {
+        if (userId == null) {
+            throw new InvalidUserIdException();
+        }
+        return new UserPoint(null, userId, 0L, null);
     }
 }
