@@ -1,22 +1,35 @@
 package shop.sajotuna.order.coupon.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import shop.sajotuna.order.coupon.domain.Coupon;
+import shop.sajotuna.order.coupon.domain.CouponPolicyType;
 import shop.sajotuna.order.coupon.domain.CouponType;
 
 @Data
+@Builder
 @AllArgsConstructor
 public class CouponResponse {
     private Long id;
     private String name;
-    private CouponType type;
+    private CouponType couponType;
+    private CouponPolicyType policyType;
     private Integer discountAmount;
     private Integer minOrderAmount;
     private Integer maxDiscountAmount;
     private Integer validDays;
 
     public static CouponResponse from(Coupon coupon) {
-        return new CouponResponse(coupon.getId(), coupon.getName(), coupon.getType(), coupon.getDiscountAmount(), coupon.getMinOrderAmount(), coupon.getMaxDiscountAmount(), coupon.getValidDays());
+        return CouponResponse.builder()
+                .id(coupon.getId())
+                .name(coupon.getName())
+                .couponType(coupon.getCouponType())
+                .policyType(coupon.getPolicyType())
+                .discountAmount(coupon.getDiscountAmount())
+                .minOrderAmount(coupon.getMinOrderAmount())
+                .maxDiscountAmount(coupon.getMaxDiscountAmount())
+                .validDays(coupon.getValidDays())
+                .build();
     }
 }

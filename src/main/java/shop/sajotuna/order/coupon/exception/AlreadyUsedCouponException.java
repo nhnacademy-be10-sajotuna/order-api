@@ -1,4 +1,4 @@
-package shop.sajotuna.order.orders.exception;
+package shop.sajotuna.order.coupon.exception;
 
 import org.springframework.http.HttpStatus;
 import shop.sajotuna.order.common.exception.ApiException;
