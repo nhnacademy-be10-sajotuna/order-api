@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: order-api
+  config:
+    import: configserver:http://localhost:10379
+  cloud:
+    config:
+      lable: dev

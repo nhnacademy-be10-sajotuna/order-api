@@ -1,34 +1,5 @@
-server:
-  port: ${PORT:10366}
-
 spring:
   application:
     name: order-api
-
-  jpa:
-    open-in-view: false
-    show-sql: true
-    hibernate:
-      ddl-auto: create
-    properties:
-      hibernate:
-        format_sql: true
-        use_sql_comments: true
-        highlight_sql: true
-        auto_quote_keyword: true
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:10372/eureka/
-    healthcheck:
-      enabled: true
-  instance:
-    prefer-ip-address: true
-    instance-id: ${spring.application.name}:${server.port}
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,shutdown
+  profiles:
+    active: prod
