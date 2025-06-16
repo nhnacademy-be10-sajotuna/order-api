@@ -2,7 +2,6 @@ package shop.sajotuna.order.orders.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import shop.sajotuna.order.orders.dto.PackageRequest;
@@ -21,7 +20,7 @@ public class PackageController {
     @GetMapping
     public ResponseEntity<List<PackageResponse>> getPackage(){
         List<PackageResponse> packages = packageService.getPackages();
-        return new ResponseEntity<>(packages, HttpStatus.OK);
+        return ResponseEntity.ok(packages);
     }
 
     // 포장 생성
@@ -29,7 +28,7 @@ public class PackageController {
     public ResponseEntity<PackageResponse> createPackage(@RequestBody @Valid PackageRequest request) {
         PackageResponse packageResponse = packageService.createPackage(request);
 
-        return new ResponseEntity<>(packageResponse, HttpStatus.CREATED);
+        return ResponseEntity.ok(packageResponse);
     }
 
     // 포장 수정
