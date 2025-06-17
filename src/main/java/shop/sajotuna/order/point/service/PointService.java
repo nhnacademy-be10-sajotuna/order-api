@@ -9,11 +9,10 @@ import java.util.List;
 public interface PointService {
     List<PointHistoryResponse> getPointsByUserId(Long userId);
 
-    PointHistoryResponse earnPointsForPurchase(Long userId, int totalPrice);
+    void earnPointsForPurchase(Long userId, int totalPrice);
 
     PointHistoryResponse redeemPoints(Long userId, int pointAmount);
 
-    PointHistoryResponse earnPointsByReview(Long userId, PointPolicyType type);
+    void earnPointsByType(Long userId, PointPolicyType type);
 
-    PointHistoryResponse earnPointsByRegister(Long userId);
 }

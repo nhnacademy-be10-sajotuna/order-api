@@ -1,6 +1,8 @@
 package shop.sajotuna.order.orders.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.coupon.service.UserCouponService;
@@ -9,6 +11,8 @@ import shop.sajotuna.order.orders.entity.*;
 import shop.sajotuna.order.orders.repository.*;
 import shop.sajotuna.order.payment.entity.Payment;
 import shop.sajotuna.order.payment.repository.PaymentRepository;
+import shop.sajotuna.order.point.controller.request.PointEarnRequest;
+import shop.sajotuna.order.point.domain.PointPolicyType;
 import shop.sajotuna.order.point.exception.OrderNotFoundException;
 import shop.sajotuna.order.point.service.PointService;
 
@@ -24,6 +28,14 @@ public class OrderService {
     private final PointService pointService;
     private final UserCouponService userCouponService;
     private final OrderProductService orderProductService;
+
+    @Value("${rabbitmq.exchange.name}")
+    private String exchangeName;
+
+    @Value("${rabbitmq.routing.key}")
+    private String routingKey;
+
+    private final RabbitTemplate rabbitTemplate;
 
     // 주문 조회
     public OrderDetailResponse findOrderDetail(long orderId){
@@ -68,7 +80,7 @@ public class OrderService {
         paymentRepository.save(payment);
 
         // 포인트 적립
-        pointService.earnPointsForPurchase(userId, paymentPrice);
+        rabbitTemplate.convertAndSend(exchangeName, routingKey, new PointEarnRequest(userId, paymentPrice, PointPolicyType.PURCHASE));
 
         return OrderResponse.from(savedOrder);
     }
