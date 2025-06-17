@@ -16,6 +16,7 @@ import shop.sajotuna.order.coupon.repository.CouponRepository;
 
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class CouponService {
 
     private final CouponRepository couponRepository;
@@ -23,7 +24,7 @@ public class CouponService {
     private final CategoryCouponRepository categoryCouponRepository;
 
     // 쿠폰 조회
-    @Transactional
+    @Transactional(readOnly = true)
     public CouponResponse findCoupon(Long couponId) {
         Coupon coupon = couponRepository.findById(couponId).orElseThrow(EntityNotFoundException::new);
 
@@ -31,7 +32,6 @@ public class CouponService {
     }
 
     // 쿠폰 생성
-    @Transactional
     public CouponResponse saveCoupon(CouponRequest couponRequest) {
         Coupon coupon = couponRepository.save(couponRequest.toEntity());
 
@@ -39,7 +39,6 @@ public class CouponService {
     }
 
     // 책 쿠폰 생성
-    @Transactional
     public CouponResponse saveBookCoupon(String isbn, CouponRequest couponRequest){
         Coupon coupon = couponRepository.save(couponRequest.toEntity());
         bookCouponRepository.save(new CouponSpecificBook(isbn, coupon));
@@ -48,7 +47,6 @@ public class CouponService {
     }
 
     // 카테고리 쿠폰 생성
-    @Transactional
     public CouponResponse saveCategoryCoupon(Long categoryId, CouponRequest couponRequest){
         Coupon coupon = couponRepository.save(couponRequest.toEntity());
         categoryCouponRepository.save(new CouponSpecificCategory(categoryId, coupon));
@@ -57,7 +55,6 @@ public class CouponService {
     }
 
     // 쿠폰 삭제
-    @Transactional
     public void deleteCoupon(Long couponId) {
         if(!couponRepository.existsById(couponId)) {
             throw new EntityNotFoundException("Coupon not found");
