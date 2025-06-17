@@ -3,9 +3,11 @@ package shop.sajotuna.order.coupon.service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.coupon.domain.Coupon;
 import shop.sajotuna.order.coupon.domain.CouponSpecificBook;
 import shop.sajotuna.order.coupon.domain.CouponSpecificCategory;
+import shop.sajotuna.order.coupon.domain.CouponType;
 import shop.sajotuna.order.coupon.dto.CouponRequest;
 import shop.sajotuna.order.coupon.dto.CouponResponse;
 import shop.sajotuna.order.coupon.repository.BookCouponRepository;
@@ -14,6 +16,7 @@ import shop.sajotuna.order.coupon.repository.CouponRepository;
 
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class CouponService {
 
     private final CouponRepository couponRepository;
@@ -21,6 +24,7 @@ public class CouponService {
     private final CategoryCouponRepository categoryCouponRepository;
 
     // 쿠폰 조회
+    @Transactional(readOnly = true)
     public CouponResponse findCoupon(Long couponId) {
         Coupon coupon = couponRepository.findById(couponId).orElseThrow(EntityNotFoundException::new);
 
