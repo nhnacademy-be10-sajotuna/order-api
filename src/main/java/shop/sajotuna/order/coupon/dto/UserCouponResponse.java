@@ -12,7 +12,7 @@ public class UserCouponResponse {
     private Long userCouponId;
     private LocalDateTime issuedAt;
     private LocalDateTime expiresDate;
-    private UserCouponType UserCoupontype;
+    private UserCouponType userCouponType;
 
     public static UserCouponResponse from(UserCoupon userCoupon) {
         return new UserCouponResponse(userCoupon.getId(), userCoupon.getIssuedAt(), userCoupon.getExpiresAt(), userCoupon.getType());
