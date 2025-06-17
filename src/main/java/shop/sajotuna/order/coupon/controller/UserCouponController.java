@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/coupons/user")
+@RequestMapping("/api/coupons/users")
 public class UserCouponController {
     private final UserCouponService userCouponService;
 
@@ -27,4 +27,6 @@ public class UserCouponController {
     public ResponseEntity<UserCouponResponse> createUserCoupon(@RequestBody @Valid UserCouponRequest userCouponRequest) {
         return ResponseEntity.ok(userCouponService.saveUserCoupon(userCouponRequest));
     }
+
+
 }

@@ -22,6 +22,7 @@ public class UserCouponService {
     private final CouponRepository couponRepository;
 
     // 유저가 가진 쿠폰 목록 조회
+    @Transactional
     public List<UserCouponResponse> getUserCoupons(Long userId) {
         List<UserCoupon> userCoupons = userCouponRepository.findByUserId(userId);
 
@@ -29,6 +30,7 @@ public class UserCouponService {
     }
 
     // 유저 쿠폰 생성
+    @Transactional
     public UserCouponResponse saveUserCoupon(UserCouponRequest userCouponRequest) {
         Coupon coupon = couponRepository.findById(userCouponRequest.getCouponId()).orElseThrow(CouponNotFoundException::new);
 
@@ -50,4 +52,5 @@ public class UserCouponService {
         userCoupon.useCoupon();
         return userCoupon.getCoupon().calculateDiscount(totalPrice);
     }
+
 }

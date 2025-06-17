@@ -3,9 +3,11 @@ package shop.sajotuna.order.coupon.service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.coupon.domain.Coupon;
 import shop.sajotuna.order.coupon.domain.CouponSpecificBook;
 import shop.sajotuna.order.coupon.domain.CouponSpecificCategory;
+import shop.sajotuna.order.coupon.domain.CouponType;
 import shop.sajotuna.order.coupon.dto.CouponRequest;
 import shop.sajotuna.order.coupon.dto.CouponResponse;
 import shop.sajotuna.order.coupon.repository.BookCouponRepository;
@@ -21,6 +23,7 @@ public class CouponService {
     private final CategoryCouponRepository categoryCouponRepository;
 
     // 쿠폰 조회
+    @Transactional
     public CouponResponse findCoupon(Long couponId) {
         Coupon coupon = couponRepository.findById(couponId).orElseThrow(EntityNotFoundException::new);
 
@@ -28,6 +31,7 @@ public class CouponService {
     }
 
     // 쿠폰 생성
+    @Transactional
     public CouponResponse saveCoupon(CouponRequest couponRequest) {
         Coupon coupon = couponRepository.save(couponRequest.toEntity());
 
@@ -35,6 +39,7 @@ public class CouponService {
     }
 
     // 책 쿠폰 생성
+    @Transactional
     public CouponResponse saveBookCoupon(String isbn, CouponRequest couponRequest){
         Coupon coupon = couponRepository.save(couponRequest.toEntity());
         bookCouponRepository.save(new CouponSpecificBook(isbn, coupon));
@@ -43,6 +48,7 @@ public class CouponService {
     }
 
     // 카테고리 쿠폰 생성
+    @Transactional
     public CouponResponse saveCategoryCoupon(Long categoryId, CouponRequest couponRequest){
         Coupon coupon = couponRepository.save(couponRequest.toEntity());
         categoryCouponRepository.save(new CouponSpecificCategory(categoryId, coupon));
@@ -51,6 +57,7 @@ public class CouponService {
     }
 
     // 쿠폰 삭제
+    @Transactional
     public void deleteCoupon(Long couponId) {
         if(!couponRepository.existsById(couponId)) {
             throw new EntityNotFoundException("Coupon not found");
