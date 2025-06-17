@@ -20,7 +20,11 @@ public class Coupon {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private CouponType type;
+    private CouponType couponType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CouponPolicyType policyType;
 
     @Column(nullable = false)
     private Integer discountAmount;
@@ -33,4 +37,20 @@ public class Coupon {
 
     @Column(nullable = false)
     private Integer validDays;
+
+    public int calculateDiscount(int orderAmount) {
+        if (orderAmount < minOrderAmount) {
+            return 0;
+        }
+
+        int discount;
+        if (policyType == CouponPolicyType.FIXED) {
+            discount = discountAmount;
+        } else {
+            discount = (int) Math.floor(orderAmount * (discountAmount / 100.0));
+            discount = Math.min(discount, maxDiscountAmount);
+        }
+
+        return Math.min(discount, orderAmount);
+    }
 }

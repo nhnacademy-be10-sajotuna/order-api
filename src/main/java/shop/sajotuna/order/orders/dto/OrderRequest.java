@@ -25,10 +25,6 @@ public class OrderRequest {
     private int deliveryPrice;
 
     @NotNull
-    @PositiveOrZero
-    private int totalPrice;
-
-    @NotNull
     private PaymentMethod method;
 
     private Long usedUserCoupon;
@@ -39,7 +35,7 @@ public class OrderRequest {
     @NotNull
     private List<OrderProductRequest> items;
 
-    public Order toEntity(Long userId) {
+    public Order toEntity(Long userId, int totalPrice) {
         return Order.builder()
                 .userId(userId)
                 .isMember(true)
