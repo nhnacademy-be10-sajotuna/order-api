@@ -24,6 +24,7 @@ public class PackageService {
     }
 
     // package 수정
+    @Transactional
     public void updatePackage(long id, PackageRequest request) {
         if(!orderPackagingRepository.existsById(id)){
             throw new EntityNotFoundException("OrderPackaging not found");

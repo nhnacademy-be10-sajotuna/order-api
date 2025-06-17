@@ -14,8 +14,9 @@ import shop.sajotuna.order.point.service.PointService;
 
 import java.util.List;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class OrderService {
     private final OrderRepository orderRepository;
     private final GuestOrderRepository guestOrderRepository;
@@ -25,21 +26,22 @@ public class OrderService {
     private final OrderProductService orderProductService;
 
     // 주문 조회
-    @Transactional(readOnly = true)
-    public OrderResponse findOrder(long orderId){
+    public OrderDetailResponse findOrderDetail(long orderId){
         Order order = orderRepository.findById(orderId).orElseThrow(OrderNotFoundException::new);
 
-        return OrderResponse.from(order);
+        List<OrderProductResponse> orderProducts = orderProductService.findByOrderId(orderId);
+
+        Payment payment = paymentRepository.getPaymentByOrder_Id(orderId);
+
+        return OrderDetailResponse.from(order, orderProducts, payment);
     }
 
     // 회원의 주문 목록 조회
-    @Transactional(readOnly = true)
     public List<OrderResponse> findOrdersByUserId(long userId){
         return orderRepository.findByUserId(userId).stream().map(OrderResponse::from).toList();
     }
 
     // 회원 주문 저장 - 주문상품, 결제, 쿠폰, 포인트도 한번에 처리하도록 구현해야 함
-    @Transactional
     public OrderResponse createUserOrder(OrderRequest orderRequest, Long userId) {
         int totalPrice = orderRequest.getItems().stream()
                 .mapToInt(item -> item.getQty() * item.getAmount())
@@ -72,15 +74,17 @@ public class OrderService {
     }
 
     // 비회원 주문 저장
-    @Transactional
     public OrderResponse createGuestOrder(GuestOrderRequest guestOrderRequest){
-        Order savedOrder = orderRepository.save(guestOrderRequest.toEntity());
+        int totalPrice = guestOrderRequest.getItems().stream()
+                .mapToInt(item -> item.getQty() * item.getAmount())
+                .sum();
+        Order savedOrder = orderRepository.save(guestOrderRequest.toEntity(totalPrice));
         guestOrderRepository.save(new GuestOrder(savedOrder, guestOrderRequest));
 
         int packagingPrice = orderProductService.saveOrderProduct(guestOrderRequest.getItems(), savedOrder);
 
         // 결제 비용
-        int finalPrice = guestOrderRequest.getTotalPrice() + guestOrderRequest.getDeliveryPrice() + packagingPrice;
+        int finalPrice = totalPrice + guestOrderRequest.getDeliveryPrice() + packagingPrice;
 
         // 결제 정보 저장
         Payment payment = new Payment(savedOrder, guestOrderRequest.getMethod(), finalPrice);
