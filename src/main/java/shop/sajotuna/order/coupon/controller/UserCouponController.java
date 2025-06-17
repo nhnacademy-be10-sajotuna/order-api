@@ -29,7 +29,7 @@ public class UserCouponController {
         return ResponseEntity.ok(userCouponService.saveUserCoupon(userCouponRequest));
     }
 
-    @PostMapping
+    @PostMapping("/issue-welcome")
     public ResponseEntity<UserCouponResponse> issueWelcomeCoupon(@RequestBody @Valid WelcomeCouponRequest welcomeCouponRequest) {
         return ResponseEntity.ok(userCouponService.issueWelcomeCoupon(welcomeCouponRequest.getUserId()));
     }
