@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import shop.sajotuna.order.coupon.dto.UserCouponRequest;
 import shop.sajotuna.order.coupon.dto.UserCouponResponse;
+import shop.sajotuna.order.coupon.dto.WelcomeCouponRequest;
 import shop.sajotuna.order.coupon.service.UserCouponService;
 
 import java.util.List;
@@ -28,5 +29,9 @@ public class UserCouponController {
         return ResponseEntity.ok(userCouponService.saveUserCoupon(userCouponRequest));
     }
 
+    @PostMapping("/issue-welcome")
+    public ResponseEntity<UserCouponResponse> issueWelcomeCoupon(@RequestBody @Valid WelcomeCouponRequest welcomeCouponRequest) {
+        return ResponseEntity.ok(userCouponService.issueWelcomeCoupon(welcomeCouponRequest.getUserId()));
+    }
 
 }
