@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.orders.dto.OrderProductRequest;
 import shop.sajotuna.order.orders.dto.OrderProductResponse;
-import shop.sajotuna.order.orders.dto.OrderProductUpdateRequest;
 import shop.sajotuna.order.orders.entity.Order;
 import shop.sajotuna.order.orders.entity.OrderPackaging;
 import shop.sajotuna.order.orders.entity.OrderProduct;
@@ -44,14 +43,6 @@ public class OrderProductService {
         List<OrderProduct> orderProducts = orderProductRepository.getOrderProductsByOrder_Id(orderId);
 
         return orderProducts.stream().map(OrderProductResponse::from).collect(Collectors.toList());
-    }
-
-    // 주문 상품 배송 상태 업데이트
-    @Transactional
-    public void updateOrderProduct(Long id, OrderProductUpdateRequest request){
-        OrderProduct orderProduct = orderProductRepository.findById(id).orElseThrow(OrderProductNotFoundException::new);
-
-        orderProduct.setStatus(request.getStatus());
     }
 
     // 주문 상품 저장

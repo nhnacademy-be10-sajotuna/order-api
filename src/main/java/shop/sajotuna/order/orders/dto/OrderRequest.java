@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 import shop.sajotuna.order.orders.entity.Order;
+import shop.sajotuna.order.orders.entity.OrderStatus;
 import shop.sajotuna.order.payment.entity.PaymentMethod;
 
 import java.time.LocalDateTime;
@@ -42,6 +43,7 @@ public class OrderRequest {
                 .shippingDate(shippingDate)
                 .streetAddress(streetAddress)
                 .deliveryPrice(deliveryPrice)
+                .status(OrderStatus.PENDING)
                 .totalPrice(totalPrice)
                 .createdAt(LocalDateTime.now()).build();
     }

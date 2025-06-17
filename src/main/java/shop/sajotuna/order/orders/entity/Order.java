@@ -31,6 +31,10 @@ public class Order {
     @Column(nullable = false)
     private Integer totalPrice;
 
+    @Enumerated(value = EnumType.STRING)
+    @Column(nullable = false)
+    private OrderStatus status;
+
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
