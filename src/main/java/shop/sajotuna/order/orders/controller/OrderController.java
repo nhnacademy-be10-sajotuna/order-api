@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import shop.sajotuna.order.orders.dto.OrderDetailResponse;
 import shop.sajotuna.order.orders.dto.OrderRequest;
 import shop.sajotuna.order.orders.dto.GuestOrderRequest;
 import shop.sajotuna.order.orders.dto.OrderResponse;
@@ -17,13 +18,12 @@ import java.util.List;
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
 public class OrderController {
-
     private final OrderService orderService;
 
     // 주문 조회
     @GetMapping("/{order-id}")
-    public ResponseEntity<OrderResponse> getOrder(@PathVariable("order-id") Long orderId){
-        return ResponseEntity.ok(orderService.findOrder(orderId));
+    public ResponseEntity<OrderDetailResponse> getOrder(@PathVariable("order-id") Long orderId){
+        return ResponseEntity.ok(orderService.findOrderDetail(orderId));
     }
 
     // 회원의 주문내역 조회

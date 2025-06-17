@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import shop.sajotuna.order.orders.dto.OrderProductResponse;
 import shop.sajotuna.order.orders.dto.OrderProductUpdateRequest;
-import shop.sajotuna.order.orders.service.ProductService;
+import shop.sajotuna.order.orders.service.OrderProductService;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ import java.util.List;
 @RequestMapping("/api/orders/product")
 @RequiredArgsConstructor
 public class OrderProductController {
-    private final ProductService productService;
+    private final OrderProductService productService;
 
     // 주문 상품 조회
     @GetMapping("/{orderProductId}")

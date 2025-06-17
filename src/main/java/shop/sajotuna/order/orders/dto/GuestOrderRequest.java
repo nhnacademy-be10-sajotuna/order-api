@@ -35,16 +35,12 @@ public class GuestOrderRequest {
     private int deliveryPrice;
 
     @NotNull
-    @PositiveOrZero
-    private int totalPrice;
-
-    @NotNull
     private PaymentMethod method;
 
     @NotNull
     private List<OrderProductRequest> items;
 
-    public Order toEntity(){
+    public Order toEntity(int totalPrice) {
         return Order.builder()
                 .isMember(false)
                 .shippingDate(shippingDate)

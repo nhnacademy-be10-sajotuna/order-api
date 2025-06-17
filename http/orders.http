@@ -45,7 +45,6 @@ Content-Type: application/json
   "shippingDate": "20250612123456",
   "streetAddress": "test",
   "deliveryPrice": 1000,
-  "totalPrice": 100000,
   "method": "CARD",
   "items": [
     {
@@ -91,7 +90,7 @@ Content-Type: application/json
 
 {
   "packaging": "test",
-  "price": 10020
+  "price": 1000
 }
 
 ### package 수정
