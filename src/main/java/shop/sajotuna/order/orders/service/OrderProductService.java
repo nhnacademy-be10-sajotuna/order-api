@@ -1,6 +1,5 @@
 package shop.sajotuna.order.orders.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,6 +9,7 @@ import shop.sajotuna.order.orders.dto.OrderProductUpdateRequest;
 import shop.sajotuna.order.orders.entity.Order;
 import shop.sajotuna.order.orders.entity.OrderPackaging;
 import shop.sajotuna.order.orders.entity.OrderProduct;
+import shop.sajotuna.order.orders.exception.OrderProductNotFoundException;
 import shop.sajotuna.order.orders.exception.PackageNotFoundException;
 import shop.sajotuna.order.orders.repository.OrderPackagingRepository;
 import shop.sajotuna.order.orders.repository.OrderProductRepository;
@@ -30,7 +30,7 @@ public class OrderProductService {
     // 주문 상품 조회
     @Transactional(readOnly = true)
     public OrderProductResponse findById(Long id) {
-        OrderProduct orderProduct = orderProductRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        OrderProduct orderProduct = orderProductRepository.findById(id).orElseThrow(OrderProductNotFoundException::new);
 
         return OrderProductResponse.from(Objects.requireNonNull(orderProduct));
     }
@@ -49,9 +49,9 @@ public class OrderProductService {
     // 주문 상품 배송 상태 업데이트
     @Transactional
     public void updateOrderProduct(Long id, OrderProductUpdateRequest request){
-        OrderProduct orderProduct = orderProductRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        OrderProduct orderProduct = orderProductRepository.findById(id).orElseThrow(OrderProductNotFoundException::new);
 
-        Objects.requireNonNull(orderProduct).setStatus(request.getStatus());
+        orderProduct.setStatus(request.getStatus());
     }
 
     // 주문 상품 저장
