@@ -58,7 +58,7 @@ public class OrderController {
         return ResponseEntity.ok(orderService.createGuestOrder(request));
     }
 
-    // 주문 반품 처리 (관리자 전용)
+    // 주문 반품 처리
     @PutMapping("/returned/{order-id}")
     public ResponseEntity<Void> returnedOrder(@PathVariable("order-id") Long orderId, @RequestBody @Valid OrderReturnedRequest request){
         orderService.returnedOrder(request.getUserId(), orderId);
@@ -66,7 +66,7 @@ public class OrderController {
         return ResponseEntity.noContent().build();
     }
 
-    // 주문 취소 처리 (관리자 전용)
+    // 주문 취소 처리
     @PutMapping("/cancelled/{order-id}")
     public ResponseEntity<Void> cancelledOrder(@PathVariable("order-id") Long orderId){
         orderService.cancelOrder(orderId);
