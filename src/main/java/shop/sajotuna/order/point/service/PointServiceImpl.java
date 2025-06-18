@@ -29,7 +29,7 @@ public class PointServiceImpl implements PointService {
     }
 
     @Override
-    public PointHistoryResponse earnPointsForPurchase(Long userId, int totalPrice) {
+    public void earnPointsForPurchase(Long userId, int totalPrice) {
         UserPoint userPoint = userPointRepository.findByUserId(userId)
                 .orElseThrow(UserPointNotFoundException::new);
 
@@ -37,7 +37,25 @@ public class PointServiceImpl implements PointService {
         int earnedPoints = pointPolicy.calculatePoint(totalPrice);
         userPoint.earnPoint(earnedPoints);
 
-        return getPointHistoryResponse(userId, earnedPoints);
+        pointHistoryRepository.save(PointHistory.createEarnHistory(userId, earnedPoints));
+    }
+
+    @Override
+    public void earnPointsByType(Long userId, PointPolicyType type) {
+        UserPoint userPoint;
+        if (type == PointPolicyType.REGISTER) {
+            userPoint = UserPoint.create(userId);
+            userPointRepository.save(userPoint);
+        } else {
+            userPoint = userPointRepository.findByUserId(userId)
+                    .orElseThrow(UserPointNotFoundException::new);
+        }
+
+        PointPolicy pointPolicy = pointPolicyService.getPointPolicy(type);
+        int earnedPoints = pointPolicy.getFixedPoint();
+        userPoint.earnPoint(earnedPoints);
+
+        pointHistoryRepository.save(PointHistory.createEarnHistory(userId, earnedPoints));
     }
 
     @Override
@@ -47,35 +65,6 @@ public class PointServiceImpl implements PointService {
 
         userPoint.redeemPoint(pointAmount);
         PointHistory pointHistory = pointHistoryRepository.save(PointHistory.createRedeemHistory(userId, pointAmount));
-        return PointHistoryResponse.from(pointHistory);
-    }
-
-    @Override
-    public PointHistoryResponse earnPointsByReview(Long userId, PointPolicyType type) {
-        UserPoint userPoint = userPointRepository.findByUserId(userId)
-                .orElseThrow(UserPointNotFoundException::new);
-
-        PointPolicy pointPolicy = pointPolicyService.getPointPolicy(type);
-        int earnedPoints = pointPolicy.getFixedPoint();
-        userPoint.earnPoint(earnedPoints);
-
-        return getPointHistoryResponse(userId, earnedPoints);
-    }
-
-    @Override
-    public PointHistoryResponse earnPointsByRegister(Long userId) {
-        UserPoint userPoint = UserPoint.create(userId);
-        userPointRepository.save(userPoint);
-
-        PointPolicy pointPolicy = pointPolicyService.getPointPolicy(PointPolicyType.REGISTER);
-        int earnedPoints = pointPolicy.getFixedPoint();
-        userPoint.earnPoint(earnedPoints);
-
-        return getPointHistoryResponse(userId, earnedPoints);
-    }
-
-    private PointHistoryResponse getPointHistoryResponse(Long userId, int earnedPoints) {
-        PointHistory pointHistory = pointHistoryRepository.save(PointHistory.createEarnHistory(userId, earnedPoints));
         return PointHistoryResponse.from(pointHistory);
     }
 }

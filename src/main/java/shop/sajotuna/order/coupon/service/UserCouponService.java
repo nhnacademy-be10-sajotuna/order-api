@@ -12,12 +12,14 @@ import shop.sajotuna.order.coupon.repository.UserCouponRepository;
 import shop.sajotuna.order.coupon.repository.CouponRepository;
 import shop.sajotuna.order.coupon.exception.CouponNotFoundException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class UserCouponService {
+    public static final String COUPON_NAME = "WELCOME";
     private final UserCouponRepository userCouponRepository;
     private final CouponRepository couponRepository;
 
@@ -51,6 +53,17 @@ public class UserCouponService {
         UserCoupon userCoupon = userCouponRepository.findById(userCouponId).orElseThrow(CouponNotFoundException::new);
         userCoupon.useCoupon();
         return userCoupon.getCoupon().calculateDiscount(totalPrice);
+    }
+
+    // 웰컴 쿠폰 발급
+    @Transactional
+    public UserCouponResponse issueWelcomeCoupon(Long userId) {
+        Coupon coupon = couponRepository.findByName(COUPON_NAME).orElseThrow(CouponNotFoundException::new);
+
+        UserCoupon userCoupon = new UserCoupon(coupon, userId, LocalDateTime.now(), coupon.getValidDays());
+        userCouponRepository.save(userCoupon);
+
+        return UserCouponResponse.from(userCoupon);
     }
 
 }

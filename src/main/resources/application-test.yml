@@ -1,0 +1,46 @@
+spring:
+  # 테스트 전용 H2 (인메모리)
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  # RabbitMQ (Testcontainers가 localhost:5672에 띄워 준다고 가정)
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+  # Config Server 비활성화
+  cloud:
+    config:
+      enabled: false
+
+  jpa:
+    open-in-view: false
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        highlight_sql: true
+        auto_quote_keyword: true
+
+# 포인트 큐/익스체인지 설정도 여기로
+rabbitmq:
+  exchange:
+    name: point-exchange
+  routing:
+    key: point.earn
+  queue:
+    name: point-queue
+
+logging:
+  level:
+    com.netflix.discovery: off
+    com.netflix.eureka: off
+    org.springframework.cloud.netflix.eureka: off
