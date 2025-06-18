@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.coupon.service.UserCouponService;
 import shop.sajotuna.order.orders.dto.*;
 import shop.sajotuna.order.orders.entity.*;
-import shop.sajotuna.order.orders.exception.InvalidStatusException;
 import shop.sajotuna.order.orders.repository.*;
 import shop.sajotuna.order.payment.entity.Payment;
 import shop.sajotuna.order.payment.repository.PaymentRepository;
@@ -110,7 +109,7 @@ public class OrderService {
     @Transactional
     public void returnedOrder(Long userId, Long orderId){
         Order order = orderRepository.findById(orderId).orElseThrow(OrderNotFoundException::new);
-        order.setStatus(OrderStatus.RETURNED);
+        order.returned();
 
         // 반품시 결제금액은 포인트로 적립됨
         Payment payment = paymentRepository.getPaymentByOrder_Id(orderId);
@@ -121,10 +120,7 @@ public class OrderService {
     @Transactional
     public void cancelOrder(Long orderId){
         Order order = orderRepository.findById(orderId).orElseThrow(OrderNotFoundException::new);
-        if(!order.getStatus().equals(OrderStatus.PENDING)){
-            throw new InvalidStatusException();
-        }
-        order.setStatus(OrderStatus.CANCELLED);
+        order.cancelled();
     }
 
 }
