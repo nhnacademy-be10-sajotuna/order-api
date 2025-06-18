@@ -4,5 +4,6 @@ public enum PointPolicyType {
     PURCHASE,
     REVIEW,
     REVIEW_WITH_IMAGE,
-    REGISTER
+    REGISTER,
+    RETURNED
 }

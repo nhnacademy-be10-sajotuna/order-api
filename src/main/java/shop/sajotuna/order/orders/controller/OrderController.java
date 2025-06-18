@@ -45,8 +45,8 @@ public class OrderController {
 
     // 주문 반품 처리
     @PutMapping("/returned/{order-id}")
-    public ResponseEntity<Void> returnedOrder(@RequestHeader("X-User-Id") Long userId, @PathVariable("order-id") Long orderId){
-        orderService.returnedOrder(userId, orderId);
+    public ResponseEntity<Void> returnedOrder(@PathVariable("order-id") Long orderId, @RequestBody @Valid OrderReturnedRequest request){
+        orderService.returnedOrder(request.getUserId(), orderId);
 
         return ResponseEntity.noContent().build();
     }

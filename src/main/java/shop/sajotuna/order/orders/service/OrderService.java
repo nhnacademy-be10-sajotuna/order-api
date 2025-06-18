@@ -114,7 +114,7 @@ public class OrderService {
 
         // 반품시 결제금액은 포인트로 적립됨
         Payment payment = paymentRepository.getPaymentByOrder_Id(orderId);
-        pointService.earnPointsForPurchase(userId, payment.getAmount());
+        rabbitTemplate.convertAndSend(exchangeName, routingKey, new PointEarnRequest(userId, payment.getAmount(), PointPolicyType.RETURNED));
     }
 
     // 주문 취소 처리

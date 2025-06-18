@@ -58,6 +58,17 @@ public class PointServiceImpl implements PointService {
         pointHistoryRepository.save(PointHistory.createEarnHistory(userId, earnedPoints));
     }
 
+    // 반품 시 결제 금액을 포인트로 적립
+    @Override
+    public void earnPointsByReturned(Long userId, int totalPrice) {
+        UserPoint userPoint = userPointRepository.findByUserId(userId)
+                .orElseThrow(UserPointNotFoundException::new);
+
+        userPoint.earnPoint(totalPrice);
+
+        pointHistoryRepository.save(PointHistory.createEarnHistory(userId, totalPrice));
+    }
+
     @Override
     public PointHistoryResponse redeemPoints(Long userId, int pointAmount) {
         UserPoint userPoint = userPointRepository.findByUserId(userId)

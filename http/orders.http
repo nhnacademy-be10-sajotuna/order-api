@@ -63,6 +63,16 @@ Content-Type: application/json
   ]
 }
 
+### 주문 반품
+PUT localhost:10366/api/orders/returned/1
+Content-Type: application/json
+
+{
+  "userId": 1
+}
+
+### 주문 취소
+PUT localhost:10366/api/orders/cancelled/1
 
 
 ### 주문 상품 조회
