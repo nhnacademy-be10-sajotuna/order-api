@@ -23,7 +23,7 @@ public class PackageController {
         return ResponseEntity.ok(packages);
     }
 
-    // 포장 생성
+    // 포장 생성 (관리자 전용)
     @PostMapping
     public ResponseEntity<PackageResponse> createPackage(@RequestBody @Valid PackageRequest request) {
         PackageResponse packageResponse = packageService.createPackage(request);
@@ -31,7 +31,7 @@ public class PackageController {
         return ResponseEntity.ok(packageResponse);
     }
 
-    // 포장 수정
+    // 포장 수정 (관리자 전용)
     @PutMapping("/{package-id}")
     public ResponseEntity<Void> updatePackage(@PathVariable("package-id") Long packageId, @RequestBody @Valid PackageRequest request) {
         packageService.updatePackage(packageId, request);
@@ -39,7 +39,7 @@ public class PackageController {
         return ResponseEntity.noContent().build();
     }
 
-    // 포장 삭제
+    // 포장 삭제 (관리자 전용)
     @DeleteMapping("/{package-id}")
     public ResponseEntity<Void> deletePackage(@PathVariable("package-id") Long packageId){
         packageService.deletePackage(packageId);

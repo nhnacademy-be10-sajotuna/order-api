@@ -2,7 +2,6 @@ package shop.sajotuna.order.orders.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import shop.sajotuna.order.orders.exception.InvalidReturnedException;
 import shop.sajotuna.order.orders.exception.InvalidStatusException;
 import shop.sajotuna.order.orders.exception.TimeOutException;
 
@@ -44,6 +43,23 @@ public class Order {
 
     private Long userId;
 
+    // 주문 발송
+    public void shipped(){
+        if (!this.status.equals(OrderStatus.PENDING)) {
+            throw new InvalidStatusException();
+        }
+        this.shippingDate = LocalDateTime.now();
+        this.status = OrderStatus.SHIPPED;
+    }
+
+    // 주문 발송 완료
+    public void delivered(){
+        if (!this.status.equals(OrderStatus.SHIPPED)) {
+            throw new InvalidStatusException();
+        }
+        this.status = OrderStatus.DELIVERED;
+    }
+
     // 주문 취소
     public void cancelled(){
         if (!this.status.equals(OrderStatus.PENDING)) {
@@ -55,7 +71,7 @@ public class Order {
     // 주문 반품
     public void returned(){
         if (!this.status.equals(OrderStatus.DELIVERED)) {
-            throw new InvalidReturnedException();
+            throw new InvalidStatusException();
         }
         if(ChronoUnit.DAYS.between(shippingDate, LocalDateTime.now()) > 10) {
             throw new TimeOutException();
