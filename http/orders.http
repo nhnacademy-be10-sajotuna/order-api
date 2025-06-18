@@ -5,6 +5,12 @@ GET localhost:10366/api/orders/1
 GET localhost:10366/api/orders/user
 X-User-Id: 1
 
+### 대기 중인 주문들 조회
+GET localhost:10366/api/orders/pending
+
+### 배송 중으로 전환
+PUT localhost:10366/api/orders/pending/1
+
 ### 회원 주문
 POST localhost:10366/api/orders/user
 Content-Type: application/json
