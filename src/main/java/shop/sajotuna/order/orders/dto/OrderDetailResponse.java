@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import shop.sajotuna.order.orders.entity.Order;
+import shop.sajotuna.order.orders.entity.OrderStatus;
 import shop.sajotuna.order.payment.entity.Payment;
 import shop.sajotuna.order.payment.entity.PaymentMethod;
 
@@ -18,6 +19,7 @@ public class OrderDetailResponse {
     private LocalDateTime shippingDate;
     private LocalDateTime orderCreatedAt;
     private int totalPrice;
+    private OrderStatus status;
     private List<OrderProductResponse> items;
     private PaymentMethod method;
     private Integer amount;
@@ -29,6 +31,7 @@ public class OrderDetailResponse {
                 .shippingDate(order.getShippingDate())
                 .orderCreatedAt(order.getCreatedAt())
                 .totalPrice(order.getTotalPrice())
+                .status(order.getStatus())
                 .items(items)
                 .method(payment.getMethod())
                 .amount(payment.getAmount())

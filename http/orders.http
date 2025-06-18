@@ -64,7 +64,7 @@ Content-Type: application/json
 }
 
 ### 주문 반품
-PUT localhost:10366/api/orders/returned/1
+PUT localhost:10366/api/orders/returned/2
 Content-Type: application/json
 
 {
@@ -75,19 +75,15 @@ Content-Type: application/json
 PUT localhost:10366/api/orders/cancelled/1
 
 
+
+
 ### 주문 상품 조회
 GET localhost:10366/api/orders/product/1
 
 ### 주문 번호에 포함된 상품들 조회
 GET localhost:10366/api/orders/product/list/1
 
-### 주문 상품의 배송 상태 수정
-PUT localhost:10366/api/orders/product/1
-Content-Type: application/json
 
-{
-  "status": "SHIPPED"
-}
 
 
 

@@ -3,6 +3,7 @@ package shop.sajotuna.order.orders.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import shop.sajotuna.order.orders.entity.Order;
+import shop.sajotuna.order.orders.entity.OrderStatus;
 
 import java.time.LocalDateTime;
 
@@ -13,8 +14,9 @@ public class OrderResponse {
     private LocalDateTime shippingDate;
     private LocalDateTime createdAt;
     private int TotalPrice;
+    private OrderStatus status;
 
     public static OrderResponse from(Order order) {
-        return new OrderResponse(order.getId(), order.getShippingDate(), order.getCreatedAt(), order.getTotalPrice());
+        return new OrderResponse(order.getId(), order.getShippingDate(), order.getCreatedAt(), order.getTotalPrice(), order.getStatus());
     }
 }
