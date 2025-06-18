@@ -15,4 +15,6 @@ public interface PointService {
 
     void earnPointsByType(Long userId, PointPolicyType type);
 
+    void earnPointsByReturned(Long userId, int totalPrice);
+
 }

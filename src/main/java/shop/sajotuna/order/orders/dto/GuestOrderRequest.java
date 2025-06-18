@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 import shop.sajotuna.order.orders.entity.Order;
+import shop.sajotuna.order.orders.entity.OrderStatus;
 import shop.sajotuna.order.payment.entity.PaymentMethod;
 
 import java.time.LocalDateTime;
@@ -47,6 +48,7 @@ public class GuestOrderRequest {
                 .streetAddress(streetAddress)
                 .deliveryPrice(deliveryPrice)
                 .totalPrice(totalPrice)
+                .status(OrderStatus.PENDING)
                 .createdAt(LocalDateTime.now()).build();
     }
 }

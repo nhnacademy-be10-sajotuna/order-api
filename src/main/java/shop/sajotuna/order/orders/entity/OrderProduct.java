@@ -33,10 +33,6 @@ public class OrderProduct {
     @Column(nullable = false)
     private Integer amount;
 
-    @Enumerated(value = EnumType.STRING)
-    @Column(nullable = false)
-    private OrderStatus status;
-
     @Column(nullable = false)
     private Boolean packagingRequest;
 }

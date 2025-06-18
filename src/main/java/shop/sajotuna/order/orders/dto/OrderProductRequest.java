@@ -7,7 +7,6 @@ import lombok.Data;
 import shop.sajotuna.order.orders.entity.Order;
 import shop.sajotuna.order.orders.entity.OrderPackaging;
 import shop.sajotuna.order.orders.entity.OrderProduct;
-import shop.sajotuna.order.orders.entity.OrderStatus;
 
 @Data
 public class OrderProductRequest {
@@ -34,7 +33,6 @@ public class OrderProductRequest {
                 .amount(amount)
                 .qty(qty)
                 .isbn(isbn)
-                .status(OrderStatus.PENDING)
                 .packagingRequest(packagingRequest).build();
     }
 }

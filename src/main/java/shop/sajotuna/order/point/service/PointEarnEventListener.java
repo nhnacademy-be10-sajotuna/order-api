@@ -17,6 +17,9 @@ public class PointEarnEventListener {
         if (request.getType() == PointPolicyType.PURCHASE) {
             pointService.earnPointsForPurchase(request.getUserId(), request.getTotalPrice());
             return;
+        } else if (request.getType() == PointPolicyType.RETURNED) {
+            pointService.earnPointsByReturned(request.getUserId(), request.getTotalPrice());
+            return;
         }
         pointService.earnPointsByType(request.getUserId(), request.getType());
     }

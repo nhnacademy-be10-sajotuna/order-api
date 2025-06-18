@@ -5,10 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import shop.sajotuna.order.orders.dto.OrderDetailResponse;
-import shop.sajotuna.order.orders.dto.OrderRequest;
-import shop.sajotuna.order.orders.dto.GuestOrderRequest;
-import shop.sajotuna.order.orders.dto.OrderResponse;
+import shop.sajotuna.order.orders.dto.*;
 import shop.sajotuna.order.orders.service.OrderService;
 
 import java.util.List;
@@ -44,5 +41,21 @@ public class OrderController {
     @PostMapping("/guest")
     public ResponseEntity<OrderResponse> createGuestOrders(@RequestBody @Valid GuestOrderRequest request) {
         return ResponseEntity.ok(orderService.createGuestOrder(request));
+    }
+
+    // 주문 반품 처리
+    @PutMapping("/returned/{order-id}")
+    public ResponseEntity<Void> returnedOrder(@PathVariable("order-id") Long orderId, @RequestBody @Valid OrderReturnedRequest request){
+        orderService.returnedOrder(request.getUserId(), orderId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    // 주문 취소 처리
+    @PutMapping("/cancelled/{order-id}")
+    public ResponseEntity<Void> cancelledOrder(@PathVariable("order-id") Long orderId){
+        orderService.cancelOrder(orderId);
+
+        return ResponseEntity.noContent().build();
     }
 }

@@ -105,4 +105,22 @@ public class OrderService {
         return OrderResponse.from(savedOrder);
     }
 
+    // 주문 반품 처리
+    @Transactional
+    public void returnedOrder(Long userId, Long orderId){
+        Order order = orderRepository.findById(orderId).orElseThrow(OrderNotFoundException::new);
+        order.returned();
+
+        // 반품시 결제금액은 포인트로 적립됨
+        Payment payment = paymentRepository.getPaymentByOrder_Id(orderId);
+        rabbitTemplate.convertAndSend(exchangeName, routingKey, new PointEarnRequest(userId, payment.getAmount(), PointPolicyType.RETURNED));
+    }
+
+    // 주문 취소 처리
+    @Transactional
+    public void cancelOrder(Long orderId){
+        Order order = orderRepository.findById(orderId).orElseThrow(OrderNotFoundException::new);
+        order.cancelled();
+    }
+
 }
