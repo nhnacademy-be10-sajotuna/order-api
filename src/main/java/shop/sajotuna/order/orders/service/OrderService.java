@@ -31,6 +31,8 @@ public class OrderService {
     private final UserCouponService userCouponService;
     private final OrderProductService orderProductService;
 
+    private final String SCHEDULE = "0 0 12 * * *";
+
     @Value("${rabbitmq.exchange.name}")
     private String exchangeName;
 
@@ -121,7 +123,7 @@ public class OrderService {
     }
 
     // 배송중으로 변경된 주문은 일정 시간경과 후 완료 처리 됨
-    @Scheduled(cron = "0 0 12 * * *") // 매일 낮 12시 마다 실행됨
+    @Scheduled(cron = SCHEDULE) // 매일 낮 12시 마다 실행됨
     @Transactional
     public void deliveredOrder(){
         // 현재 시간 기준으로 1일 이상 지난 주문들을 가져온다
