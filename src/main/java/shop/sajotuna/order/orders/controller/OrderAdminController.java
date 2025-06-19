@@ -10,6 +10,7 @@ import shop.sajotuna.order.orders.dto.OrderResponse;
 import shop.sajotuna.order.orders.dto.PackageRequest;
 import shop.sajotuna.order.orders.dto.PackageResponse;
 import shop.sajotuna.order.orders.entity.OrderStatus;
+import shop.sajotuna.order.orders.exception.InvalidStatusException;
 import shop.sajotuna.order.orders.service.OrderService;
 import shop.sajotuna.order.orders.service.PackageService;
 
@@ -26,7 +27,13 @@ public class OrderAdminController {
     // 주문 목록 조회
     @GetMapping
     public ResponseEntity<List<OrderResponse>> getPendingOrders(@RequestParam String status){
-        return ResponseEntity.ok(orderService.findOrdersByStatus(OrderStatus.valueOf(status.toUpperCase())));
+        try {
+            OrderStatus orderStatus = OrderStatus.valueOf(status.toUpperCase());
+
+            return ResponseEntity.ok(orderService.findOrdersByStatus(orderStatus));
+        } catch (IllegalArgumentException e) {
+            throw new InvalidStatusException();
+        }
     }
 
     // 배송 중으로 전환

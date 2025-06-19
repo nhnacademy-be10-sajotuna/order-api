@@ -80,25 +80,24 @@ Content-Type: application/json
 ### 주문 취소
 PUT localhost:10366/api/orders/cancelled/1
 
-### 주문 목록 조회
-GET localhost:10366/api/admin/orders?status=pending
-
-
-
-
-
 ### 주문 상품 조회
 GET localhost:10366/api/orders/product/1
 
 ### 주문 번호에 포함된 상품들 조회
 GET localhost:10366/api/orders/product/list/1
 
-
-
-
-
 ### package 목록 조회
 GET localhost:10366/api/orders/package
+
+
+
+
+
+### 주문 목록 조회
+GET localhost:10366/api/admin/orders?status=fewfdsfds
+
+### 주문 배송 중으로 전환
+PUT localhost:10366/api/admin/orders/pending/1
 
 ### package 추가
 POST localhost:10366/api/admin/orders/package
