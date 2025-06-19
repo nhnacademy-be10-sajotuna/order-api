@@ -29,13 +29,15 @@ spring:
 
 rabbitmq:
   point:
-    queue: point-queue
-    exchange: point-exchange
+    queue: sajotuna.point.queue
+    exchange: sajotuna.point.exchange
     routing-key: point.earn
-    dlx-queue: point-dlq
-    dlx-exchange: point-dlx
+    dlx-queue: sajotuna.point.dlq
+    dlx-exchange: sajotuna.point.dlx
     dlx-routing-key: point.earn.error
-
+    parking-lot-queue: sajotuna.point.parking.queue
+    parking-lot-exchange: sajotuna.point.parking.exchange
+    parking-lot-routing-key: point.earn.dead
 logging:
   level:
     com.netflix.discovery: off
