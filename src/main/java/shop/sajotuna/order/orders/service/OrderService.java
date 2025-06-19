@@ -2,9 +2,9 @@ package shop.sajotuna.order.orders.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import shop.sajotuna.order.common.rabbitmq.PointRabbitProperties;
 import shop.sajotuna.order.coupon.service.UserCouponService;
 import shop.sajotuna.order.orders.dto.*;
 import shop.sajotuna.order.orders.entity.*;
@@ -12,7 +12,6 @@ import shop.sajotuna.order.orders.repository.*;
 import shop.sajotuna.order.payment.entity.Payment;
 import shop.sajotuna.order.payment.repository.PaymentRepository;
 import shop.sajotuna.order.point.controller.request.PointEarnRequest;
-import shop.sajotuna.order.point.domain.PointPolicyType;
 import shop.sajotuna.order.point.exception.OrderNotFoundException;
 import shop.sajotuna.order.point.service.PointService;
 
@@ -29,13 +28,8 @@ public class OrderService {
     private final UserCouponService userCouponService;
     private final OrderProductService orderProductService;
 
-    @Value("${rabbitmq.exchange.name}")
-    private String exchangeName;
-
-    @Value("${rabbitmq.routing.key}")
-    private String routingKey;
-
     private final RabbitTemplate rabbitTemplate;
+    private final PointRabbitProperties pointRabbitProperties;
 
     // 주문 조회
     public OrderDetailResponse findOrderDetail(long orderId){
@@ -80,8 +74,7 @@ public class OrderService {
         paymentRepository.save(payment);
 
         // 포인트 적립
-        rabbitTemplate.convertAndSend(exchangeName, routingKey, new PointEarnRequest(userId, paymentPrice, PointPolicyType.PURCHASE));
-
+        pointService.earnPointsForPurchase(userId, paymentPrice);
         return OrderResponse.from(savedOrder);
     }
 
@@ -113,7 +106,7 @@ public class OrderService {
 
         // 반품시 결제금액은 포인트로 적립됨
         Payment payment = paymentRepository.getPaymentByOrder_Id(orderId);
-        rabbitTemplate.convertAndSend(exchangeName, routingKey, new PointEarnRequest(userId, payment.getAmount(), PointPolicyType.RETURNED));
+        pointService.earnPointsByReturned(new PointEarnRequest(userId, payment.getAmount()));
     }
 
     // 주문 취소 처리
