@@ -22,6 +22,7 @@ public class UserPoint {
     private Long id;
 
     @NotNull
+    @Column(unique = true)
     private Long userId;
 
     @NotNull

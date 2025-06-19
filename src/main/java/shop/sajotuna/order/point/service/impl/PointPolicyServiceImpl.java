@@ -1,4 +1,4 @@
-package shop.sajotuna.order.point.service;
+package shop.sajotuna.order.point.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -6,6 +6,7 @@ import shop.sajotuna.order.point.domain.PointPolicy;
 import shop.sajotuna.order.point.domain.PointPolicyType;
 import shop.sajotuna.order.point.exception.PointPolicyNotFoundException;
 import shop.sajotuna.order.point.repository.PointPolicyRepository;
+import shop.sajotuna.order.point.service.PointPolicyService;
 
 @Service
 @RequiredArgsConstructor

@@ -1,13 +1,19 @@
-package shop.sajotuna.order.point.service;
+package shop.sajotuna.order.point.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import shop.sajotuna.order.common.rabbitmq.PointRabbitProperties;
+import shop.sajotuna.order.point.controller.request.PointEarnRequest;
 import shop.sajotuna.order.point.exception.UserPointNotFoundException;
 import shop.sajotuna.order.point.controller.response.PointHistoryResponse;
 import shop.sajotuna.order.point.domain.*;
 import shop.sajotuna.order.point.repository.PointHistoryRepository;
 import shop.sajotuna.order.point.repository.UserPointRepository;
+import shop.sajotuna.order.point.service.PointPolicyService;
+import shop.sajotuna.order.point.service.PointQueueService;
+import shop.sajotuna.order.point.service.PointService;
 
 import java.util.List;
 
@@ -19,6 +25,7 @@ public class PointServiceImpl implements PointService {
     private final PointHistoryRepository pointHistoryRepository;
     private final PointPolicyService pointPolicyService;
     private final UserPointRepository userPointRepository;
+    private final PointQueueService pointQueueService;
 
     @Override
     @Transactional(readOnly = true)
@@ -30,14 +37,10 @@ public class PointServiceImpl implements PointService {
 
     @Override
     public void earnPointsForPurchase(Long userId, int totalPrice) {
-        UserPoint userPoint = userPointRepository.findByUserId(userId)
-                .orElseThrow(UserPointNotFoundException::new);
-
         PointPolicy pointPolicy = pointPolicyService.getPointPolicy(PointPolicyType.PURCHASE);
-        int earnedPoints = pointPolicy.calculatePoint(totalPrice);
-        userPoint.earnPoint(earnedPoints);
 
-        pointHistoryRepository.save(PointHistory.createEarnHistory(userId, earnedPoints));
+        pointQueueService.sendEarnPointsMessage(
+                new PointEarnRequest(userId, pointPolicy.calculatePoint(totalPrice)));
     }
 
     @Override
@@ -46,27 +49,18 @@ public class PointServiceImpl implements PointService {
         if (type == PointPolicyType.REGISTER) {
             userPoint = UserPoint.create(userId);
             userPointRepository.save(userPoint);
-        } else {
-            userPoint = userPointRepository.findByUserId(userId)
-                    .orElseThrow(UserPointNotFoundException::new);
         }
 
         PointPolicy pointPolicy = pointPolicyService.getPointPolicy(type);
-        int earnedPoints = pointPolicy.getFixedPoint();
-        userPoint.earnPoint(earnedPoints);
 
-        pointHistoryRepository.save(PointHistory.createEarnHistory(userId, earnedPoints));
+        pointQueueService.sendEarnPointsMessage(
+                new PointEarnRequest(userId, pointPolicy.getFixedPoint()));
     }
 
     // 반품 시 결제 금액을 포인트로 적립
     @Override
-    public void earnPointsByReturned(Long userId, int totalPrice) {
-        UserPoint userPoint = userPointRepository.findByUserId(userId)
-                .orElseThrow(UserPointNotFoundException::new);
-
-        userPoint.earnPoint(totalPrice);
-
-        pointHistoryRepository.save(PointHistory.createEarnHistory(userId, totalPrice));
+    public void earnPointsByReturned(PointEarnRequest request) {
+        pointQueueService.sendEarnPointsMessage(request);
     }
 
     @Override
