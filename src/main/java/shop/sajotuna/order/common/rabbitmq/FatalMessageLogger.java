@@ -26,4 +26,16 @@ public class FatalMessageLogger {
 
         fatalMessageRepository.save(log);
     }
+
+    public void logParkingLotMessage(Message message) {
+        FatalMessageLog log = FatalMessageLog.builder()
+                .payload(new String(message.getBody(), StandardCharsets.UTF_8))
+                .headers(message.getMessageProperties().getHeaders().toString())
+                .exceptionType("RetryableException")
+                .exceptionMessage("Retry count exceeded. Moved to parking-lot queue.")
+                .occurredAt(LocalDateTime.now())
+                .build();
+
+        fatalMessageRepository.save(log);
+    }
 }
