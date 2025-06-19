@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import shop.sajotuna.order.orders.dto.*;
-import shop.sajotuna.order.orders.entity.OrderStatus;
 import shop.sajotuna.order.orders.service.OrderService;
 
 import java.util.List;
@@ -28,20 +27,6 @@ public class OrderController {
     @GetMapping("/user")
     public ResponseEntity<List<OrderResponse>> getUserOrder(@RequestHeader("X-User-Id") Long userId){
         return ResponseEntity.ok(orderService.findOrdersByUserId(userId));
-    }
-
-    // 대기 중인 주문들 조회 (관리자 전용)
-    @GetMapping("/pending")
-    public ResponseEntity<List<OrderResponse>> getPendingOrders(){
-        return ResponseEntity.ok(orderService.findOrdersByStatus(OrderStatus.PENDING));
-    }
-
-    // 배송 중으로 전환 (관리자 전용)
-    @PutMapping("/pending/{order-id}")
-    public ResponseEntity<List<OrderResponse>> shippedOrder(@PathVariable("order-id") Long orderId){
-        orderService.shippedOrder(orderId);
-
-        return ResponseEntity.noContent().build();
     }
 
     // 회원 주문

@@ -12,6 +12,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class PackageService {
     private final OrderPackagingRepository orderPackagingRepository;
 
@@ -23,12 +24,9 @@ public class PackageService {
     }
 
     // package 수정
-    @Transactional
     public void updatePackage(long id, PackageRequest request) {
         OrderPackaging orderPackaging = orderPackagingRepository.findById(id).orElseThrow(PackageNotFoundException::new);
-
-        orderPackaging.setPackaging(request.getPackaging());
-        orderPackaging.setPrice(request.getPrice());
+        orderPackaging.update(request.getPackaging(), request.getPrice());
     }
 
     // package 삭제

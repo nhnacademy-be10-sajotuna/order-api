@@ -68,6 +68,7 @@ public class OrderService {
         Order savedOrder = orderRepository.save(orderRequest.toEntity(userId, totalPrice));
         // 주문 상품 추가
         int packagingPrice = orderProductService.saveOrderProduct(orderRequest.getItems(), savedOrder);
+        totalPrice += packagingPrice;
 
         // 쿠폰 먼저 사용 후 포인트 사용
         if (orderRequest.getUsedUserCoupon() != null) {
@@ -81,7 +82,7 @@ public class OrderService {
         }
 
         // 결제 정보 저장
-        int paymentPrice = totalPrice + packagingPrice + orderRequest.getDeliveryPrice();
+        int paymentPrice = totalPrice + orderRequest.getDeliveryPrice();
         savedOrder.setTotalPrice(paymentPrice);
         Payment payment = new Payment(savedOrder, orderRequest.getMethod(), paymentPrice);
         paymentRepository.save(payment);
