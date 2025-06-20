@@ -26,4 +26,9 @@ public class OrderPackaging {
         this.packaging = packaging;
         this.price = price;
     }
+
+    public void update(String packaging, Integer price) {
+        this.packaging = packaging;
+        this.price = price;
+    }
 }

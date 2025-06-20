@@ -3,6 +3,7 @@ package shop.sajotuna.order.orders.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.coupon.service.UserCouponService;
@@ -16,6 +17,7 @@ import shop.sajotuna.order.point.domain.PointPolicyType;
 import shop.sajotuna.order.point.exception.OrderNotFoundException;
 import shop.sajotuna.order.point.service.PointService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -28,6 +30,8 @@ public class OrderService {
     private final PointService pointService;
     private final UserCouponService userCouponService;
     private final OrderProductService orderProductService;
+
+    private final String SCHEDULE = "0 0 12 * * *";
 
     @Value("${rabbitmq.exchange.name}")
     private String exchangeName;
@@ -48,9 +52,18 @@ public class OrderService {
         return OrderDetailResponse.from(order, orderProducts, payment);
     }
 
+    public List<OrderResponse> findAllOrders() {
+        return orderRepository.findAll().stream().map(OrderResponse::from).toList();
+    }
+
     // 회원의 주문 목록 조회
     public List<OrderResponse> findOrdersByUserId(long userId){
         return orderRepository.findByUserId(userId).stream().map(OrderResponse::from).toList();
+    }
+
+    // 주문 상태에 따른 주문들 조회
+    public List<OrderResponse> findOrdersByStatus(OrderStatus orderStatus){
+        return orderRepository.findOrdersByStatus(orderStatus).stream().map(OrderResponse::from).toList();
     }
 
     // 회원 주문 저장 - 주문상품, 결제, 쿠폰, 포인트도 한번에 처리하도록 구현해야 함
@@ -61,6 +74,7 @@ public class OrderService {
         Order savedOrder = orderRepository.save(orderRequest.toEntity(userId, totalPrice));
         // 주문 상품 추가
         int packagingPrice = orderProductService.saveOrderProduct(orderRequest.getItems(), savedOrder);
+        totalPrice += packagingPrice;
 
         // 쿠폰 먼저 사용 후 포인트 사용
         if (orderRequest.getUsedUserCoupon() != null) {
@@ -74,7 +88,7 @@ public class OrderService {
         }
 
         // 결제 정보 저장
-        int paymentPrice = totalPrice + packagingPrice + orderRequest.getDeliveryPrice();
+        int paymentPrice = totalPrice + orderRequest.getDeliveryPrice();
         savedOrder.setTotalPrice(paymentPrice);
         Payment payment = new Payment(savedOrder, orderRequest.getMethod(), paymentPrice);
         paymentRepository.save(payment);
@@ -103,6 +117,23 @@ public class OrderService {
         paymentRepository.save(payment);
 
         return OrderResponse.from(savedOrder);
+    }
+
+    // 주문 배송 중으로 변경
+    @Transactional
+    public void shippedOrder(Long orderId){
+        Order order = orderRepository.findById(orderId).orElseThrow(OrderNotFoundException::new);
+        order.shipped();
+    }
+
+    // 배송중으로 변경된 주문은 일정 시간경과 후 완료 처리 됨
+    @Scheduled(cron = SCHEDULE) // 매일 낮 12시 마다 실행됨
+    @Transactional
+    public void deliveredOrder(){
+        // 현재 시간 기준으로 1일 이상 지난 주문들을 가져온다
+        List<Order> orders = orderRepository.findShippedOrders(LocalDateTime.now().minusDays(1));
+        // 배송 날짜와 1일 이상 차이가 난다면 배송완료로 변경
+        orders.forEach(Order::delivered);
     }
 
     // 주문 반품 처리
