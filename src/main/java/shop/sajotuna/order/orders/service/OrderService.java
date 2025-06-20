@@ -3,6 +3,8 @@ package shop.sajotuna.order.orders.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,8 +49,8 @@ public class OrderService {
         return OrderDetailResponse.from(order, orderProducts, payment);
     }
 
-    public List<OrderResponse> findAllOrders() {
-        return orderRepository.findAll().stream().map(OrderResponse::from).toList();
+    public Page<OrderResponse> findAllOrders(Pageable pageable) {
+        return orderRepository.findAllBy(pageable).map(OrderResponse::from);
     }
 
     // 회원의 주문 목록 조회
@@ -57,8 +59,8 @@ public class OrderService {
     }
 
     // 주문 상태에 따른 주문들 조회
-    public List<OrderResponse> findOrdersByStatus(OrderStatus orderStatus){
-        return orderRepository.findOrdersByStatus(orderStatus).stream().map(OrderResponse::from).toList();
+    public Page<OrderResponse> findOrdersByStatus(OrderStatus orderStatus, Pageable pageable) {
+        return orderRepository.findOrdersByStatus(orderStatus, pageable).map(OrderResponse::from);
     }
 
     // 회원 주문 저장 - 주문상품, 결제, 쿠폰, 포인트도 한번에 처리하도록 구현해야 함

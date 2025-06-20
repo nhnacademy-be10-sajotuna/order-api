@@ -3,6 +3,8 @@ package shop.sajotuna.order.orders.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,8 +16,6 @@ import shop.sajotuna.order.orders.exception.InvalidStatusException;
 import shop.sajotuna.order.orders.service.OrderService;
 import shop.sajotuna.order.orders.service.PackageService;
 
-import java.util.List;
-
 @Slf4j
 @RestController
 @RequestMapping("/api/admin/orders")
@@ -26,17 +26,17 @@ public class OrderAdminController {
 
     // 모든 주문 목록 조회
     @GetMapping
-    public ResponseEntity<List<OrderResponse>> getAllOrders() {
-        return ResponseEntity.ok(orderService.findAllOrders());
+    public ResponseEntity<Page<OrderResponse>> getAllOrders(Pageable pageable) {
+        return ResponseEntity.ok(orderService.findAllOrders(pageable));
     }
 
     // 배송 상태에 따라 주문 목록 조회
     @GetMapping("/{status}")
-    public ResponseEntity<List<OrderResponse>> getPendingOrders(@PathVariable String status){
+    public ResponseEntity<Page<OrderResponse>> getPendingOrders(@PathVariable String status, Pageable pageable) {
         try {
             OrderStatus orderStatus = OrderStatus.valueOf(status.toUpperCase());
 
-            return ResponseEntity.ok(orderService.findOrdersByStatus(orderStatus));
+            return ResponseEntity.ok(orderService.findOrdersByStatus(orderStatus, pageable));
         } catch (IllegalArgumentException e) {
             throw new InvalidStatusException();
         }
@@ -44,7 +44,7 @@ public class OrderAdminController {
 
     // 배송 중으로 전환
     @PutMapping("/pending/{order-id}")
-    public ResponseEntity<List<OrderResponse>> shippedOrder(@PathVariable("order-id") Long orderId){
+    public ResponseEntity<Void> shippedOrder(@PathVariable("order-id") Long orderId){
         orderService.shippedOrder(orderId);
 
         return ResponseEntity.noContent().build();

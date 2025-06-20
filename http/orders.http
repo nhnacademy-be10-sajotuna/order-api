@@ -92,10 +92,10 @@ GET localhost:10366/api/orders/package
 
 
 ### 주문 목록 조회
-GET localhost:10366/api/admin/orders
+GET localhost:10366/api/admin/orders?page=0&size=5
 
 ### 배송 상태에 따라 주문 목록 조회
-GET localhost:10366/api/admin/orders/pending
+GET localhost:10366/api/admin/orders/pending?page=0&size=5
 
 ### 주문 배송 중으로 전환
 PUT localhost:10366/api/admin/orders/pending/1
