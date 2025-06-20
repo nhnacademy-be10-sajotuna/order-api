@@ -20,4 +20,11 @@ public class PointController {
     public ResponseEntity<List<PointHistoryResponse>> getPointsByUserId(@RequestHeader("X-User-Id") Long userId) {
         return ResponseEntity.ok(pointService.getPointsByUserId(userId));
     }
+
+    @PostMapping
+    public ResponseEntity<Void> earnPoints(@RequestHeader("X-User-Id") Long userId,
+                                           @RequestParam("type") PointPolicyType type) {
+        pointService.earnPointsByType(userId, type);
+        return ResponseEntity.ok().build();
+    }
 }

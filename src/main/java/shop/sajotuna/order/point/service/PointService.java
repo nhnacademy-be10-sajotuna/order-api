@@ -1,6 +1,7 @@
 package shop.sajotuna.order.point.service;
 
 
+import shop.sajotuna.order.point.controller.request.PointEarnRequest;
 import shop.sajotuna.order.point.controller.response.PointHistoryResponse;
 import shop.sajotuna.order.point.domain.PointPolicyType;
 
@@ -15,6 +16,6 @@ public interface PointService {
 
     void earnPointsByType(Long userId, PointPolicyType type);
 
-    void earnPointsByReturned(Long userId, int totalPrice);
+    void earnPointsByReturned(PointEarnRequest request);
 
 }
