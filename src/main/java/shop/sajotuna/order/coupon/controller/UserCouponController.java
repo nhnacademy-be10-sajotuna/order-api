@@ -29,6 +29,7 @@ public class UserCouponController {
         return ResponseEntity.ok(userCouponService.saveUserCoupon(userCouponRequest));
     }
 
+    // 웰컴 쿠폰 발급
     @PostMapping("/issue-welcome")
     public ResponseEntity<UserCouponResponse> issueWelcomeCoupon(@RequestBody @Valid WelcomeCouponRequest welcomeCouponRequest) {
         return ResponseEntity.ok(userCouponService.issueWelcomeCoupon(welcomeCouponRequest.getUserId()));

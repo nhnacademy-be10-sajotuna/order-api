@@ -1,0 +1,42 @@
+### 유저가 가진 쿠폰 조회
+GET localhost:10366/api/coupons/users
+X-User-Id: 1
+
+
+### 유저 쿠폰 발급
+POST localhost:10366/api/coupons/users
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "couponId": 10,
+  "issuedAt": "20250618093000"
+}
+
+### 카테고리 쿠폰 발급
+POST localhost:10366/api/coupons/category?categoryId=1
+Content-Type: application/json
+
+{
+  "name": "카테고리쿠폰",
+  "couponType": "CATEGORY",
+  "policyType": "FIXED",
+  "discountAmount": 10000,
+  "minOrderAmount": 50000,
+  "maxDiscountAmount": 10000,
+  "validDays": 7
+}
+
+### 북 쿠폰 발급
+POST localhost:10366/api/coupons/book?bookId=1
+Content-Type: application/json
+
+{
+  "name": "도서쿠폰",
+  "couponType": "BOOK",
+  "policyType": "RATE",
+  "discountAmount": 20,
+  "minOrderAmount": 30000,
+  "maxDiscountAmount": 10000,
+  "validDays": 14
+}

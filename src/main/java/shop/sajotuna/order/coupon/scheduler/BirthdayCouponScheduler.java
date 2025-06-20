@@ -19,11 +19,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BirthdayCouponScheduler {
     public static final String COUPON_NAME = "BIRTHDAY";
+    public static final String BIRTHDAY_COUPON_MONTHLY = "0 0 0 1 * ?"; // 매달 1일 0시
     private final BirthdayClient birthdayClient;
     private final UserCouponService userCouponService;
     private final CouponRepository couponRepository;
 
-    @Scheduled(cron = "0 0 0 1 * ?") // 매달 1일 0시
+    @Scheduled(cron = BIRTHDAY_COUPON_MONTHLY)
     public void issueBirthdayCoupons() {
         List<BirthdayUserResponse> users = birthdayClient.getBirthdayUsers();
         for (BirthdayUserResponse user : users) {
