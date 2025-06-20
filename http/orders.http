@@ -5,6 +5,12 @@ GET localhost:10366/api/orders/1
 GET localhost:10366/api/orders/user
 X-User-Id: 1
 
+### 대기 중인 주문들 조회
+GET localhost:10366/api/orders/pending
+
+### 배송 중으로 전환
+PUT localhost:10366/api/orders/pending/1
+
 ### 회원 주문
 POST localhost:10366/api/orders/user
 Content-Type: application/json
@@ -74,24 +80,28 @@ Content-Type: application/json
 ### 주문 취소
 PUT localhost:10366/api/orders/cancelled/1
 
-
-
-
 ### 주문 상품 조회
 GET localhost:10366/api/orders/product/1
 
 ### 주문 번호에 포함된 상품들 조회
 GET localhost:10366/api/orders/product/list/1
 
-
-
-
-
 ### package 목록 조회
 GET localhost:10366/api/orders/package
 
+
+
+### 주문 목록 조회
+GET localhost:10366/api/admin/orders
+
+### 배송 상태에 따라 주문 목록 조회
+GET localhost:10366/api/admin/orders/pending
+
+### 주문 배송 중으로 전환
+PUT localhost:10366/api/admin/orders/pending/1
+
 ### package 추가
-POST localhost:10366/api/orders/package
+POST localhost:10366/api/admin/orders/package
 Content-Type: application/json
 
 {
@@ -100,7 +110,7 @@ Content-Type: application/json
 }
 
 ### package 수정
-PUT localhost:10366/api/orders/package/1
+PUT localhost:10366/api/admin/orders/package/1
 Content-Type: application/json
 
 {
