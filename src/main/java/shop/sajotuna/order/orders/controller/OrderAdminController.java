@@ -24,9 +24,15 @@ public class OrderAdminController {
     private final OrderService orderService;
     private final PackageService packageService;
 
-    // 주문 목록 조회
+    // 모든 주문 목록 조회
     @GetMapping
-    public ResponseEntity<List<OrderResponse>> getPendingOrders(@RequestParam String status){
+    public ResponseEntity<List<OrderResponse>> getAllOrders() {
+        return ResponseEntity.ok(orderService.findAllOrders());
+    }
+
+    // 배송 상태에 따라 주문 목록 조회
+    @GetMapping("/{status}")
+    public ResponseEntity<List<OrderResponse>> getPendingOrders(@PathVariable String status){
         try {
             OrderStatus orderStatus = OrderStatus.valueOf(status.toUpperCase());
 

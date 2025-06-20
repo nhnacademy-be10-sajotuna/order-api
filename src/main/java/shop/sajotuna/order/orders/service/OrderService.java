@@ -52,6 +52,10 @@ public class OrderService {
         return OrderDetailResponse.from(order, orderProducts, payment);
     }
 
+    public List<OrderResponse> findAllOrders() {
+        return orderRepository.findAll().stream().map(OrderResponse::from).toList();
+    }
+
     // 회원의 주문 목록 조회
     public List<OrderResponse> findOrdersByUserId(long userId){
         return orderRepository.findByUserId(userId).stream().map(OrderResponse::from).toList();
