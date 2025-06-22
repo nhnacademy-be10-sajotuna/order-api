@@ -85,6 +85,7 @@ public class RabbitMqConfig {
         connectionFactory.setPort(rabbitMqProperties.getPort());
         connectionFactory.setUsername(rabbitMqProperties.getUsername());
         connectionFactory.setPassword(rabbitMqProperties.getPassword());
+        connectionFactory.setVirtualHost(rabbitMqProperties.getVirtualHost());
         return connectionFactory;
     }
 
