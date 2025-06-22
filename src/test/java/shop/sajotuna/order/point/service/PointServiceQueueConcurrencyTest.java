@@ -1,5 +1,6 @@
 package shop.sajotuna.order.point.service;
 
+import com.netflix.discovery.converters.Auto;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,8 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import shop.sajotuna.order.common.rabbitmq.PointRabbitProperties;
-import shop.sajotuna.order.point.controller.request.PointEarnRequest;
+import shop.sajotuna.order.point.controller.request.PointEvent;
+import shop.sajotuna.order.point.domain.PointPolicy;
+import shop.sajotuna.order.point.domain.PointPolicyType;
 import shop.sajotuna.order.point.domain.UserPoint;
+import shop.sajotuna.order.point.repository.PointPolicyRepository;
 import shop.sajotuna.order.point.repository.UserPointRepository;
 
 import java.time.Duration;
@@ -28,20 +32,16 @@ public class PointServiceQueueConcurrencyTest {
     private static final int POINT_AMOUNT = 10_000;
 
     @Autowired
-    private RabbitTemplate rabbitTemplate;
-
-    @Autowired
     private UserPointRepository userPointRepository;
 
     @Autowired
-    private PointRabbitProperties pointRabbitProperties;
+    private PointPolicyService pointPolicyService;
+
+    @Autowired
+    private PointQueueService pointQueueService;
 
     @BeforeEach
     void setUp() {
-        rabbitTemplate.execute(ch -> {
-            ch.queuePurge(pointRabbitProperties.getQueue());
-            return null;
-        });
         userPointRepository.deleteAll();
         userPointRepository.save(UserPoint.create(USER_ID));
     }
@@ -49,20 +49,16 @@ public class PointServiceQueueConcurrencyTest {
     @Test
     void concurrentEarningViaQueue_shouldAccumulateWithoutLostUpdates() throws InterruptedException {
 
+        PointEvent event = new PointEvent(USER_ID, PointPolicyType.PURCHASE, POINT_AMOUNT);
+        PointPolicy pointPolicy = pointPolicyService.getPointPolicy(event.getType());
+        int earnPoint = pointPolicy.calculatePoint(POINT_AMOUNT);
         ExecutorService executor = Executors.newFixedThreadPool(THREADS);
         CountDownLatch latch = new CountDownLatch(THREADS);
-
-        String exchange = pointRabbitProperties.getExchange();
-        String routingKey = pointRabbitProperties.getRoutingKey();
 
         for (int i = 0; i < THREADS; i++) {
             executor.submit(() -> {
                 try {
-                    rabbitTemplate.convertAndSend(
-                            exchange,
-                            routingKey,
-                            new PointEarnRequest(USER_ID, POINT_AMOUNT)
-                    );
+                    pointQueueService.sendEarnPointsMessage(event);
                 } finally {
                     latch.countDown();
                 }
@@ -76,7 +72,7 @@ public class PointServiceQueueConcurrencyTest {
                 .untilAsserted(() -> {
                     UserPoint up = userPointRepository.findByUserId(USER_ID)
                             .orElseThrow();
-                    assertEquals(POINT_AMOUNT * THREADS, up.getRemainPoint());
+                    assertEquals((long) earnPoint * THREADS, up.getRemainPoint());
                     assertEquals(THREADS, up.getVersion());
                 });
 
