@@ -31,7 +31,7 @@ public class PointPolicy {
     /**
      * 구매 적립 시 포인트 계산을 위해 사용하는 메서드
      */
-    public int calculatePoint(int totalPrice) {
+    public int calculatePoint(Integer totalPrice) {
         if (totalPrice < 0) {
             throw new InvalidPriceException(totalPrice);
         }
