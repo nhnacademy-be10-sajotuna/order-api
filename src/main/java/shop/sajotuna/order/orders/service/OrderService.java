@@ -1,22 +1,22 @@
 package shop.sajotuna.order.orders.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import shop.sajotuna.order.common.rabbitmq.PointRabbitProperties;
 import shop.sajotuna.order.coupon.service.UserCouponService;
 import shop.sajotuna.order.orders.dto.*;
 import shop.sajotuna.order.orders.entity.*;
 import shop.sajotuna.order.orders.repository.*;
 import shop.sajotuna.order.payment.entity.Payment;
 import shop.sajotuna.order.payment.repository.PaymentRepository;
-import shop.sajotuna.order.point.controller.request.PointEarnRequest;
+import shop.sajotuna.order.point.controller.request.PointEvent;
+import shop.sajotuna.order.point.domain.PointPolicyType;
 import shop.sajotuna.order.point.exception.OrderNotFoundException;
+import shop.sajotuna.order.point.service.PointQueueService;
 import shop.sajotuna.order.point.service.PointService;
 
 import java.time.LocalDateTime;
@@ -32,11 +32,9 @@ public class OrderService {
     private final PointService pointService;
     private final UserCouponService userCouponService;
     private final OrderProductService orderProductService;
+    private final PointQueueService pointQueueService;
 
     private final String SCHEDULE = "0 0 12 * * *";
-
-    private final RabbitTemplate rabbitTemplate;
-    private final PointRabbitProperties pointRabbitProperties;
 
     // 주문 조회
     public OrderDetailResponse findOrderDetail(long orderId){
@@ -64,6 +62,7 @@ public class OrderService {
     }
 
     // 회원 주문 저장 - 주문상품, 결제, 쿠폰, 포인트도 한번에 처리하도록 구현해야 함
+    @Transactional
     public OrderResponse createUserOrder(OrderRequest orderRequest, Long userId) {
         int totalPrice = orderRequest.getItems().stream()
                 .mapToInt(item -> item.getQty() * item.getAmount())
@@ -91,7 +90,7 @@ public class OrderService {
         paymentRepository.save(payment);
 
         // 포인트 적립
-        pointService.earnPointsForPurchase(userId, paymentPrice);
+        pointQueueService.sendEarnPointsMessage(new PointEvent(userId, PointPolicyType.PURCHASE, paymentPrice));
         return OrderResponse.from(savedOrder);
     }
 
@@ -140,7 +139,7 @@ public class OrderService {
 
         // 반품시 결제금액은 포인트로 적립됨
         Payment payment = paymentRepository.getPaymentByOrder_Id(orderId);
-        pointService.earnPointsByReturned(new PointEarnRequest(userId, payment.getAmount()));
+        pointQueueService.sendEarnPointsMessage(new PointEvent(userId, PointPolicyType.RETURNED, payment.getAmount()));
     }
 
     // 주문 취소 처리
