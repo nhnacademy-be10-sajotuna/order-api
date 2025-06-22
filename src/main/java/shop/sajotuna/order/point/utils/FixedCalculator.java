@@ -14,7 +14,7 @@ public class FixedCalculator implements PointCalculator {
 
     private final PointPolicyService policyService;
 
-    private final static List<PointPolicyType> SUPPORTED_TYPES = List.of(
+    private final static EnumSet<PointPolicyType> SUPPORTED_TYPES = EnumSet.of(
             PointPolicyType.REVIEW,
             PointPolicyType.REVIEW_WITH_IMAGE,
             PointPolicyType.REGISTER);
