@@ -1,6 +1,5 @@
 package shop.sajotuna.order.point.service;
 
-import com.netflix.discovery.converters.Auto;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
