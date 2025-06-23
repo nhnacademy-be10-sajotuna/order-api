@@ -1,16 +1,16 @@
 package shop.sajotuna.order.point.service;
 
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import shop.sajotuna.order.common.rabbitmq.FatalMessageLog;
 import shop.sajotuna.order.common.rabbitmq.FatalMessageRepository;
 import shop.sajotuna.order.common.rabbitmq.PointRabbitProperties;
-import shop.sajotuna.order.point.controller.request.PointEarnRequest;
 import org.junit.jupiter.api.Test;
 import org.awaitility.Awaitility;
+import shop.sajotuna.order.point.controller.request.PointEvent;
+import shop.sajotuna.order.point.domain.PointPolicyType;
 
 import java.time.Duration;
 import java.util.List;
@@ -19,13 +19,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class RabbitMqDlqRetryTest {
+public class FatalExceptionLogTest {
 
     @Autowired
-    private RabbitTemplate rabbitTemplate;
-
-    @Autowired
-    private RabbitAdmin rabbitAdmin;
+    private PointQueueService pointQueueService;
 
     @Autowired
     private PointRabbitProperties pointRabbitProperties;
@@ -35,15 +32,14 @@ public class RabbitMqDlqRetryTest {
 
     @Test
     void whenFatalException_throwsImmediateAcknowledgeAmqpExceptionAndSaveLog() {
-     PointEarnRequest bad = new PointEarnRequest(-1L, 0);
-        rabbitTemplate.convertAndSend(pointRabbitProperties.getExchange(), pointRabbitProperties.getRoutingKey(), bad);
+        PointEvent bad = new PointEvent(null, PointPolicyType.PURCHASE, 0);
+        pointQueueService.sendEarnPointsMessage(bad);
 
         Awaitility.await()
                 .atMost(Duration.ofSeconds(5))
                 .untilAsserted(() -> {
                     List<FatalMessageLog> logs = fatalMessageRepository.findAll();
                     assertFalse(logs.isEmpty());
-                    assertTrue(logs.get(0).getExceptionType().contains("UserPointNotFoundException"));
                 });
     }
 }

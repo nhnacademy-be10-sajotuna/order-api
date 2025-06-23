@@ -1,15 +1,16 @@
 package shop.sajotuna.order.point.service;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
-import shop.sajotuna.order.point.controller.request.PointEarnRequest;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import shop.sajotuna.order.point.controller.response.PointHistoryResponse;
-import shop.sajotuna.order.point.domain.*;
+import shop.sajotuna.order.point.domain.PointHistory;
+import shop.sajotuna.order.point.domain.PointType;
+import shop.sajotuna.order.point.domain.UserPoint;
 import shop.sajotuna.order.point.exception.InsufficientPointException;
 import shop.sajotuna.order.point.exception.UserPointNotFoundException;
 import shop.sajotuna.order.point.repository.PointHistoryRepository;
@@ -22,141 +23,85 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@Transactional
-class PointServiceImplTest {
-
-    private static final Long USER_ID = 1L;
-    private static final int PURCHASE_AMOUNT = 10000;
-
-    @InjectMocks
-    private PointServiceImpl pointService;
+@ExtendWith(MockitoExtension.class)
+class PointServiceImplTest{
 
     @Mock
-    private PointHistoryRepository pointHistoryRepository;
-
-    @Mock
-    private PointPolicyService pointPolicyService;
+    private PointHistoryRepository historyRepository;
 
     @Mock
     private UserPointRepository userPointRepository;
 
-    @Mock
-    private PointQueueService pointQueueService;
-
-    private UserPoint userPoint;
-
-    @BeforeEach
-    void setup() {
-        userPoint = UserPoint.create(USER_ID);
-    }
+    @InjectMocks
+    private PointServiceImpl pointService;
 
     @Test
-    void earnPointsForPurchase_shouldSendQueueMessage() {
+    @DisplayName("getPointsById - 모든 포인트 기록 조회")
+    void getPointsByUserId_shouldGetAllPointHistories() {
         // given
-        PointPolicy policy = mock(PointPolicy.class);
-        when(pointPolicyService.getPointPolicy(PointPolicyType.PURCHASE)).thenReturn(policy);
-        when(policy.calculatePoint(PURCHASE_AMOUNT)).thenReturn(300);
+        Long userId = 1L;
+        PointHistory pointHistory1 = PointHistory.createEarnHistory(userId, 1000);
+        PointHistory pointHistory2 = PointHistory.createRedeemHistory(userId, 500);
+        when(historyRepository.getPointHistoriesByUserId(userId)).thenReturn(List.of(pointHistory1, pointHistory2));
 
         // when
-        pointService.earnPointsForPurchase(USER_ID, PURCHASE_AMOUNT);
+        List<PointHistoryResponse> pointsByUserId = pointService.getPointsByUserId(userId);
 
         // then
-        verify(pointQueueService).sendEarnPointsMessage(
-                argThat(req -> req.getUserId().equals(USER_ID) && req.getPointAmount() == 300));
+        assertThat(pointsByUserId).hasSize(2)
+                .extracting("userId", "amount", "type")
+                .contains(tuple(userId, 1000, PointType.EARNED),
+                        tuple(userId, 500, PointType.REDEEMED));
     }
 
     @Test
-    void earnPointsByType_register_shouldCreateUserPointAndSendQueueMessage() {
+    @DisplayName("redeemPoints - 포인트 사용 성공")
+    void redeemPoints_success() {
         // given
-        when(pointPolicyService.getPointPolicy(PointPolicyType.REGISTER))
-                .thenReturn(PointPolicy.builder().fixedPoint(500).type(PointPolicyType.REGISTER).build());
+        Long userId = 1L;
+        int pointAmount = 500;
+        UserPoint userPoint = new UserPoint(1L, userId, 1000L, null);
+        when(userPointRepository.findByUserId(userId)).thenReturn(Optional.of(userPoint));
+        PointHistory pointHistory = PointHistory.createRedeemHistory(userId, pointAmount);
+        when(historyRepository.save(Mockito.any(PointHistory.class))).thenReturn(pointHistory);
 
         // when
-        pointService.earnPointsByType(USER_ID, PointPolicyType.REGISTER);
+        PointHistoryResponse response = pointService.redeemPoints(userId, pointAmount);
 
         // then
-        verify(userPointRepository).save(any(UserPoint.class));
-        verify(pointQueueService).sendEarnPointsMessage(
-                argThat(req -> req.getUserId().equals(USER_ID) && req.getPointAmount() == 500));
+        assertThat(response).isNotNull();
+        assertThat(response.getUserId()).isEqualTo(userId);
+        assertThat(response.getAmount()).isEqualTo(pointAmount);
+        assertThat(response.getType()).isEqualTo(PointType.REDEEMED);
+        verify(userPointRepository).findByUserId(userId);
     }
 
     @Test
-    void earnPointsByType_review_shouldSendQueueMessageOnly() {
+    @DisplayName("redeemPoints - 포인트 부족 시 예외 발생")
+    void redeemPoints_insufficientPoints() {
         // given
-        when(pointPolicyService.getPointPolicy(PointPolicyType.REVIEW))
-                .thenReturn(PointPolicy.builder().fixedPoint(100).type(PointPolicyType.REVIEW).build());
-        when(userPointRepository.findByUserId(USER_ID)).thenReturn(Optional.of(userPoint));
+        Long userId = 1L;
+        int pointAmount = 500;
+        UserPoint userPoint = new UserPoint(1L, userId, 300L, null);
+        when(userPointRepository.findByUserId(userId)).thenReturn(Optional.of(userPoint));
 
-        // when
-        pointService.earnPointsByType(USER_ID, PointPolicyType.REVIEW);
-
-        // then
-        verify(pointQueueService).sendEarnPointsMessage(
-                argThat(req -> req.getUserId().equals(USER_ID) && req.getPointAmount() == 100));
-    }
-
-    @Test
-    void earnPointsByReturned_shouldSendQueueMessage() {
-        // given
-        PointEarnRequest request = new PointEarnRequest(USER_ID, 150);
-
-        // when
-        pointService.earnPointsByReturned(request);
-
-        // then
-        verify(pointQueueService).sendEarnPointsMessage(request);
-    }
-
-    @Test
-    void redeemPoints_shouldUpdateUserPointAndSaveHistory() {
-        // given
-        userPoint.earnPoint(500);
-        when(userPointRepository.findByUserId(USER_ID)).thenReturn(Optional.of(userPoint));
-        PointHistory dummyHistory = PointHistory.createRedeemHistory(USER_ID, 200);
-        when(pointHistoryRepository.save(any())).thenReturn(dummyHistory);
-
-        // when
-        PointHistoryResponse resp = pointService.redeemPoints(USER_ID, 200);
-
-        // then
-        assertThat(resp.getAmount()).isEqualTo(200);
-        assertThat(resp.getType()).isEqualTo(PointType.REDEEMED);
-        assertThat(userPoint.getRemainPoint()).isEqualTo(300);
-    }
-
-    @Test
-    void redeemPoints_whenInsufficient_shouldThrowException() {
-        // given
-        when(userPointRepository.findByUserId(USER_ID)).thenReturn(Optional.of(userPoint));
-
-        // then
-        assertThatThrownBy(() -> pointService.redeemPoints(USER_ID, 100))
+        // when & then
+        assertThatThrownBy(() -> pointService.redeemPoints(userId, pointAmount))
                 .isInstanceOf(InsufficientPointException.class);
+
+        verify(historyRepository, never()).save(Mockito.any(PointHistory.class));
     }
 
     @Test
-    void redeemPoints_whenUserNotFound_shouldThrowException() {
-        when(userPointRepository.findByUserId(USER_ID)).thenReturn(Optional.empty());
-
-        assertThatThrownBy(() -> pointService.redeemPoints(USER_ID, 100))
-                .isInstanceOf(UserPointNotFoundException.class);
-    }
-
-    @Test
-    void getPointsByUserId_shouldMapToResponses() {
+    @DisplayName("redeemPoints - 유저 포인트 정보가 없을 시 예외 발생")
+    void redeemPoints_userPointNotFound() {
         // given
-        PointHistory history = PointHistory.createEarnHistory(USER_ID, 100);
-        when(pointHistoryRepository.getPointHistoriesByUserId(USER_ID))
-                .thenReturn(List.of(history));
+        Long userId = 1L;
+        int pointAmount = 500;
+        when(userPointRepository.findByUserId(userId)).thenReturn(Optional.empty());
 
-        // when
-        List<PointHistoryResponse> responses = pointService.getPointsByUserId(USER_ID);
-
-        // then
-        assertThat(responses).hasSize(1);
-        assertThat(responses.get(0).getAmount()).isEqualTo(100);
-        assertThat(responses.get(0).getType()).isEqualTo(PointType.EARNED);
+        // when & then
+        assertThatThrownBy(() -> pointService.redeemPoints(userId, pointAmount))
+                .isInstanceOf(UserPointNotFoundException.class);
     }
 }

@@ -10,6 +10,7 @@ spring:
     port: 5672
     username: guest
     password: guest
+    virtual-host: sajotuna
 
   cloud:
     config:
@@ -31,13 +32,13 @@ rabbitmq:
   point:
     queue: sajotuna.point.queue
     exchange: sajotuna.point.exchange
-    routing-key: point.earn
+    routing-key: sajotuna.point.earn
     dlx-queue: sajotuna.point.dlq
     dlx-exchange: sajotuna.point.dlx
-    dlx-routing-key: point.earn.error
+    dlx-routing-key: sajotuna.point.earn.error
     parking-lot-queue: sajotuna.point.parking.queue
     parking-lot-exchange: sajotuna.point.parking.exchange
-    parking-lot-routing-key: point.earn.dead
+    parking-lot-routing-key: sajotuna.point.earn.dead
 logging:
   level:
     com.netflix.discovery: off
