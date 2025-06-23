@@ -1,5 +1,5 @@
 package shop.sajotuna.order.point.domain;
 
-public enum PointType {
+public enum PointHistoryType {
     EARNED, REDEEMED
 }

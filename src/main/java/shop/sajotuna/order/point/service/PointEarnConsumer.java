@@ -15,19 +15,24 @@ import shop.sajotuna.order.point.repository.UserPointRepository;
 @RequiredArgsConstructor
 public class PointEarnConsumer {
 
-    private final UserPointRepository userPointRepo;
-    private final PointHistoryRepository historyRepo;
-    private final PointCalculationService pointCalculationService;
+    private final UserPointRepository userPointRepository;
+    private final PointHistoryRepository historyRepository;
+    private final PointPolicyService pointPolicyService;
 
     @RabbitListener(queues = "${rabbitmq.point.queue}")
     @Transactional
     public void onMessage(PointEvent event) {
         log.info("Point Earned Event Received: {}", event);
-        UserPoint userPoint = userPointRepo.findByUserId(event.getUserId())
-                .orElseGet(() -> userPointRepo.save(UserPoint.create(event.getUserId())));
+        UserPoint userPoint = userPointRepository.findByUserId(event.getUserId())
+                .orElseGet(() -> userPointRepository.save(UserPoint.create(event.getUserId())));
 
-        int amount = pointCalculationService.calculatePoint(event);
+        int amount;
+        if (event.getType() == PointPolicyType.RETURNED) {
+            amount = event.getTotalPrice();
+        } else {
+            amount = pointPolicyService.getPointPolicy(event.getType()).calculatePoint(event.getTotalPrice());
+        }
         userPoint.earnPoint(amount);
-        historyRepo.save(PointHistory.createEarnHistory(event.getUserId(), amount));
+        historyRepository.save(PointHistory.createEarnHistory(event.getUserId(), amount, event.getType().getDescription()));
     }
 }

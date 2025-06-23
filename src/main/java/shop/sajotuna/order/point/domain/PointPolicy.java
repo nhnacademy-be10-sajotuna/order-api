@@ -23,19 +23,28 @@ public class PointPolicy {
     @NotNull
     private PointPolicyType type;
 
-    private Integer fixedPoint;
+    @NotNull
+    @Min(1)
+    private int value;
 
-    @Column(precision=4, scale=3)
-    private BigDecimal rate;
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    private CalculationMode calculationMode;
 
     /**
      * 구매 적립 시 포인트 계산을 위해 사용하는 메서드
+     * calculationMode가 FIXED인 경우에는 value를 그대로 반환하고,
+     * calculationMode가 RATE인 경우에는 totalPrice에 대한 비율을 계산하여 포인트를 반환합니다.
+     * ex) value = 15인 경우 1.5%의 비율로 포인트를 계산합니다.
      */
     public int calculatePoint(Integer totalPrice) {
+        if (calculationMode == CalculationMode.FIXED) {
+            return value;
+        }
         if (totalPrice < 0) {
             throw new InvalidPriceException(totalPrice);
         }
-        BigDecimal price = BigDecimal.valueOf(totalPrice);
-        return price.multiply(rate).setScale(0, RoundingMode.DOWN).intValue();
+        BigDecimal rate = BigDecimal.valueOf(value).movePointLeft(3);
+        return BigDecimal.valueOf(totalPrice).multiply(rate).setScale(0, RoundingMode.DOWN).intValue();
     }
 }
