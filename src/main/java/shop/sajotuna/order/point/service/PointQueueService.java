@@ -1,7 +1,7 @@
 package shop.sajotuna.order.point.service;
 
-import shop.sajotuna.order.point.controller.request.PointEarnRequest;
+import shop.sajotuna.order.point.controller.request.PointEvent;
 
 public interface PointQueueService {
-    void sendEarnPointsMessage(PointEarnRequest request);
+    void sendEarnPointsMessage(PointEvent event);
 }
