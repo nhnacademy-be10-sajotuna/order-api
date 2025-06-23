@@ -9,7 +9,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import shop.sajotuna.order.point.controller.response.PointHistoryResponse;
 import shop.sajotuna.order.point.domain.PointHistory;
-import shop.sajotuna.order.point.domain.PointType;
+import shop.sajotuna.order.point.domain.PointHistoryType;
+import shop.sajotuna.order.point.domain.PointPolicyType;
 import shop.sajotuna.order.point.domain.UserPoint;
 import shop.sajotuna.order.point.exception.InsufficientPointException;
 import shop.sajotuna.order.point.exception.UserPointNotFoundException;
@@ -35,13 +36,15 @@ class PointServiceImplTest{
     @InjectMocks
     private PointServiceImpl pointService;
 
+    private static final String REDEEM_MESSAGE = "포인트 사용";
+
     @Test
     @DisplayName("getPointsById - 모든 포인트 기록 조회")
     void getPointsByUserId_shouldGetAllPointHistories() {
         // given
         Long userId = 1L;
-        PointHistory pointHistory1 = PointHistory.createEarnHistory(userId, 1000);
-        PointHistory pointHistory2 = PointHistory.createRedeemHistory(userId, 500);
+        PointHistory pointHistory1 = PointHistory.createEarnHistory(userId, 1000, PointPolicyType.REVIEW.getDescription());
+        PointHistory pointHistory2 = PointHistory.createRedeemHistory(userId, 500, REDEEM_MESSAGE);
         when(historyRepository.getPointHistoriesByUserId(userId)).thenReturn(List.of(pointHistory1, pointHistory2));
 
         // when
@@ -50,8 +53,8 @@ class PointServiceImplTest{
         // then
         assertThat(pointsByUserId).hasSize(2)
                 .extracting("userId", "amount", "type")
-                .contains(tuple(userId, 1000, PointType.EARNED),
-                        tuple(userId, 500, PointType.REDEEMED));
+                .contains(tuple(userId, 1000, PointHistoryType.EARNED),
+                        tuple(userId, 500, PointHistoryType.REDEEMED));
     }
 
     @Test
@@ -62,7 +65,7 @@ class PointServiceImplTest{
         int pointAmount = 500;
         UserPoint userPoint = new UserPoint(1L, userId, 1000L, null);
         when(userPointRepository.findByUserId(userId)).thenReturn(Optional.of(userPoint));
-        PointHistory pointHistory = PointHistory.createRedeemHistory(userId, pointAmount);
+        PointHistory pointHistory = PointHistory.createRedeemHistory(userId, pointAmount, REDEEM_MESSAGE);
         when(historyRepository.save(Mockito.any(PointHistory.class))).thenReturn(pointHistory);
 
         // when
@@ -72,7 +75,7 @@ class PointServiceImplTest{
         assertThat(response).isNotNull();
         assertThat(response.getUserId()).isEqualTo(userId);
         assertThat(response.getAmount()).isEqualTo(pointAmount);
-        assertThat(response.getType()).isEqualTo(PointType.REDEEMED);
+        assertThat(response.getType()).isEqualTo(PointHistoryType.REDEEMED);
         verify(userPointRepository).findByUserId(userId);
     }
 

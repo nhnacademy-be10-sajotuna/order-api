@@ -17,6 +17,7 @@ import java.util.List;
 @Transactional
 public class PointServiceImpl implements PointService {
 
+    public static final String REDEEM_MESSAGE = "구매 사용";
     private final PointHistoryRepository pointHistoryRepository;
     private final UserPointRepository userPointRepository;
 
@@ -34,7 +35,7 @@ public class PointServiceImpl implements PointService {
                 .orElseThrow(UserPointNotFoundException::new);
 
         userPoint.redeemPoint(pointAmount);
-        PointHistory pointHistory = pointHistoryRepository.save(PointHistory.createRedeemHistory(userId, pointAmount));
+        PointHistory pointHistory = pointHistoryRepository.save(PointHistory.createRedeemHistory(userId, pointAmount, REDEEM_MESSAGE));
         return PointHistoryResponse.from(pointHistory);
     }
 }

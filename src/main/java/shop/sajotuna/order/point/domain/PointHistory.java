@@ -27,23 +27,27 @@ public class PointHistory {
 
     @Enumerated(value = EnumType.STRING)
     @NotNull
-    private PointType type;
+    private PointHistoryType type;
+
+    @NotNull
+    private String description;
 
     @NotNull
     private LocalDateTime createdAt;
 
-    private PointHistory(Long userId, int amount, PointType type) {
+    private PointHistory(Long userId, int amount, PointHistoryType type, String description) {
         this.userId = userId;
         this.amount = amount;
         this.type = type;
+        this.description = description;
         this.createdAt = LocalDateTime.now();
     }
 
-    public static PointHistory createRedeemHistory(Long userId, int amount) {
-        return new PointHistory(userId, amount, PointType.REDEEMED);
+    public static PointHistory createRedeemHistory(Long userId, int amount, String description) {
+        return new PointHistory(userId, amount, PointHistoryType.REDEEMED, description);
     }
 
-    public static PointHistory createEarnHistory(Long userId, int amount) {
-        return new PointHistory(userId, amount, PointType.EARNED);
+    public static PointHistory createEarnHistory(Long userId, int amount, String description) {
+        return new PointHistory(userId, amount, PointHistoryType.EARNED, description);
     }
 }

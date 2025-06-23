@@ -3,7 +3,7 @@ package shop.sajotuna.order.point.controller.response;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import shop.sajotuna.order.point.domain.PointHistory;
-import shop.sajotuna.order.point.domain.PointType;
+import shop.sajotuna.order.point.domain.PointHistoryType;
 
 import java.time.LocalDateTime;
 
@@ -16,7 +16,9 @@ public class PointHistoryResponse {
 
     private int amount;
 
-    private PointType type;
+    private PointHistoryType type;
+
+    private String description;
 
     private LocalDateTime createdAt;
 
@@ -26,6 +28,7 @@ public class PointHistoryResponse {
                 pointHistory.getUserId(),
                 pointHistory.getAmount(),
                 pointHistory.getType(),
+                pointHistory.getDescription(),
                 pointHistory.getCreatedAt()
         );
     }
