@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
+import shop.sajotuna.order.point.domain.CalculationMode;
 import shop.sajotuna.order.point.domain.PointPolicy;
 import shop.sajotuna.order.point.domain.PointPolicyType;
 import shop.sajotuna.order.point.repository.PointPolicyRepository;
@@ -22,20 +23,24 @@ public class PointPolicyInitializer implements ApplicationRunner {
         if (policyRepository.count() == 0) {
             List<PointPolicy> defaults = List.of(
                     PointPolicy.builder()
+                            .calculationMode(CalculationMode.RATE)
                             .type(PointPolicyType.PURCHASE)
-                            .rate(BigDecimal.valueOf(0.10))
+                            .value(100)
                             .build(),
                     PointPolicy.builder()
+                            .calculationMode(CalculationMode.FIXED)
                             .type(PointPolicyType.REVIEW)
-                            .fixedPoint(200)
+                            .value(200)
                             .build(),
                     PointPolicy.builder()
+                            .calculationMode(CalculationMode.FIXED)
                             .type(PointPolicyType.REVIEW_WITH_IMAGE)
-                            .fixedPoint(500)
+                            .value(500)
                             .build(),
                     PointPolicy.builder()
+                            .calculationMode(CalculationMode.FIXED)
                             .type(PointPolicyType.REGISTER)
-                            .fixedPoint(5000)
+                            .value(5000)
                             .build()
             );
             policyRepository.saveAll(defaults);

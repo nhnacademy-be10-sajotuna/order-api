@@ -14,8 +14,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 
 import shop.sajotuna.order.point.controller.request.PointEvent;
-import shop.sajotuna.order.point.domain.PointType;
-import shop.sajotuna.order.point.domain.UserPoint;
+import shop.sajotuna.order.point.domain.*;
 import shop.sajotuna.order.point.repository.UserPointRepository;
 import shop.sajotuna.order.point.repository.PointHistoryRepository;
 
@@ -29,7 +28,7 @@ class PointEarnConsumerTest {
     private PointHistoryRepository historyRepo;
 
     @Mock
-    private PointCalculationService pointCalculationService;
+    private PointPolicyService pointPolicyService;
 
     @InjectMocks
     private PointEarnConsumer consumer;
@@ -39,12 +38,17 @@ class PointEarnConsumerTest {
         Long userId = 42L;
         PointEvent event = mock(PointEvent.class);
         when(event.getUserId()).thenReturn(userId);
+        when(event.getType()).thenReturn(PointPolicyType.REVIEW);
 
         UserPoint existingUserPoint = UserPoint.create(userId);
         when(userPointRepo.findByUserId(userId)).thenReturn(Optional.of(existingUserPoint));
 
         int earned = 100;
-        when(pointCalculationService.calculatePoint(event)).thenReturn(earned);
+        PointPolicy pointPolicy = PointPolicy.builder()
+                .calculationMode(CalculationMode.FIXED)
+                .value(earned)
+                .build();
+        when(pointPolicyService.getPointPolicy(any())).thenReturn(pointPolicy);
 
         consumer.onMessage(event);
 
@@ -53,7 +57,7 @@ class PointEarnConsumerTest {
         verify(historyRepo).save(argThat(history ->
                 history.getUserId().equals(userId) &&
                         history.getAmount() == earned &&
-                        history.getType() == PointType.EARNED
+                        history.getType() == PointHistoryType.EARNED
         ));
 
         verify(userPointRepo, never()).save(any(UserPoint.class));
@@ -64,13 +68,18 @@ class PointEarnConsumerTest {
         Long userId = 99L;
         PointEvent event = mock(PointEvent.class);
         when(event.getUserId()).thenReturn(userId);
+        when(event.getType()).thenReturn(PointPolicyType.REGISTER);
 
         when(userPointRepo.findByUserId(userId)).thenReturn(Optional.empty());
         UserPoint newUserPoint = UserPoint.create(userId);
         when(userPointRepo.save(any(UserPoint.class))).thenReturn(newUserPoint);
 
         int earned = 50;
-        when(pointCalculationService.calculatePoint(event)).thenReturn(earned);
+        PointPolicy pointPolicy = PointPolicy.builder()
+                .calculationMode(CalculationMode.FIXED)
+                .value(earned)
+                .build();
+        when(pointPolicyService.getPointPolicy(any())).thenReturn(pointPolicy);
 
         consumer.onMessage(event);
 
