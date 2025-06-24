@@ -11,7 +11,7 @@ import shop.sajotuna.order.point.service.PointPolicyService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/admin/point-policy")
+@RequestMapping("/api/admin/point-polies")
 @RequiredArgsConstructor
 public class AdminPointPolicyController {
 
