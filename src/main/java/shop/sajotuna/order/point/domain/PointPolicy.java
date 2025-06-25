@@ -1,8 +1,10 @@
 package shop.sajotuna.order.point.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import shop.sajotuna.order.point.exception.InvalidPercentageException;
 import shop.sajotuna.order.point.exception.InvalidPriceException;
 
 import java.math.BigDecimal;
@@ -15,6 +17,7 @@ import java.math.RoundingMode;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PointPolicy {
 
+    public static final int MAX_PERCENTAGE = 1000;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -46,5 +49,14 @@ public class PointPolicy {
         }
         BigDecimal rate = BigDecimal.valueOf(value).movePointLeft(3);
         return BigDecimal.valueOf(totalPrice).multiply(rate).setScale(0, RoundingMode.DOWN).intValue();
+    }
+
+    public void update(int value) {
+        if (calculationMode == CalculationMode.RATE) {
+            if (value > MAX_PERCENTAGE) {
+                throw new InvalidPercentageException();
+            }
+        }
+        this.value = value;
     }
 }

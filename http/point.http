@@ -1,3 +1,14 @@
 ### 포인트 전체 조회
 GET localhost:10366/api/points
 X-User-Id: 1
+
+### 포인트 정책 수정
+PUT localhost:10366/api/admin/point-policy/1
+Content-Type: application/json
+
+{
+  "value": 15
+}
+
+### 포인트 정책 조회
+GET localhost:10366/api/admin/point-policy

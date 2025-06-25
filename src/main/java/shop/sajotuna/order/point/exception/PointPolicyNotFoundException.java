@@ -6,9 +6,9 @@ import shop.sajotuna.order.point.domain.PointPolicyType;
 
 public class PointPolicyNotFoundException extends ApiException {
 
-    private static final String MESSAGE = "Point policy not found for type: %s";
+    private static final String MESSAGE = "Point policy not found";
 
-    public PointPolicyNotFoundException(PointPolicyType type) {
-        super(HttpStatus.NOT_FOUND.value(), String.format(MESSAGE, type));
+    public PointPolicyNotFoundException() {
+        super(HttpStatus.NOT_FOUND.value(), MESSAGE);
     }
 }
