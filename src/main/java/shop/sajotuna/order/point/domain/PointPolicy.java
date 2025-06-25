@@ -1,6 +1,7 @@
 package shop.sajotuna.order.point.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import shop.sajotuna.order.point.exception.InvalidPriceException;
