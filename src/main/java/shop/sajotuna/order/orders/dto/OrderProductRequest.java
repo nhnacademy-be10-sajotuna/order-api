@@ -23,6 +23,8 @@ public class OrderProductRequest {
     @PositiveOrZero
     private int amount;
 
+    //TODO: 상품 쿠폰 추가
+
     @NotNull
     private Boolean packagingRequest;
 
