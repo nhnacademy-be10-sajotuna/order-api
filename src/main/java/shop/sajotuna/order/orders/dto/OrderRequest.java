@@ -28,7 +28,7 @@ public class OrderRequest {
     @NotNull
     private PaymentMethod method;
 
-    private Long usedUserCoupon;
+    private Long orderCouponId;
 
     @PositiveOrZero
     private int usedPoint;
@@ -36,15 +36,7 @@ public class OrderRequest {
     @NotNull
     private List<OrderProductRequest> items;
 
-    public Order toEntity(Long userId, int totalPrice) {
-        return Order.builder()
-                .userId(userId)
-                .isMember(true)
-                .shippingDate(shippingDate)
-                .streetAddress(streetAddress)
-                .deliveryPrice(deliveryPrice)
-                .status(OrderStatus.PENDING)
-                .totalPrice(totalPrice)
-                .createdAt(LocalDateTime.now()).build();
+    public Order toEntity(Long userId) {
+        return Order.createBaseUserOrder(shippingDate, streetAddress, userId);
     }
 }
