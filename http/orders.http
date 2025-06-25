@@ -21,7 +21,7 @@ X-User-Id: 1
   "streetAddress": "test",
   "deliveryPrice": 1000,
   "usedPoint": 1000,
-  "usedUserCoupon": 1,
+  "orderCouponId": 1,
   "method": "CARD",
   "items": [
     {

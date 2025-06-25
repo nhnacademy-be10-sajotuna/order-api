@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.point.controller.request.PointEvent;
 import shop.sajotuna.order.point.domain.*;
-import shop.sajotuna.order.point.repository.PointHistoryRepository;
 import shop.sajotuna.order.point.repository.UserPointRepository;
 
 @Slf4j
@@ -16,7 +15,7 @@ import shop.sajotuna.order.point.repository.UserPointRepository;
 public class PointEarnConsumer {
 
     private final UserPointRepository userPointRepository;
-    private final PointHistoryRepository historyRepository;
+    private final PointHistoryWriter pointHistoryWriter;
     private final PointPolicyService pointPolicyService;
 
     @RabbitListener(queues = "${rabbitmq.point.queue}")
@@ -33,6 +32,6 @@ public class PointEarnConsumer {
             amount = pointPolicyService.getPointPolicy(event.getType()).calculatePoint(event.getTotalPrice());
         }
         userPoint.earnPoint(amount);
-        historyRepository.save(PointHistory.createEarnHistory(event.getUserId(), amount, event.getType().getDescription()));
+        pointHistoryWriter.savePointEarnHistory(event.getUserId(), amount, event.getType().getDescription());
     }
 }

@@ -16,7 +16,7 @@ public class PackageController {
 
     // 포장 목록 조회
     @GetMapping
-    public ResponseEntity<List<PackageResponse>> getPackage(){
+    public ResponseEntity<List<PackageResponse>> getPackage() {
         List<PackageResponse> packages = packageService.getPackages();
         return ResponseEntity.ok(packages);
     }
