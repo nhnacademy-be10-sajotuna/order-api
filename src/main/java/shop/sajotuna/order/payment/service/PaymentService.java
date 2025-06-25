@@ -3,8 +3,10 @@ package shop.sajotuna.order.payment.service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import shop.sajotuna.order.orders.entity.Order;
 import shop.sajotuna.order.payment.dto.PaymentResponse;
 import shop.sajotuna.order.payment.entity.Payment;
+import shop.sajotuna.order.payment.entity.PaymentMethod;
 import shop.sajotuna.order.payment.repository.PaymentRepository;
 
 import java.util.List;
@@ -25,5 +27,11 @@ public class PaymentService {
     // 모든 결제 정보 조회
     public List<PaymentResponse> getAllPayments() {
         return paymentRepository.findAll().stream().map(PaymentResponse::from).collect(Collectors.toList());
+    }
+
+    public void processUserPayment(Order order, PaymentMethod paymentMethod, Long userId) {
+        //TODO: 결제 외부 API 연동 필요
+        Payment payment = new Payment(order, paymentMethod, userId);
+        paymentRepository.save(payment);
     }
 }
