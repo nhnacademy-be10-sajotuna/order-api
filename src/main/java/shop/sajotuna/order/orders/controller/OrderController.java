@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import shop.sajotuna.order.orders.dto.*;
+import shop.sajotuna.order.orders.service.OrderProcessService;
 import shop.sajotuna.order.orders.service.OrderService;
 
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderController {
     private final OrderService orderService;
+    private final OrderProcessService orderProcessService;
 
     // 주문 조회
     @GetMapping("/{order-id}")
@@ -32,9 +34,10 @@ public class OrderController {
     // 회원 주문
     @PostMapping("/user")
     public ResponseEntity<OrderResponse> createUserOrders(@RequestHeader("X-User-Id") Long userId, @RequestBody @Valid OrderRequest request) {
-        log.info("createUserOrders: userId = {}, request = {}", userId, request.getUsedUserCoupon());
+        log.info("createUserOrders: userId = {}, request = {}", userId, request.getOrderCouponId());
 
-        return ResponseEntity.ok(orderService.createUserOrder(request, userId));
+        OrderResponse orderResponse = orderProcessService.processUserOrder(request, userId);
+        return ResponseEntity.ok(orderResponse);
     }
 
     // 비회원 주문
