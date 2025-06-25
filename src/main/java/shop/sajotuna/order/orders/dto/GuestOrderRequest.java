@@ -46,7 +46,6 @@ public class GuestOrderRequest {
                 .isMember(false)
                 .shippingDate(shippingDate)
                 .streetAddress(streetAddress)
-                .deliveryPrice(deliveryPrice)
                 .totalPrice(totalPrice)
                 .status(OrderStatus.PENDING)
                 .createdAt(LocalDateTime.now()).build();

@@ -1,0 +1,23 @@
+### 쿠폰 발급
+POST localhost:10366/api/coupons
+Content-Type: application/json
+
+{
+  "name": "string",
+  "couponType": "ORDER",
+  "policyType": "FIXED",
+  "discountAmount": 1000,
+  "minOrderAmount": 10000,
+  "maxDiscountAmount": 1000,
+  "validDays": 1
+}
+
+### 회원 쿠폰 발급
+POST localhost:10366/api/coupons/users
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "couponId": 1,
+  "issuedAt": "20250620151112"
+}
