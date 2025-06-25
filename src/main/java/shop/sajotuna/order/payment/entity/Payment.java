@@ -32,10 +32,14 @@ public class Payment {
     @NotNull
     private LocalDateTime createdAt;
 
-    public Payment(Order order, PaymentMethod method, Integer amount) {
+    @NotNull
+    private Long userId;
+
+    public Payment(Order order, PaymentMethod method, Long userId) {
         this.order = order;
         this.method = method;
-        this.amount = amount;
+        this.amount = order.getFinalPrice();
+        this.userId = userId;
         this.createdAt = LocalDateTime.now();
     }
 }

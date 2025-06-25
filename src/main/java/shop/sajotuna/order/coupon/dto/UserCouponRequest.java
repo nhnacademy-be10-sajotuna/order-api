@@ -15,6 +15,6 @@ public class UserCouponRequest {
     @NotNull
     private Long couponId;
     @NotNull
-    @JsonFormat(pattern = "yyyyMMddHHmmSS")
+    @JsonFormat(pattern = "yyyyMMddHHmmss")
     private LocalDateTime issuedAt;
 }

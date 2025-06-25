@@ -41,20 +41,6 @@ public class UserCouponService {
         return UserCouponResponse.from(userCoupon);
     }
 
-    // 유저 쿠폰 내역 변경
-    @Transactional
-    public void updateUserCoupon(Long userCouponId, UserCouponType userCouponType) {
-        UserCoupon userCoupon = userCouponRepository.findById(userCouponId).orElseThrow(CouponNotFoundException::new);
-        userCoupon.setType(userCouponType);
-    }
-
-    @Transactional
-    public int useCoupon(Long userCouponId, int totalPrice) {
-        UserCoupon userCoupon = userCouponRepository.findById(userCouponId).orElseThrow(CouponNotFoundException::new);
-        userCoupon.useCoupon();
-        return userCoupon.getCoupon().calculateDiscount(totalPrice);
-    }
-
     // 웰컴 쿠폰 발급
     @Transactional
     public UserCouponResponse issueWelcomeCoupon(Long userId) {

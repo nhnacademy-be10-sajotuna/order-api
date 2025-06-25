@@ -48,7 +48,7 @@ public class UserCoupon {
         this.expiresAt = issuedAt.plusDays(validDays);
     }
 
-    public void useCoupon() {
+    public int applyCoupon(int totalProductPrice) {
         if (type == UserCouponType.USED || type == UserCouponType.EXPIRED) {
             throw new AlreadyUsedCouponException();
         }
@@ -56,6 +56,8 @@ public class UserCoupon {
             type = UserCouponType.EXPIRED;
             throw new ExpiredCouponException();
         }
+
         this.type = UserCouponType.USED;
+        return coupon.calculateDiscount(totalProductPrice);
     }
 }
