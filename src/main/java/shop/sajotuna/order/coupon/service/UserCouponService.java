@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import shop.sajotuna.order.coupon.domain.Coupon;
+import shop.sajotuna.order.coupon.domain.CouponType;
 import shop.sajotuna.order.coupon.domain.UserCoupon;
 import shop.sajotuna.order.coupon.domain.UserCouponType;
 import shop.sajotuna.order.coupon.dto.BookInfo;
@@ -60,7 +61,7 @@ public class UserCouponService {
         return UserCouponResponse.from(userCoupon);
     }
 
-    // 사용 가능한 쿠폰 조회
+    // 사용 가능한 책 쿠폰 조회
     public List<CouponResponse> getAvailableCoupons(Long userId, BookInfo bookInfo) {
 
         List<UserCoupon> userCoupons = userCouponRepository.findByUserId(userId);
@@ -81,6 +82,23 @@ public class UserCouponService {
             }
         }
         return result;
+    }
+
+    // 사용 가능한 오더 쿠폰 조회
+    public List<CouponResponse> getAvailableOrderCoupons(Long userId, int totalPrice){
+        List<UserCoupon> userCoupons = userCouponRepository.findByUserId(userId);
+
+        userCoupons.forEach(UserCoupon::updateExpiredCoupon);
+
+        List<UserCoupon> availableCoupons = userCoupons.stream()
+                .filter(coupon -> coupon.getType() == UserCouponType.AVAILABLE)
+                .toList();
+
+        List<Coupon> coupons = availableCoupons.stream().map(UserCoupon::getCoupon)
+                .filter(coupon -> coupon.getCouponType() == CouponType.ORDER)
+                .filter(coupon -> totalPrice >= coupon.getMinOrderAmount())
+                .toList();
+        return coupons.stream().map(CouponResponse::from).toList();
     }
 
 }

@@ -15,14 +15,21 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/coupons/available-coupons")
-public class BookCouponController {
+public class AvailableCouponController {
 
     private final UserCouponService userCouponService;
 
-    // 사용 가능한 쿠폰 조회
-    @GetMapping
-    public ResponseEntity<List<CouponResponse>> getAvailableCoupons(@RequestHeader("X-User-Id") Long userId, BookInfo bookInfo) {
+    // 사용 가능한 북 쿠폰 조회
+    @GetMapping("/book")
+    public ResponseEntity<List<CouponResponse>> getAvailableBookCoupons(@RequestHeader("X-User-Id") Long userId, BookInfo bookInfo) {
         List<CouponResponse> availableCoupons = userCouponService.getAvailableCoupons(userId,bookInfo);
+        return ResponseEntity.ok(availableCoupons);
+    }
+
+    // 사용 가능한 오더 쿠폰 조회
+    @GetMapping("/order")
+    public ResponseEntity<List<CouponResponse>> getAvailableOrderCoupons(@RequestHeader("X-User-Id") Long userId){
+        List<CouponResponse> availableCoupons = userCouponService.getAvailableOrderCoupons(userId, 10);
         return ResponseEntity.ok(availableCoupons);
     }
 }
