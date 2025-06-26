@@ -17,6 +17,6 @@ public class OrderResponse {
     private OrderStatus status;
 
     public static OrderResponse from(Order order) {
-        return new OrderResponse(order.getId(), order.getShippingDate(), order.getCreatedAt(), order.getTotalPrice(), order.getStatus());
+        return new OrderResponse(order.getId(), order.getShippingDate(), order.getCreatedAt(), order.getTotalPrice().getAmount(), order.getStatus());
     }
 }

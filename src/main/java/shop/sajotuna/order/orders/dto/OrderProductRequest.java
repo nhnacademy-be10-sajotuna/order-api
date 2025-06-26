@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
+import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.orders.domain.Order;
 import shop.sajotuna.order.orders.domain.OrderPackaging;
 import shop.sajotuna.order.orders.domain.OrderProduct;
@@ -32,7 +33,7 @@ public class OrderProductRequest {
         return OrderProduct.builder()
                 .order(order)
                 .orderPackaging(orderPackaging)
-                .amount(amount)
+                .amount(Money.of(amount))
                 .qty(qty)
                 .isbn(isbn)
                 .packagingRequest(packagingRequest).build();

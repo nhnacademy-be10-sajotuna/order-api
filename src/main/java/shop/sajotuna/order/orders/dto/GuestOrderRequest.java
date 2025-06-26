@@ -41,12 +41,11 @@ public class GuestOrderRequest {
     @NotNull
     private List<OrderProductRequest> items;
 
-    public Order toEntity(int totalPrice) {
+    public Order toEntity() {
         return Order.builder()
                 .isMember(false)
                 .shippingDate(shippingDate)
                 .streetAddress(streetAddress)
-                .totalPrice(totalPrice)
                 .status(OrderStatus.PENDING)
                 .createdAt(LocalDateTime.now()).build();
     }

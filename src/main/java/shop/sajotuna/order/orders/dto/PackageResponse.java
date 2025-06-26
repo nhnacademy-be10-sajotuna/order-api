@@ -14,6 +14,6 @@ public class PackageResponse {
     private Integer price;
 
     public static PackageResponse from(OrderPackaging orderPackaging) {
-        return new PackageResponse(orderPackaging.getId(), orderPackaging.getPackaging(), orderPackaging.getPrice());
+        return new PackageResponse(orderPackaging.getId(), orderPackaging.getPackaging(), orderPackaging.getPrice().getAmount());
     }
 }

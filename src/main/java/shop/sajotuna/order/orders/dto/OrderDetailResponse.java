@@ -30,7 +30,7 @@ public class OrderDetailResponse {
                 .orderId(order.getId())
                 .shippingDate(order.getShippingDate())
                 .orderCreatedAt(order.getCreatedAt())
-                .totalPrice(order.getTotalPrice())
+                .totalPrice(order.getTotalPrice().getAmount())
                 .status(order.getStatus())
                 .items(items)
                 .method(payment.getMethod())

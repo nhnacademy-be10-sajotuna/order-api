@@ -16,6 +16,6 @@ public class OrderProductResponse {
     private Boolean packagingRequest;
 
     public static OrderProductResponse from(OrderProduct product) {
-        return new OrderProductResponse(product.getId(), product.getIsbn(), product.getOrderPackaging(), product.getQty(), product.getAmount(), product.getPackagingRequest());
+        return new OrderProductResponse(product.getId(), product.getIsbn(), product.getOrderPackaging(), product.getQty(), product.getAmount().getAmount(), product.getPackagingRequest());
     }
 }
