@@ -2,7 +2,6 @@ package shop.sajotuna.order.point.exception;
 
 import org.springframework.http.HttpStatus;
 import shop.sajotuna.order.common.exception.ApiException;
-import shop.sajotuna.order.point.domain.PointPolicyType;
 
 public class PointPolicyNotFoundException extends ApiException {
 

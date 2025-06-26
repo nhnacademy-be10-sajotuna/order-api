@@ -15,10 +15,10 @@ public class PointHistoryWriter {
     private final PointHistoryRepository pointHistoryRepository;
 
     public void savePointEarnHistory(Long userId, Money pointAmount, String description) {
-        PointHistory pointHistory = pointHistoryRepository.save(PointHistory.createEarnHistory(userId, pointAmount, description));
+        pointHistoryRepository.save(PointHistory.createEarnHistory(userId, pointAmount, description));
     }
 
     public void savePointRedeemHistory(Long userId, Money pointAmount) {
-        PointHistory pointHistory = pointHistoryRepository.save(PointHistory.createRedeemHistory(userId, pointAmount, REDEEM_MESSAGE));
+        pointHistoryRepository.save(PointHistory.createRedeemHistory(userId, pointAmount, REDEEM_MESSAGE));
     }
 }

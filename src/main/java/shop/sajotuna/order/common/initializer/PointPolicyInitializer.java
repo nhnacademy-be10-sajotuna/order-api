@@ -9,7 +9,6 @@ import shop.sajotuna.order.point.domain.PointPolicy;
 import shop.sajotuna.order.point.domain.PointPolicyType;
 import shop.sajotuna.order.point.repository.PointPolicyRepository;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Component
