@@ -5,7 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import shop.sajotuna.order.point.controller.request.PointEvent;
+import shop.sajotuna.order.common.domain.Money;
+import shop.sajotuna.order.point.service.dto.event.PointEvent;
 import shop.sajotuna.order.point.domain.*;
 import shop.sajotuna.order.point.repository.UserPointRepository;
 
@@ -25,7 +26,7 @@ public class PointEarnConsumer {
         UserPoint userPoint = userPointRepository.findByUserId(event.getUserId())
                 .orElseGet(() -> userPointRepository.save(UserPoint.create(event.getUserId())));
 
-        int amount;
+        Money amount;
         if (event.getType() == PointPolicyType.RETURNED) {
             amount = event.getTotalPrice();
         } else {

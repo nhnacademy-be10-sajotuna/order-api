@@ -7,7 +7,7 @@ import shop.sajotuna.order.orders.dto.OrderRequest;
 import shop.sajotuna.order.orders.dto.OrderResponse;
 import shop.sajotuna.order.orders.domain.Order;
 import shop.sajotuna.order.payment.service.PaymentService;
-import shop.sajotuna.order.point.controller.request.PointEvent;
+import shop.sajotuna.order.point.service.dto.event.PointEvent;
 import shop.sajotuna.order.point.domain.PointPolicyType;
 import shop.sajotuna.order.point.service.PointQueueService;
 

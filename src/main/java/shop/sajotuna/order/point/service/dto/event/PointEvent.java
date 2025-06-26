@@ -1,8 +1,9 @@
-package shop.sajotuna.order.point.controller.request;
+package shop.sajotuna.order.point.service.dto.event;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
+import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.point.domain.PointPolicyType;
 
 @AllArgsConstructor
@@ -11,5 +12,5 @@ import shop.sajotuna.order.point.domain.PointPolicyType;
 public class PointEvent {
     Long userId;
     PointPolicyType type;
-    Integer totalPrice;
+    Money totalPrice;
 }

@@ -3,6 +3,7 @@ package shop.sajotuna.order.point.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.point.exception.UserPointNotFoundException;
 import shop.sajotuna.order.point.controller.response.PointHistoryResponse;
 import shop.sajotuna.order.point.domain.*;
@@ -30,7 +31,7 @@ public class PointServiceImpl implements PointService {
     }
 
     @Override
-    public PointHistoryResponse redeemPoints(Long userId, int pointAmount) {
+    public PointHistoryResponse redeemPoints(Long userId, Money pointAmount) {
         UserPoint userPoint = userPointRepository.findByUserId(userId)
                 .orElseThrow(UserPointNotFoundException::new);
 
