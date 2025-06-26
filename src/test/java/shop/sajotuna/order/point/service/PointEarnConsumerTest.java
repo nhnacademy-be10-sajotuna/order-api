@@ -13,10 +13,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 
-import shop.sajotuna.order.point.controller.request.PointEvent;
 import shop.sajotuna.order.point.domain.*;
+import shop.sajotuna.order.point.service.dto.event.PointEvent;
 import shop.sajotuna.order.point.repository.UserPointRepository;
 import shop.sajotuna.order.point.repository.PointHistoryRepository;
+import shop.sajotuna.order.common.domain.Money;
 
 @ExtendWith(MockitoExtension.class)
 class PointEarnConsumerTest {
@@ -56,7 +57,7 @@ class PointEarnConsumerTest {
 
         verify(historyRepo).save(argThat(history ->
                 history.getUserId().equals(userId) &&
-                        history.getAmount() == earned &&
+                        history.getAmount().equals(Money.of(earned)) &&
                         history.getType() == PointHistoryType.EARNED
         ));
 
@@ -87,7 +88,7 @@ class PointEarnConsumerTest {
 
         verify(historyRepo).save(argThat(history ->
                 history.getUserId().equals(userId) &&
-                        history.getAmount() == earned
+                        history.getAmount().equals(Money.of(earned))
         ));
     }
 }
