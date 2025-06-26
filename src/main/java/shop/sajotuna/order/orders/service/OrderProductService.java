@@ -53,7 +53,7 @@ public class OrderProductService {
 
             if (item.getPackagingRequest()) {
                 packaging = orderPackagingRepository.findById(item.getOrderPackagingId()).orElseThrow(PackageNotFoundException::new);
-                packagingPrice += packaging.getPrice();
+                packagingPrice += packaging.getPrice().getAmount();
             }
             orderProductRepository.save(item.toEntity(order, packaging));
         }

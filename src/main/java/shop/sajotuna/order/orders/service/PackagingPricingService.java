@@ -2,6 +2,7 @@ package shop.sajotuna.order.orders.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.orders.dto.OrderProductRequest;
 import shop.sajotuna.order.orders.domain.OrderPackaging;
 import shop.sajotuna.order.orders.exception.PackageNotFoundException;
@@ -14,15 +15,15 @@ import java.util.List;
 public class PackagingPricingService {
     private final OrderPackagingRepository orderPackagingRepository;
 
-    public int calculatePackagingPrice(List<OrderProductRequest> orderProductRequests) {
+    public Money calculatePackagingPrice(List<OrderProductRequest> orderProductRequests) {
         return orderProductRequests.stream()
                 .filter(OrderProductRequest::getPackagingRequest)
-                .mapToInt(item -> {
+                .map(item -> {
                     OrderPackaging packaging = orderPackagingRepository
                             .findById(item.getOrderPackagingId())
                             .orElseThrow(PackageNotFoundException::new);
                     return packaging.getPrice();
                 })
-                .sum();
+                .reduce(Money.zero(), Money::plus);
     }
 }

@@ -1,15 +1,24 @@
 package shop.sajotuna.order.coupon.repository;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import shop.sajotuna.order.coupon.domain.UserCoupon;
 import shop.sajotuna.order.coupon.domain.UserCouponType;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface UserCouponRepository extends JpaRepository<UserCoupon, Long> {
 
     List<UserCoupon> findByUserIdAndType(Long userId, UserCouponType type);
     List<UserCoupon> findByUserId(Long userId);
+
+    @EntityGraph(attributePaths = {"coupon"})
+    @Query("SELECT uc FROM UserCoupon uc WHERE uc.id = :id")
+    Optional<UserCoupon> findByIdWithCoupon(@Param("id") Long id);
+
 }
 

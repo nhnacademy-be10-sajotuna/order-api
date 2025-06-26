@@ -2,10 +2,10 @@ package shop.sajotuna.order.orders.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.coupon.domain.UserCoupon;
 import shop.sajotuna.order.coupon.exception.CouponNotFoundException;
 import shop.sajotuna.order.coupon.repository.UserCouponRepository;
-import shop.sajotuna.order.orders.dto.OrderRequest;
 import shop.sajotuna.order.orders.domain.Discounts;
 import shop.sajotuna.order.point.domain.UserPoint;
 import shop.sajotuna.order.point.exception.UserPointNotFoundException;
@@ -20,21 +20,19 @@ public class DiscountService {
     private final UserCouponRepository userCouponRepository;
     private final PointHistoryWriter pointHistoryWriter;
 
-    public Discounts discount(OrderRequest orderRequest, Long userId, int totalProductPrice) {
-
-        int couponDiscountAmount = 0;
-        if (orderRequest.getOrderCouponId() != null) {
-            UserCoupon userCoupon = getUserCouponById(orderRequest.getOrderCouponId());
+    public Discounts discount(Long orderCouponId, Money usedPoint, Long userId, Money totalProductPrice) {
+        Money couponDiscountAmount = Money.zero();
+        if (orderCouponId != null) {
+            UserCoupon userCoupon = getUserCouponById(orderCouponId);
             couponDiscountAmount = userCoupon.applyCoupon(totalProductPrice);
         }
 
-        if(orderRequest.getUsedPoint() > 0){
+        if (usedPoint.isPositive()) {
             UserPoint userPoint = getUserPointByUserId(userId);
-            userPoint.redeemPoint(orderRequest.getUsedPoint());
-            pointHistoryWriter.savePointRedeemHistory(userId, orderRequest.getUsedPoint());
+             userPoint.redeemPoint(usedPoint);
+            pointHistoryWriter.savePointRedeemHistory(userId, usedPoint);
         }
-
-        return new Discounts(couponDiscountAmount, orderRequest.getUsedPoint());
+        return new Discounts(couponDiscountAmount, usedPoint);
     }
 
     private UserPoint getUserPointByUserId(Long userId) {
@@ -43,7 +41,7 @@ public class DiscountService {
     }
 
     private UserCoupon getUserCouponById(Long userCouponId) {
-        return userCouponRepository.findById(userCouponId)
+        return userCouponRepository.findByIdWithCoupon(userCouponId)
                 .orElseThrow(CouponNotFoundException::new);
     }
 }

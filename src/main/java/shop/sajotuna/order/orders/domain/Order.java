@@ -5,7 +5,6 @@ import lombok.*;
 import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.orders.exception.InvalidStatusException;
 import shop.sajotuna.order.orders.exception.TimeOutException;
-import shop.sajotuna.order.point.exception.InvalidPriceException;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -62,6 +61,24 @@ public class Order {
                 .streetAddress(streetAddress)
                 .status(OrderStatus.PENDING)
                 .createdAt(LocalDateTime.now()).build();
+    }
+
+    public static Order createUserOrder(
+            LocalDateTime shippingDate,
+            String streetAddress,
+            OrderPrice orderPrice,
+            Discounts discounts,
+            Long userId) {
+
+        return Order.builder()
+                .isMember(true)
+                .shippingDate(shippingDate)
+                .streetAddress(streetAddress)
+                .orderPrice(orderPrice)
+                .discounts(discounts)
+                .status(OrderStatus.PENDING)
+                .createdAt(LocalDateTime.now())
+                .userId(userId).build();
     }
 
     public Money getTotalPrice() {

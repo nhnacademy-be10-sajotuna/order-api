@@ -27,7 +27,7 @@ public class OrderProcessService {
 
         paymentService.processUserPayment(order, orderRequest.getMethod(), userId);
 
-        pointQueueService.sendEarnPointsMessage(new PointEvent(userId, PointPolicyType.PURCHASE, order.getTotalPrice()));
+        pointQueueService.sendEarnPointsMessage(new PointEvent(userId, PointPolicyType.PURCHASE, order.getFinalPrice()));
         return OrderResponse.from(order);
     }
 }

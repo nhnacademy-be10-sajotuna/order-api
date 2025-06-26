@@ -2,7 +2,6 @@ package shop.sajotuna.order.point.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,7 +26,6 @@ public class UserPoint {
     private Long userId;
 
     @NotNull
-    @PositiveOrZero
     private Money remainPoint;
 
     @Version

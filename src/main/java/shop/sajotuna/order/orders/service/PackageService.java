@@ -3,6 +3,7 @@ package shop.sajotuna.order.orders.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.orders.dto.PackageRequest;
 import shop.sajotuna.order.orders.dto.PackageResponse;
 import shop.sajotuna.order.orders.domain.OrderPackaging;
@@ -18,7 +19,7 @@ public class PackageService {
 
     // package 생성
     public PackageResponse createPackage(PackageRequest request) {
-        OrderPackaging orderPackaging = orderPackagingRepository.save(new OrderPackaging(request.getPackaging(), request.getPrice()));
+        OrderPackaging orderPackaging = orderPackagingRepository.save(new OrderPackaging(request.getPackaging(), Money.of(request.getPrice())));
 
         return PackageResponse.from(orderPackaging);
     }
@@ -26,7 +27,7 @@ public class PackageService {
     // package 수정
     public void updatePackage(long id, PackageRequest request) {
         OrderPackaging orderPackaging = orderPackagingRepository.findById(id).orElseThrow(PackageNotFoundException::new);
-        orderPackaging.update(request.getPackaging(), request.getPrice());
+        orderPackaging.update(request.getPackaging(), Money.of(request.getPrice()));
     }
 
     // package 삭제

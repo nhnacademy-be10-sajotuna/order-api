@@ -40,6 +40,10 @@ public class OrderPrice {
         this.deliveryPrice = deliveryPrice;
     }
 
+    public static OrderPrice create(Money totalProductPrice, Money packagingPrice, Money deliveryPrice) {
+        return new OrderPrice(totalProductPrice, packagingPrice, deliveryPrice);
+    }
+
     private void validateOrderPrice(Money totalProductPrice, Money packagingPrice, Money deliveryPrice) {
         if (totalProductPrice == null) {
             throw new IllegalArgumentException("상품 총액은 필수입니다.");
