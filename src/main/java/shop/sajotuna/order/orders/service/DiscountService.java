@@ -6,7 +6,7 @@ import shop.sajotuna.order.coupon.domain.UserCoupon;
 import shop.sajotuna.order.coupon.exception.CouponNotFoundException;
 import shop.sajotuna.order.coupon.repository.UserCouponRepository;
 import shop.sajotuna.order.orders.dto.OrderRequest;
-import shop.sajotuna.order.orders.entity.Discounts;
+import shop.sajotuna.order.orders.domain.Discounts;
 import shop.sajotuna.order.point.domain.UserPoint;
 import shop.sajotuna.order.point.exception.UserPointNotFoundException;
 import shop.sajotuna.order.point.repository.UserPointRepository;

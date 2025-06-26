@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import shop.sajotuna.order.orders.dto.OrderResponse;
 import shop.sajotuna.order.orders.dto.PackageRequest;
 import shop.sajotuna.order.orders.dto.PackageResponse;
-import shop.sajotuna.order.orders.entity.OrderStatus;
+import shop.sajotuna.order.orders.domain.OrderStatus;
 import shop.sajotuna.order.orders.exception.InvalidStatusException;
 import shop.sajotuna.order.orders.service.OrderService;
 import shop.sajotuna.order.orders.service.PackageService;

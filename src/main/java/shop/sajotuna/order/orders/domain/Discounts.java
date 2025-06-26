@@ -1,4 +1,4 @@
-package shop.sajotuna.order.orders.entity;
+package shop.sajotuna.order.orders.domain;
 
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import shop.sajotuna.order.orders.dto.OrderProductRequest;
 import shop.sajotuna.order.orders.dto.OrderRequest;
-import shop.sajotuna.order.orders.entity.OrderPrice;
+import shop.sajotuna.order.orders.domain.OrderPrice;
 
 import java.util.List;
 

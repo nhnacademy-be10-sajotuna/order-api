@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.orders.dto.PackageRequest;
 import shop.sajotuna.order.orders.dto.PackageResponse;
-import shop.sajotuna.order.orders.entity.OrderPackaging;
+import shop.sajotuna.order.orders.domain.OrderPackaging;
 import shop.sajotuna.order.orders.exception.PackageNotFoundException;
 import shop.sajotuna.order.orders.repository.OrderPackagingRepository;
 import java.util.List;

@@ -2,8 +2,8 @@ package shop.sajotuna.order.orders.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import shop.sajotuna.order.orders.entity.OrderPackaging;
-import shop.sajotuna.order.orders.entity.OrderProduct;
+import shop.sajotuna.order.orders.domain.OrderPackaging;
+import shop.sajotuna.order.orders.domain.OrderProduct;
 
 @Data
 @AllArgsConstructor

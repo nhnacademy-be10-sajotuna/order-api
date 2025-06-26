@@ -1,7 +1,7 @@
 package shop.sajotuna.order.orders.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import shop.sajotuna.order.orders.entity.OrderProduct;
+import shop.sajotuna.order.orders.domain.OrderProduct;
 
 import java.util.List;
 

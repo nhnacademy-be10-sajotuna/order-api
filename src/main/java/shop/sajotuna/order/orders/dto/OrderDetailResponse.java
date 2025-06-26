@@ -3,10 +3,10 @@ package shop.sajotuna.order.orders.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import shop.sajotuna.order.orders.entity.Order;
-import shop.sajotuna.order.orders.entity.OrderStatus;
-import shop.sajotuna.order.payment.entity.Payment;
-import shop.sajotuna.order.payment.entity.PaymentMethod;
+import shop.sajotuna.order.orders.domain.Order;
+import shop.sajotuna.order.orders.domain.OrderStatus;
+import shop.sajotuna.order.payment.domain.Payment;
+import shop.sajotuna.order.payment.domain.PaymentMethod;
 
 import java.time.LocalDateTime;
 import java.util.List;

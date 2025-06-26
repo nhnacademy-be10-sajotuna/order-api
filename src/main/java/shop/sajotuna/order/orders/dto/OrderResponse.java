@@ -2,8 +2,8 @@ package shop.sajotuna.order.orders.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import shop.sajotuna.order.orders.entity.Order;
-import shop.sajotuna.order.orders.entity.OrderStatus;
+import shop.sajotuna.order.orders.domain.Order;
+import shop.sajotuna.order.orders.domain.OrderStatus;
 
 import java.time.LocalDateTime;
 

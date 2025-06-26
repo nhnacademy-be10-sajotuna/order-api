@@ -4,9 +4,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
-import shop.sajotuna.order.orders.entity.Order;
-import shop.sajotuna.order.orders.entity.OrderPackaging;
-import shop.sajotuna.order.orders.entity.OrderProduct;
+import shop.sajotuna.order.orders.domain.Order;
+import shop.sajotuna.order.orders.domain.OrderPackaging;
+import shop.sajotuna.order.orders.domain.OrderProduct;
 
 @Data
 public class OrderProductRequest {

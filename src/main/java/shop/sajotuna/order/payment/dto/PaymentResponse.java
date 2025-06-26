@@ -2,8 +2,8 @@ package shop.sajotuna.order.payment.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import shop.sajotuna.order.payment.entity.Payment;
-import shop.sajotuna.order.payment.entity.PaymentMethod;
+import shop.sajotuna.order.payment.domain.Payment;
+import shop.sajotuna.order.payment.domain.PaymentMethod;
 
 import java.time.LocalDateTime;
 

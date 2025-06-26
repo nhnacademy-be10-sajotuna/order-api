@@ -3,10 +3,10 @@ package shop.sajotuna.order.payment.service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import shop.sajotuna.order.orders.entity.Order;
+import shop.sajotuna.order.orders.domain.Order;
 import shop.sajotuna.order.payment.dto.PaymentResponse;
-import shop.sajotuna.order.payment.entity.Payment;
-import shop.sajotuna.order.payment.entity.PaymentMethod;
+import shop.sajotuna.order.payment.domain.Payment;
+import shop.sajotuna.order.payment.domain.PaymentMethod;
 import shop.sajotuna.order.payment.repository.PaymentRepository;
 
 import java.util.List;

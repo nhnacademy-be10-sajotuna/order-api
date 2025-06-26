@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.orders.dto.OrderRequest;
 import shop.sajotuna.order.orders.dto.OrderResponse;
-import shop.sajotuna.order.orders.entity.Order;
+import shop.sajotuna.order.orders.domain.Order;
 import shop.sajotuna.order.payment.service.PaymentService;
 import shop.sajotuna.order.point.controller.request.PointEvent;
 import shop.sajotuna.order.point.domain.PointPolicyType;
