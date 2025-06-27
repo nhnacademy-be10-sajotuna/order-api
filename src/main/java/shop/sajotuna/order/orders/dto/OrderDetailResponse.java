@@ -34,7 +34,7 @@ public class OrderDetailResponse {
                 .status(order.getStatus())
                 .items(items)
                 .method(payment.getMethod())
-                .amount(payment.getAmount())
+                .amount(payment.getAmount().getAmount())
                 .paymentCreatedAt(payment.getCreatedAt())
                 .build();
     }
