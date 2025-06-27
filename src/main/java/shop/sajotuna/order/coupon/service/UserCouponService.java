@@ -3,6 +3,7 @@ package shop.sajotuna.order.coupon.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.coupon.domain.Coupon;
 import shop.sajotuna.order.coupon.domain.CouponType;
 import shop.sajotuna.order.coupon.domain.UserCoupon;
@@ -85,7 +86,7 @@ public class UserCouponService {
     }
 
     // 사용 가능한 오더 쿠폰 조회
-    public List<CouponResponse> getAvailableOrderCoupons(Long userId, int totalPrice){
+    public List<CouponResponse> getAvailableOrderCoupons(Long userId, Money totalPrice){
         List<UserCoupon> userCoupons = userCouponRepository.findByUserId(userId);
 
         userCoupons.forEach(UserCoupon::updateExpiredCoupon);
@@ -96,7 +97,7 @@ public class UserCouponService {
 
         List<Coupon> coupons = availableCoupons.stream().map(UserCoupon::getCoupon)
                 .filter(coupon -> coupon.getCouponType() == CouponType.ORDER)
-                .filter(coupon -> totalPrice >= coupon.getMinOrderAmount())
+                .filter(coupon -> totalPrice.isGreaterThan(coupon.getMinOrderAmount()))
                 .toList();
         return coupons.stream().map(CouponResponse::from).toList();
     }
