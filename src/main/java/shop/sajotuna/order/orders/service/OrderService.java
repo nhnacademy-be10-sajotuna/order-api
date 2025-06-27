@@ -7,8 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import shop.sajotuna.order.common.domain.Money;
-import shop.sajotuna.order.coupon.service.UserCouponService;
 import shop.sajotuna.order.orders.dto.*;
 import shop.sajotuna.order.orders.domain.*;
 import shop.sajotuna.order.orders.repository.*;
@@ -18,7 +16,6 @@ import shop.sajotuna.order.point.service.dto.event.PointEvent;
 import shop.sajotuna.order.point.domain.PointPolicyType;
 import shop.sajotuna.order.point.exception.OrderNotFoundException;
 import shop.sajotuna.order.point.service.PointQueueService;
-import shop.sajotuna.order.point.service.PointService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,8 +27,6 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final GuestOrderRepository guestOrderRepository;
     private final PaymentRepository paymentRepository;
-    private final PointService pointService;
-    private final UserCouponService userCouponService;
     private final OrderProductService orderProductService;
     private final PointQueueService pointQueueService;
 
@@ -77,7 +72,7 @@ public class OrderService {
         int finalPrice = totalPrice + guestOrderRequest.getDeliveryPrice() + packagingPrice;
 
         // 결제 정보 저장
-        Payment payment = new Payment(savedOrder, guestOrderRequest.getMethod(), 1L);
+        Payment payment = new Payment(savedOrder, guestOrderRequest.getMethod());
         paymentRepository.save(payment);
 
         return OrderResponse.from(savedOrder);
@@ -108,7 +103,7 @@ public class OrderService {
 
         // 반품시 결제금액은 포인트로 적립됨
         Payment payment = paymentRepository.getPaymentByOrder_Id(orderId);
-        pointQueueService.sendEarnPointsMessage(new PointEvent(userId, PointPolicyType.RETURNED, Money.of(payment.getAmount())));
+        pointQueueService.sendEarnPointsMessage(new PointEvent(userId, PointPolicyType.RETURNED, payment.getAmount()));
     }
 
     // 주문 취소 처리
