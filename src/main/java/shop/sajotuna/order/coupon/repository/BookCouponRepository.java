@@ -7,4 +7,6 @@ public interface BookCouponRepository extends JpaRepository<CouponSpecificBook, 
     boolean existsByCoupon_Id(Long couponId);
 
     void deleteByCoupon_Id(Long couponId);
+
+    boolean existsByCouponIdAndIsbn(Long couponId, String isbn);
 }

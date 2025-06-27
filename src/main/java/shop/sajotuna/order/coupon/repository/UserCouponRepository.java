@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import shop.sajotuna.order.coupon.domain.UserCoupon;
-import shop.sajotuna.order.coupon.domain.UserCouponType;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,7 +12,7 @@ import java.util.Optional;
 
 public interface UserCouponRepository extends JpaRepository<UserCoupon, Long> {
 
-    List<UserCoupon> findByUserIdAndType(Long userId, UserCouponType type);
+    @EntityGraph(value = "coupon")
     List<UserCoupon> findByUserId(Long userId);
 
     @EntityGraph(attributePaths = {"coupon"})
