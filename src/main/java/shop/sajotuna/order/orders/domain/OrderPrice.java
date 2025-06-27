@@ -3,6 +3,7 @@ package shop.sajotuna.order.orders.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import shop.sajotuna.order.common.domain.Money;
+import shop.sajotuna.order.common.exception.NullValueException;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -46,16 +47,16 @@ public class OrderPrice {
 
     private void validateOrderPrice(Money totalProductPrice, Money packagingPrice, Money deliveryPrice) {
         if (totalProductPrice == null) {
-            throw new IllegalArgumentException("상품 총액은 필수입니다.");
+            throw new NullValueException("상품 총액은 필수입니다.");
         }
         if (packagingPrice == null) {
-            throw new IllegalArgumentException("포장비는 필수입니다.");
+            throw new NullValueException("포장비는 필수입니다.");
         }
         if (deliveryPrice == null) {
-            throw new IllegalArgumentException("배송비는 필수입니다.");
+            throw new NullValueException("배송비는 필수입니다.");
         }
         if (!totalProductPrice.isPositive()) {
-            throw new IllegalArgumentException("상품 총액은 0원보다 커야 합니다.");
+            throw new NullValueException("상품 총액은 0원보다 커야 합니다.");
         }
     }
 }

@@ -3,6 +3,7 @@ package shop.sajotuna.order.coupon.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import shop.sajotuna.order.common.domain.Money;
+import shop.sajotuna.order.common.exception.NullValueException;
 
 @Getter
 @Setter
@@ -59,7 +60,7 @@ public class Coupon {
     //TODO: Money로 변경 후 수정
     public Money calculateDiscount(Money totalProductPrice) {
         if (totalProductPrice == null) {
-            throw new IllegalArgumentException("주문 금액은 null일 수 없습니다.");
+            throw new NullValueException("주문 금액은 null일 수 없습니다.");
         }
 
         Money minOrderMoney = Money.of(minOrderAmount);
