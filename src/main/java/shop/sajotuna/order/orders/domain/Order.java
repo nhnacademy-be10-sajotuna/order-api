@@ -1,10 +1,10 @@
-package shop.sajotuna.order.orders.entity;
+package shop.sajotuna.order.orders.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.orders.exception.InvalidStatusException;
 import shop.sajotuna.order.orders.exception.TimeOutException;
-import shop.sajotuna.order.point.exception.InvalidPriceException;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -35,12 +35,6 @@ public class Order {
     @Embedded
     private Discounts discounts;
 
-    @Column(nullable = false)
-    private Integer totalPrice;
-
-    @Column(nullable = false)
-    private Integer finalPrice;
-
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
     private OrderStatus status;
@@ -69,33 +63,38 @@ public class Order {
                 .createdAt(LocalDateTime.now()).build();
     }
 
+    public static Order createUserOrder(
+            LocalDateTime shippingDate,
+            String streetAddress,
+            OrderPrice orderPrice,
+            Discounts discounts,
+            Long userId) {
+
+        return Order.builder()
+                .isMember(true)
+                .shippingDate(shippingDate)
+                .streetAddress(streetAddress)
+                .orderPrice(orderPrice)
+                .discounts(discounts)
+                .status(OrderStatus.PENDING)
+                .createdAt(LocalDateTime.now())
+                .userId(userId).build();
+    }
+
+    public Money getTotalPrice() {
+        return orderPrice.getTotalPrice();
+    }
+
+    public Money getFinalPrice() {
+        return orderPrice.getTotalPrice().minus(discounts.getTotalDiscountAmount());
+    }
+
+    public Money getFinalProductPrice() {
+        return orderPrice.getTotalProductPrice().minus(discounts.getTotalDiscountAmount());
+    }
+
     public void setOrderPrice(OrderPrice orderPrice) {
-        validatePricingCalculation(orderPrice);
         this.orderPrice = orderPrice;
-        this.totalPrice = orderPrice.getTotalProductPrice() + orderPrice.getPackagingPrice() + orderPrice.getDeliveryPrice();
-        setFinalPrice();
-    }
-
-    private void validatePricingCalculation(OrderPrice orderPrice) {
-        if (orderPrice == null) {
-            throw new IllegalArgumentException("가격 정보는 null일 수 없습니다.");
-        }
-
-        if (orderPrice.getTotalProductPrice() <= 0) {
-            throw new InvalidPriceException(orderPrice.getTotalProductPrice());
-        }
-
-        if (orderPrice.getDeliveryPrice() < 0) {
-            throw new InvalidPriceException(orderPrice.getDeliveryPrice());
-        }
-    }
-
-    public void setFinalPrice() {
-        finalPrice = totalPrice - discounts.getCouponDiscountAmount() - discounts.getUsedPoint();
-
-        if (finalPrice < 0) {
-            throw new InvalidPriceException(finalPrice);
-        }
     }
 
     // 주문 발송

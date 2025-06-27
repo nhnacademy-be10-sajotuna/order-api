@@ -3,7 +3,7 @@ package shop.sajotuna.order.orders.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import shop.sajotuna.order.orders.entity.OrderPackaging;
+import shop.sajotuna.order.orders.domain.OrderPackaging;
 
 @Data
 @AllArgsConstructor
@@ -14,6 +14,6 @@ public class PackageResponse {
     private Integer price;
 
     public static PackageResponse from(OrderPackaging orderPackaging) {
-        return new PackageResponse(orderPackaging.getId(), orderPackaging.getPackaging(), orderPackaging.getPrice());
+        return new PackageResponse(orderPackaging.getId(), orderPackaging.getPackaging(), orderPackaging.getPrice().getAmount());
     }
 }

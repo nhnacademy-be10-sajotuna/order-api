@@ -2,8 +2,8 @@ package shop.sajotuna.order.orders.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import shop.sajotuna.order.orders.entity.OrderPackaging;
-import shop.sajotuna.order.orders.entity.OrderProduct;
+import shop.sajotuna.order.orders.domain.OrderPackaging;
+import shop.sajotuna.order.orders.domain.OrderProduct;
 
 @Data
 @AllArgsConstructor
@@ -16,6 +16,6 @@ public class OrderProductResponse {
     private Boolean packagingRequest;
 
     public static OrderProductResponse from(OrderProduct product) {
-        return new OrderProductResponse(product.getId(), product.getIsbn(), product.getOrderPackaging(), product.getQty(), product.getAmount(), product.getPackagingRequest());
+        return new OrderProductResponse(product.getId(), product.getIsbn(), product.getOrderPackaging(), product.getQty(), product.getAmount().getAmount(), product.getPackagingRequest());
     }
 }

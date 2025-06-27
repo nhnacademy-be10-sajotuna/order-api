@@ -2,9 +2,9 @@ package shop.sajotuna.order.orders.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.orders.dto.OrderProductRequest;
-import shop.sajotuna.order.orders.dto.OrderRequest;
-import shop.sajotuna.order.orders.entity.OrderPrice;
+import shop.sajotuna.order.orders.domain.OrderPrice;
 
 import java.util.List;
 
@@ -14,17 +14,20 @@ public class PricingService {
 
     private final PackagingPricingService packagingPricingService;
 
-    public OrderPrice calculatePrices(OrderRequest orderRequest) {
-        int totalProductPrice = calculateTotalProductPrice(orderRequest.getItems());
+    public OrderPrice calculatePrices( List<OrderProductRequest> items, Money deliveryPrice) {
+        Money totalProductPrice = calculateTotalProductPrice(items);
+        Money packagingPrice = packagingPricingService.calculatePackagingPrice(items);
 
-        int packagingPrice = packagingPricingService.calculatePackagingPrice(orderRequest.getItems());
-
-        return new OrderPrice(totalProductPrice, packagingPrice, orderRequest.getDeliveryPrice());
+        return OrderPrice.create(
+                totalProductPrice,
+                packagingPrice,
+                deliveryPrice
+        );
     }
 
-    private int calculateTotalProductPrice(List<OrderProductRequest> orderProducts) {
+    private Money calculateTotalProductPrice(List<OrderProductRequest> orderProducts) {
         return orderProducts.stream()
-                .mapToInt(item -> item.getAmount() * item.getQty())
-                .sum();
+                .map(item -> Money.of(item.getAmount()).multiply(item.getQty()))
+                .reduce(Money.zero(), Money::plus);
     }
 }

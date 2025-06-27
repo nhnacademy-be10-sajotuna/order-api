@@ -26,7 +26,7 @@ public class PointHistoryResponse {
         return new PointHistoryResponse(
                 pointHistory.getId(),
                 pointHistory.getUserId(),
-                pointHistory.getAmount(),
+                pointHistory.getAmount().getAmount(),
                 pointHistory.getType(),
                 pointHistory.getDescription(),
                 pointHistory.getCreatedAt()

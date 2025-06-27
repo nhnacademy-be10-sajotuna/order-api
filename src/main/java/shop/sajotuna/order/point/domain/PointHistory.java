@@ -2,10 +2,10 @@ package shop.sajotuna.order.point.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.sajotuna.order.common.domain.Money;
 
 import java.time.LocalDateTime;
 
@@ -22,8 +22,8 @@ public class PointHistory {
     private Long userId;
 
     @NotNull
-    @PositiveOrZero
-    private int amount;
+    @Embedded
+    private Money amount;
 
     @Enumerated(value = EnumType.STRING)
     @NotNull
@@ -35,7 +35,7 @@ public class PointHistory {
     @NotNull
     private LocalDateTime createdAt;
 
-    private PointHistory(Long userId, int amount, PointHistoryType type, String description) {
+    private PointHistory(Long userId, Money amount, PointHistoryType type, String description) {
         this.userId = userId;
         this.amount = amount;
         this.type = type;
@@ -43,11 +43,11 @@ public class PointHistory {
         this.createdAt = LocalDateTime.now();
     }
 
-    public static PointHistory createRedeemHistory(Long userId, int amount, String description) {
+    public static PointHistory createRedeemHistory(Long userId, Money amount, String description) {
         return new PointHistory(userId, amount, PointHistoryType.REDEEMED, description);
     }
 
-    public static PointHistory createEarnHistory(Long userId, int amount, String description) {
+    public static PointHistory createEarnHistory(Long userId, Money amount, String description) {
         return new PointHistory(userId, amount, PointHistoryType.EARNED, description);
     }
 }

@@ -27,8 +27,8 @@ public class CouponResponse {
                 .couponType(coupon.getCouponType())
                 .policyType(coupon.getPolicyType())
                 .discountAmount(coupon.getDiscountAmount())
-                .minOrderAmount(coupon.getMinOrderAmount())
-                .maxDiscountAmount(coupon.getMaxDiscountAmount())
+                .minOrderAmount(coupon.getMinOrderAmount().getAmount())
+                .maxDiscountAmount(coupon.getMaxDiscountAmount().getAmount())
                 .validDays(coupon.getValidDays())
                 .build();
     }

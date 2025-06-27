@@ -2,11 +2,11 @@ package shop.sajotuna.order.point.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.point.exception.InvalidUserIdException;
 import shop.sajotuna.order.point.exception.NegativePointException;
 import shop.sajotuna.order.point.exception.InsufficientPointException;
@@ -26,33 +26,32 @@ public class UserPoint {
     private Long userId;
 
     @NotNull
-    @PositiveOrZero
-    private Long remainPoint;
+    private Money remainPoint;
 
     @Version
     private Long version;
 
-    public void earnPoint(long amount) {
-        if (amount < 0) {
+    public void earnPoint(Money amount) {
+        if (!amount.isPositive()) {
             throw new NegativePointException();
         }
-        this.remainPoint += amount;
+        this.remainPoint = this.remainPoint.plus(amount);
     }
 
-    public void redeemPoint(int pointAmount) {
-        if (remainPoint < pointAmount) {
-            throw new InsufficientPointException(remainPoint, pointAmount - remainPoint);
+    public void redeemPoint(Money pointAmount) {
+        if (remainPoint.isLessThan(pointAmount)) {
+            throw new InsufficientPointException(remainPoint, pointAmount.minus(remainPoint));
         }
-        if (pointAmount < 0) {
+        if (!pointAmount.isPositive()) {
             throw new NegativePointException();
         }
-        this.remainPoint -= pointAmount;
+        this.remainPoint = this.remainPoint.minus(pointAmount);
     }
 
     public static UserPoint create(Long userId) {
         if (userId == null) {
             throw new InvalidUserIdException();
         }
-        return new UserPoint(null, userId, 0L, null);
+        return new UserPoint(null, userId, Money.zero(), null);
     }
 }

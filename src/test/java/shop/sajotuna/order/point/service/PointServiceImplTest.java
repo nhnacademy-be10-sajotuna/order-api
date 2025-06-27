@@ -17,6 +17,7 @@ import shop.sajotuna.order.point.exception.UserPointNotFoundException;
 import shop.sajotuna.order.point.repository.PointHistoryRepository;
 import shop.sajotuna.order.point.repository.UserPointRepository;
 import shop.sajotuna.order.point.service.impl.PointServiceImpl;
+import shop.sajotuna.order.common.domain.Money;
 
 import java.util.List;
 import java.util.Optional;
@@ -43,8 +44,8 @@ class PointServiceImplTest{
     void getPointsByUserId_shouldGetAllPointHistories() {
         // given
         Long userId = 1L;
-        PointHistory pointHistory1 = PointHistory.createEarnHistory(userId, 1000, PointPolicyType.REVIEW.getDescription());
-        PointHistory pointHistory2 = PointHistory.createRedeemHistory(userId, 500, REDEEM_MESSAGE);
+        PointHistory pointHistory1 = PointHistory.createEarnHistory(userId, Money.of(1000), PointPolicyType.REVIEW.getDescription());
+        PointHistory pointHistory2 = PointHistory.createRedeemHistory(userId, Money.of(500), REDEEM_MESSAGE);
         when(historyRepository.getPointHistoriesByUserId(userId)).thenReturn(List.of(pointHistory1, pointHistory2));
 
         // when
@@ -53,8 +54,8 @@ class PointServiceImplTest{
         // then
         assertThat(pointsByUserId).hasSize(2)
                 .extracting("userId", "amount", "type")
-                .contains(tuple(userId, 1000, PointHistoryType.EARNED),
-                        tuple(userId, 500, PointHistoryType.REDEEMED));
+                .contains(tuple(userId, Money.of(1000), PointHistoryType.EARNED),
+                        tuple(userId, Money.of(500), PointHistoryType.REDEEMED));
     }
 
     @Test
@@ -63,18 +64,18 @@ class PointServiceImplTest{
         // given
         Long userId = 1L;
         int pointAmount = 500;
-        UserPoint userPoint = new UserPoint(1L, userId, 1000L, null);
+        UserPoint userPoint = new UserPoint(1L, userId, Money.of(1000), null);
         when(userPointRepository.findByUserId(userId)).thenReturn(Optional.of(userPoint));
-        PointHistory pointHistory = PointHistory.createRedeemHistory(userId, pointAmount, REDEEM_MESSAGE);
+        PointHistory pointHistory = PointHistory.createRedeemHistory(userId, Money.of(pointAmount), REDEEM_MESSAGE);
         when(historyRepository.save(Mockito.any(PointHistory.class))).thenReturn(pointHistory);
 
         // when
-        PointHistoryResponse response = pointService.redeemPoints(userId, pointAmount);
+        PointHistoryResponse response = pointService.redeemPoints(userId, Money.of(pointAmount));
 
         // then
         assertThat(response).isNotNull();
         assertThat(response.getUserId()).isEqualTo(userId);
-        assertThat(response.getAmount()).isEqualTo(pointAmount);
+        assertThat(response.getAmount()).isEqualTo(Money.of(pointAmount));
         assertThat(response.getType()).isEqualTo(PointHistoryType.REDEEMED);
         verify(userPointRepository).findByUserId(userId);
     }
@@ -85,11 +86,11 @@ class PointServiceImplTest{
         // given
         Long userId = 1L;
         int pointAmount = 500;
-        UserPoint userPoint = new UserPoint(1L, userId, 300L, null);
+        UserPoint userPoint = new UserPoint(1L, userId, Money.of(300), null);
         when(userPointRepository.findByUserId(userId)).thenReturn(Optional.of(userPoint));
 
         // when & then
-        assertThatThrownBy(() -> pointService.redeemPoints(userId, pointAmount))
+        assertThatThrownBy(() -> pointService.redeemPoints(userId, Money.of(pointAmount)))
                 .isInstanceOf(InsufficientPointException.class);
 
         verify(historyRepository, never()).save(Mockito.any(PointHistory.class));
@@ -104,7 +105,7 @@ class PointServiceImplTest{
         when(userPointRepository.findByUserId(userId)).thenReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> pointService.redeemPoints(userId, pointAmount))
+        assertThatThrownBy(() -> pointService.redeemPoints(userId, Money.of(pointAmount)))
                 .isInstanceOf(UserPointNotFoundException.class);
     }
 }

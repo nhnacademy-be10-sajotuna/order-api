@@ -3,17 +3,15 @@ package shop.sajotuna.order.point.service;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import shop.sajotuna.order.common.rabbitmq.PointRabbitProperties;
-import shop.sajotuna.order.point.controller.request.PointEvent;
+import shop.sajotuna.order.point.service.dto.event.PointEvent;
 import shop.sajotuna.order.point.domain.PointPolicy;
 import shop.sajotuna.order.point.domain.PointPolicyType;
 import shop.sajotuna.order.point.domain.UserPoint;
-import shop.sajotuna.order.point.repository.PointPolicyRepository;
 import shop.sajotuna.order.point.repository.UserPointRepository;
+import shop.sajotuna.order.common.domain.Money;
 
 import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
@@ -48,9 +46,9 @@ public class PointServiceQueueConcurrencyTest {
     @Test
     void concurrentEarningViaQueue_shouldAccumulateWithoutLostUpdates() throws InterruptedException {
 
-        PointEvent event = new PointEvent(USER_ID, PointPolicyType.PURCHASE, POINT_AMOUNT);
+        PointEvent event = new PointEvent(USER_ID, PointPolicyType.PURCHASE, Money.of(POINT_AMOUNT));
         PointPolicy pointPolicy = pointPolicyService.getPointPolicy(event.getType());
-        int earnPoint = pointPolicy.calculatePoint(POINT_AMOUNT);
+        Money earnPoint = pointPolicy.calculatePoint(Money.of(POINT_AMOUNT));
         ExecutorService executor = Executors.newFixedThreadPool(THREADS);
         CountDownLatch latch = new CountDownLatch(THREADS);
 
@@ -71,7 +69,7 @@ public class PointServiceQueueConcurrencyTest {
                 .untilAsserted(() -> {
                     UserPoint up = userPointRepository.findByUserId(USER_ID)
                             .orElseThrow();
-                    assertEquals((long) earnPoint * THREADS, up.getRemainPoint());
+                    assertEquals(earnPoint.multiply(THREADS), up.getRemainPoint());
                     assertEquals(THREADS, up.getVersion());
                 });
 

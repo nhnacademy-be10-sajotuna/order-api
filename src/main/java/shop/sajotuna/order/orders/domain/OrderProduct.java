@@ -1,8 +1,9 @@
-package shop.sajotuna.order.orders.entity;
+package shop.sajotuna.order.orders.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import shop.sajotuna.order.common.domain.Money;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -31,7 +32,7 @@ public class OrderProduct {
     private Integer qty;
 
     @Column(nullable = false)
-    private Integer amount;
+    private Money amount;
 
     @Column(nullable = false)
     private Boolean packagingRequest;

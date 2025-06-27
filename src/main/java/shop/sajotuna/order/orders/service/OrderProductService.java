@@ -5,9 +5,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.orders.dto.OrderProductRequest;
 import shop.sajotuna.order.orders.dto.OrderProductResponse;
-import shop.sajotuna.order.orders.entity.Order;
-import shop.sajotuna.order.orders.entity.OrderPackaging;
-import shop.sajotuna.order.orders.entity.OrderProduct;
+import shop.sajotuna.order.orders.domain.Order;
+import shop.sajotuna.order.orders.domain.OrderPackaging;
+import shop.sajotuna.order.orders.domain.OrderProduct;
 import shop.sajotuna.order.orders.exception.OrderProductNotFoundException;
 import shop.sajotuna.order.orders.exception.PackageNotFoundException;
 import shop.sajotuna.order.orders.repository.OrderPackagingRepository;
@@ -53,7 +53,7 @@ public class OrderProductService {
 
             if (item.getPackagingRequest()) {
                 packaging = orderPackagingRepository.findById(item.getOrderPackagingId()).orElseThrow(PackageNotFoundException::new);
-                packagingPrice += packaging.getPrice();
+                packagingPrice += packaging.getPrice().getAmount();
             }
             orderProductRepository.save(item.toEntity(order, packaging));
         }

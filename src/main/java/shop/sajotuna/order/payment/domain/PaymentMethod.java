@@ -1,4 +1,4 @@
-package shop.sajotuna.order.payment.entity;
+package shop.sajotuna.order.payment.domain;
 
 public enum PaymentMethod {
     CARD,

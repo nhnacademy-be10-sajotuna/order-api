@@ -5,9 +5,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.orders.dto.OrderRequest;
 import shop.sajotuna.order.orders.dto.OrderResponse;
-import shop.sajotuna.order.orders.entity.Order;
+import shop.sajotuna.order.orders.domain.Order;
 import shop.sajotuna.order.payment.service.PaymentService;
-import shop.sajotuna.order.point.controller.request.PointEvent;
+import shop.sajotuna.order.point.service.dto.event.PointEvent;
 import shop.sajotuna.order.point.domain.PointPolicyType;
 import shop.sajotuna.order.point.service.PointQueueService;
 
@@ -27,7 +27,7 @@ public class OrderProcessService {
 
         paymentService.processUserPayment(order, orderRequest.getMethod(), userId);
 
-        pointQueueService.sendEarnPointsMessage(new PointEvent(userId, PointPolicyType.PURCHASE, order.getTotalPrice()));
+        pointQueueService.sendEarnPointsMessage(new PointEvent(userId, PointPolicyType.PURCHASE, order.getFinalPrice()));
         return OrderResponse.from(order);
     }
 }

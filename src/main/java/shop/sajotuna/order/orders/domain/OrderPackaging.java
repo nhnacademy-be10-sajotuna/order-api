@@ -1,10 +1,11 @@
-package shop.sajotuna.order.orders.entity;
+package shop.sajotuna.order.orders.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import shop.sajotuna.order.common.domain.Money;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -20,14 +21,14 @@ public class OrderPackaging {
     private String packaging;
 
     @Column(nullable = false)
-    private Integer price;
+    private Money price;
 
-    public OrderPackaging(String packaging, Integer price) {
+    public OrderPackaging(String packaging, Money price) {
         this.packaging = packaging;
         this.price = price;
     }
 
-    public void update(String packaging, Integer price) {
+    public void update(String packaging, Money price) {
         this.packaging = packaging;
         this.price = price;
     }

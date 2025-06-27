@@ -4,11 +4,12 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.point.exception.InvalidPercentageException;
-import shop.sajotuna.order.point.exception.InvalidPriceException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+
 
 @Entity
 @Getter
@@ -40,15 +41,11 @@ public class PointPolicy {
      * calculationMode가 RATE인 경우에는 totalPrice에 대한 비율을 계산하여 포인트를 반환합니다.
      * ex) value = 15인 경우 1.5%의 비율로 포인트를 계산합니다.
      */
-    public int calculatePoint(Integer totalPrice) {
+    public Money calculatePoint(Money totalPrice) {
         if (calculationMode == CalculationMode.FIXED) {
-            return value;
+            return Money.of(value);
         }
-        if (totalPrice < 0) {
-            throw new InvalidPriceException(totalPrice);
-        }
-        BigDecimal rate = BigDecimal.valueOf(value).movePointLeft(3);
-        return BigDecimal.valueOf(totalPrice).multiply(rate).setScale(0, RoundingMode.DOWN).intValue();
+        return totalPrice.percentage(value, RoundingMode.DOWN);
     }
 
     public void update(int value) {

@@ -1,11 +1,11 @@
-package shop.sajotuna.order.payment.entity;
+package shop.sajotuna.order.payment.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import shop.sajotuna.order.orders.entity.Order;
+import shop.sajotuna.order.orders.domain.Order;
 
 import java.time.LocalDateTime;
 
@@ -38,7 +38,7 @@ public class Payment {
     public Payment(Order order, PaymentMethod method, Long userId) {
         this.order = order;
         this.method = method;
-        this.amount = order.getFinalPrice();
+        this.amount = order.getFinalPrice().getAmount();
         this.userId = userId;
         this.createdAt = LocalDateTime.now();
     }

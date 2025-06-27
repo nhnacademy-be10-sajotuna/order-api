@@ -11,4 +11,4 @@ Content-Type: application/json
 }
 
 ### 포인트 정책 조회
-GET localhost:10366/api/admin/point-policy
+GET localhost:10366/api/admin/point-policies

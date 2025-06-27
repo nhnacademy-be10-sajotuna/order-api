@@ -6,9 +6,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
-import shop.sajotuna.order.orders.entity.Order;
-import shop.sajotuna.order.orders.entity.OrderStatus;
-import shop.sajotuna.order.payment.entity.PaymentMethod;
+import shop.sajotuna.order.orders.domain.Order;
+import shop.sajotuna.order.orders.domain.OrderStatus;
+import shop.sajotuna.order.payment.domain.PaymentMethod;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -41,12 +41,11 @@ public class GuestOrderRequest {
     @NotNull
     private List<OrderProductRequest> items;
 
-    public Order toEntity(int totalPrice) {
+    public Order toEntity() {
         return Order.builder()
                 .isMember(false)
                 .shippingDate(shippingDate)
                 .streetAddress(streetAddress)
-                .totalPrice(totalPrice)
                 .status(OrderStatus.PENDING)
                 .createdAt(LocalDateTime.now()).build();
     }
