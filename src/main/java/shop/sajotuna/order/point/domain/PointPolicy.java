@@ -10,6 +10,7 @@ import shop.sajotuna.order.point.exception.InvalidPercentageException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+
 @Entity
 @Getter
 @AllArgsConstructor
@@ -44,9 +45,7 @@ public class PointPolicy {
         if (calculationMode == CalculationMode.FIXED) {
             return Money.of(value);
         }
-        BigDecimal rate = BigDecimal.valueOf(value).movePointLeft(3);
-        int pointAmount = BigDecimal.valueOf(totalPrice.getAmount()).multiply(rate).setScale(0, RoundingMode.DOWN).intValue();
-        return Money.of(pointAmount);
+        return totalPrice.percentage(value, RoundingMode.DOWN);
     }
 
     public void update(int value) {

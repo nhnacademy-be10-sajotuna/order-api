@@ -4,6 +4,8 @@ import jakarta.persistence.Embeddable;
 import lombok.*;
 import shop.sajotuna.order.common.exception.MoneyException;
 import shop.sajotuna.order.common.exception.NullValueException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -97,6 +99,29 @@ public class Money {
             throw new NullValueException("비교할 금액이 null입니다.");
         }
         return this.amount <= other.amount;
+    }
+
+    /**
+     *  퍼센트 계산을 위한 메서드
+     *  현재 서비스에서는 퍼센트는 소수점 1자리까지만 지원합니다.
+     */
+    private Money percentage(BigDecimal percentage, RoundingMode roundingMode) {
+        if (percentage == null) {
+            throw new NullValueException("퍼센트 값이 null입니다.");
+        }
+        if (percentage.compareTo(BigDecimal.ZERO) < 0) {
+            throw new MoneyException.InvalidOperandException("퍼센트 값은 0 이상이어야 합니다.");
+        }
+        
+        BigDecimal result = BigDecimal.valueOf(this.amount)
+                .multiply(percentage)
+                .divide(BigDecimal.valueOf(1000), roundingMode);
+
+        return new Money(result.intValue());
+    }
+
+    public Money percentage(int percentage, RoundingMode roundingMode) {
+        return percentage(BigDecimal.valueOf(percentage), roundingMode);
     }
 }
 

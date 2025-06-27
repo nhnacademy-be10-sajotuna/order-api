@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.coupon.domain.Coupon;
 import shop.sajotuna.order.coupon.domain.CouponPolicyType;
 import shop.sajotuna.order.coupon.domain.CouponType;
@@ -43,8 +44,8 @@ public class CouponRequest {
                 .couponType(couponType)
                 .policyType(policyType)
                 .discountAmount(discountAmount)
-                .minOrderAmount(minOrderAmount)
-                .maxDiscountAmount(maxDiscountAmount)
+                .minOrderAmount(Money.of(minOrderAmount))
+                .maxDiscountAmount(Money.of(maxDiscountAmount))
                 .validDays(validDays).build();
     }
 }
