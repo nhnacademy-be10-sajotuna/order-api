@@ -4,15 +4,21 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import shop.sajotuna.order.coupon.domain.Coupon;
+import shop.sajotuna.order.coupon.domain.CouponType;
 import shop.sajotuna.order.coupon.domain.UserCoupon;
 import shop.sajotuna.order.coupon.domain.UserCouponType;
+import shop.sajotuna.order.coupon.dto.BookInfo;
+import shop.sajotuna.order.coupon.dto.CouponResponse;
 import shop.sajotuna.order.coupon.dto.UserCouponRequest;
 import shop.sajotuna.order.coupon.dto.UserCouponResponse;
+import shop.sajotuna.order.coupon.repository.BookCouponRepository;
+import shop.sajotuna.order.coupon.repository.CategoryCouponRepository;
 import shop.sajotuna.order.coupon.repository.UserCouponRepository;
 import shop.sajotuna.order.coupon.repository.CouponRepository;
 import shop.sajotuna.order.coupon.exception.CouponNotFoundException;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,11 +28,14 @@ public class UserCouponService {
     public static final String COUPON_NAME = "WELCOME";
     private final UserCouponRepository userCouponRepository;
     private final CouponRepository couponRepository;
+    private final BookCouponRepository bookCouponRepository;
+    private final CategoryCouponRepository categoryCouponRepository;
 
     // 유저가 가진 쿠폰 목록 조회
     @Transactional
     public List<UserCouponResponse> getUserCoupons(Long userId) {
         List<UserCoupon> userCoupons = userCouponRepository.findByUserId(userId);
+        userCoupons.forEach(UserCoupon::updateExpiredCoupon);
 
         return userCoupons.stream().map(UserCouponResponse::from).collect(Collectors.toList());
     }
@@ -50,6 +59,46 @@ public class UserCouponService {
         userCouponRepository.save(userCoupon);
 
         return UserCouponResponse.from(userCoupon);
+    }
+
+    // 사용 가능한 책 쿠폰 조회
+    public List<CouponResponse> getAvailableCoupons(Long userId, BookInfo bookInfo) {
+
+        List<UserCoupon> userCoupons = userCouponRepository.findByUserId(userId);
+
+        userCoupons.forEach(UserCoupon::updateExpiredCoupon);
+
+        List<UserCoupon> availableCoupons = userCoupons.stream().filter(coupon -> coupon.getType() == UserCouponType.AVAILABLE).toList();
+
+        List<Coupon> coupons = availableCoupons.stream().map(UserCoupon::getCoupon).toList();
+        List<CouponResponse> result = new ArrayList<>();
+        for (Coupon coupon : coupons) {
+
+            if (bookCouponRepository.existsByCouponIdAndIsbn(coupon.getId(), bookInfo.getIsbn())) {
+                result.add(CouponResponse.from(coupon));
+            }
+            if (categoryCouponRepository.existsByCouponIdAndCategoryIdIn(coupon.getId(), bookInfo.getCategoryIds())) {
+                result.add(CouponResponse.from(coupon));
+            }
+        }
+        return result;
+    }
+
+    // 사용 가능한 오더 쿠폰 조회
+    public List<CouponResponse> getAvailableOrderCoupons(Long userId, int totalPrice){
+        List<UserCoupon> userCoupons = userCouponRepository.findByUserId(userId);
+
+        userCoupons.forEach(UserCoupon::updateExpiredCoupon);
+
+        List<UserCoupon> availableCoupons = userCoupons.stream()
+                .filter(coupon -> coupon.getType() == UserCouponType.AVAILABLE)
+                .toList();
+
+        List<Coupon> coupons = availableCoupons.stream().map(UserCoupon::getCoupon)
+                .filter(coupon -> coupon.getCouponType() == CouponType.ORDER)
+                .filter(coupon -> totalPrice >= coupon.getMinOrderAmount())
+                .toList();
+        return coupons.stream().map(CouponResponse::from).toList();
     }
 
 }

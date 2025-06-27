@@ -48,6 +48,16 @@ public class UserCoupon {
         this.expiresAt = issuedAt.plusDays(validDays);
     }
 
+    public boolean isExpiredCoupon() {
+        return LocalDateTime.now().isAfter(expiresAt);
+    }
+
+    public void updateExpiredCoupon() {
+        if (isExpiredCoupon()) {
+            type = UserCouponType.EXPIRED;
+        }
+    }
+
     public int applyCoupon(int totalProductPrice) {
         if (type == UserCouponType.USED || type == UserCouponType.EXPIRED) {
             throw new AlreadyUsedCouponException();
