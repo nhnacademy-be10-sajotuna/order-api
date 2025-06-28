@@ -8,11 +8,13 @@ import shop.sajotuna.order.orders.exception.TimeOutException;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@Data
+@Getter
 @Entity
 @Table(name = "orders")
 public class Order {
@@ -20,14 +22,14 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Boolean isMember;
+    @Embedded
+    private Orderer orderer;
 
     @Column(nullable = false)
-    private LocalDateTime shippingDate;
+    private boolean isUserOrder;
 
-    @Column(nullable = false)
-    private String streetAddress;
+    @Embedded
+    private ShippingInfo shippingInfo;
 
     @Embedded
     private OrderPrice orderPrice;
@@ -39,46 +41,68 @@ public class Order {
     @Column(nullable = false)
     private OrderStatus status;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    private Long userId;
-
-    public static Order createBaseUserOrder(LocalDateTime shippingDate, String streetAddress, Long userId) {
-        return Order.builder()
-                .isMember(true)
-                .shippingDate(shippingDate)
-                .streetAddress(streetAddress)
-                .status(OrderStatus.PENDING)
-                .createdAt(LocalDateTime.now())
-                .userId(userId).build();
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<OrderProduct> orderProducts = new ArrayList<>();
+    
+    @Builder
+    private Order(Orderer orderer, boolean isUserOrder, ShippingInfo shippingInfo, OrderPrice orderPrice, Discounts discounts, OrderStatus orderStatus, List<OrderProduct> orderProducts) {
+        this.orderer = orderer;
+        this.isUserOrder = isUserOrder;
+        this.shippingInfo = shippingInfo;
+        this.orderPrice = orderPrice;
+        this.discounts = discounts;
+        this.status = orderStatus;
+        this.createdAt = LocalDateTime.now();
+        addOrderProduct(orderProducts);
     }
 
-    public static Order createBaseGuestOrder(LocalDateTime shippingDate, String streetAddress) {
-        return Order.builder()
-                .isMember(false)
-                .shippingDate(shippingDate)
-                .streetAddress(streetAddress)
-                .status(OrderStatus.PENDING)
-                .createdAt(LocalDateTime.now()).build();
+    private void addOrderProduct(List<OrderProduct> orderProducts) {
+        for (OrderProduct orderProduct : orderProducts) {
+            if (orderProduct == null) {
+                throw new IllegalArgumentException("주문 상품은 null일 수 없습니다.");
+            }
+            orderProduct.setOrder(this);
+            this.orderProducts.add(orderProduct);
+        }
     }
 
     public static Order createUserOrder(
-            LocalDateTime shippingDate,
-            String streetAddress,
+            Orderer orderer,
+            ShippingInfo shippingInfo,
             OrderPrice orderPrice,
             Discounts discounts,
-            Long userId) {
-
+            List<OrderProduct> orderProducts
+    ) {
         return Order.builder()
-                .isMember(true)
-                .shippingDate(shippingDate)
-                .streetAddress(streetAddress)
+                .orderer(orderer)
+                .isUserOrder(true)
+                .shippingInfo(shippingInfo)
                 .orderPrice(orderPrice)
                 .discounts(discounts)
                 .status(OrderStatus.PENDING)
-                .createdAt(LocalDateTime.now())
-                .userId(userId).build();
+                .orderProducts(orderProducts)
+                .build();
+    }
+
+    public static Order createGuestOrder(
+            Orderer orderer,
+            ShippingInfo shippingInfo,
+            OrderPrice orderPrice,
+            Discounts discounts,
+            List<OrderProduct> orderProducts
+    ) {
+        return Order.builder()
+                .orderer(orderer)
+                .isUserOrder(false)
+                .shippingInfo(shippingInfo)
+                .orderPrice(orderPrice)
+                .discounts(discounts)
+                .status(OrderStatus.PENDING)
+                .orderProducts(orderProducts)
+                .build();
     }
 
     public Money getTotalPrice() {
@@ -93,16 +117,12 @@ public class Order {
         return orderPrice.getTotalProductPrice().minus(discounts.getTotalDiscountAmount());
     }
 
-    public void setOrderPrice(OrderPrice orderPrice) {
-        this.orderPrice = orderPrice;
-    }
-
     // 주문 발송
     public void shipped() {
         if (!this.status.equals(OrderStatus.PENDING)) {
             throw new InvalidStatusException();
         }
-        this.shippingDate = LocalDateTime.now();
+        shippingInfo.startShipping();
         this.status = OrderStatus.SHIPPED;
     }
 
@@ -127,7 +147,7 @@ public class Order {
         if (!this.status.equals(OrderStatus.DELIVERED)) {
             throw new InvalidStatusException();
         }
-        if (ChronoUnit.DAYS.between(shippingDate, LocalDateTime.now()) > 10) {
+        if (ChronoUnit.DAYS.between(shippingInfo.getShippingDate(), LocalDateTime.now()) > 10) {
             throw new TimeOutException();
         }
 
