@@ -1,12 +1,10 @@
 package shop.sajotuna.order.orders.controller;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import shop.sajotuna.order.orders.dto.*;
-import shop.sajotuna.order.orders.service.OrderProcessService;
 import shop.sajotuna.order.orders.service.OrderService;
 
 import java.util.List;
@@ -17,11 +15,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderController {
     private final OrderService orderService;
-    private final OrderProcessService orderProcessService;
 
     // 주문 조회
     @GetMapping("/{order-id}")
-    public ResponseEntity<OrderDetailResponse> getOrder(@PathVariable("order-id") Long orderId){
+    public ResponseEntity<OrderDetailResponse> getOrder(@PathVariable("order-id") Long orderId) {
         return ResponseEntity.ok(orderService.findOrderDetail(orderId));
     }
 
@@ -31,25 +28,10 @@ public class OrderController {
         return ResponseEntity.ok(orderService.findOrdersByUserId(userId));
     }
 
-    // 회원 주문
-    @PostMapping("/user")
-    public ResponseEntity<OrderResponse> createUserOrders(@RequestHeader("X-User-Id") Long userId, @RequestBody @Valid OrderRequest request) {
-        log.info("createUserOrders: userId = {}, request = {}", userId, request.getOrderCouponId());
-
-        OrderResponse orderResponse = orderProcessService.processUserOrder(request, userId);
-        return ResponseEntity.ok(orderResponse);
-    }
-
-    // 비회원 주문
-    @PostMapping("/guest")
-    public ResponseEntity<OrderResponse> createGuestOrders(@RequestBody @Valid GuestOrderRequest request) {
-        return ResponseEntity.ok(orderService.createGuestOrder(request));
-    }
-
     // 주문 반품 처리
     @PutMapping("/returned/{order-id}")
-    public ResponseEntity<Void> returnedOrder(@PathVariable("order-id") Long orderId, @RequestBody @Valid OrderReturnedRequest request){
-        orderService.returnedOrder(request.getUserId(), orderId);
+    public ResponseEntity<Void> returnedOrder(@PathVariable("order-id") Long orderId, @RequestHeader("X-User-Id") Long userId){
+        orderService.returnedOrder(userId, orderId);
 
         return ResponseEntity.noContent().build();
     }

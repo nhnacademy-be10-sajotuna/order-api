@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder(access = AccessLevel.PRIVATE)
 @Getter
 @Entity
 @Table(name = "orders")
@@ -42,22 +42,12 @@ public class Order {
     private OrderStatus status;
 
     @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
     private List<OrderProduct> orderProducts = new ArrayList<>();
-    
-    @Builder
-    private Order(Orderer orderer, boolean isUserOrder, ShippingInfo shippingInfo, OrderPrice orderPrice, Discounts discounts, OrderStatus orderStatus, List<OrderProduct> orderProducts) {
-        this.orderer = orderer;
-        this.isUserOrder = isUserOrder;
-        this.shippingInfo = shippingInfo;
-        this.orderPrice = orderPrice;
-        this.discounts = discounts;
-        this.status = orderStatus;
-        this.createdAt = LocalDateTime.now();
-        addOrderProduct(orderProducts);
-    }
 
     private void addOrderProduct(List<OrderProduct> orderProducts) {
         for (OrderProduct orderProduct : orderProducts) {
@@ -76,15 +66,16 @@ public class Order {
             Discounts discounts,
             List<OrderProduct> orderProducts
     ) {
-        return Order.builder()
+        Order order = Order.builder()
                 .orderer(orderer)
                 .isUserOrder(true)
                 .shippingInfo(shippingInfo)
                 .orderPrice(orderPrice)
                 .discounts(discounts)
                 .status(OrderStatus.PENDING)
-                .orderProducts(orderProducts)
                 .build();
+        order.addOrderProduct(orderProducts);
+        return order;
     }
 
     public static Order createGuestOrder(

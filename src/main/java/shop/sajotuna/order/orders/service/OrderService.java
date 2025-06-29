@@ -8,7 +8,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.common.domain.Money;
-import shop.sajotuna.order.coupon.service.UserCouponService;
 import shop.sajotuna.order.orders.dto.*;
 import shop.sajotuna.order.orders.domain.*;
 import shop.sajotuna.order.orders.repository.*;
@@ -18,7 +17,6 @@ import shop.sajotuna.order.point.service.dto.event.PointEvent;
 import shop.sajotuna.order.point.domain.PointPolicyType;
 import shop.sajotuna.order.point.exception.OrderNotFoundException;
 import shop.sajotuna.order.point.service.PointQueueService;
-import shop.sajotuna.order.point.service.PointService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,10 +26,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class OrderService {
     private final OrderRepository orderRepository;
-    private final GuestOrderRepository guestOrderRepository;
     private final PaymentRepository paymentRepository;
-    private final PointService pointService;
-    private final UserCouponService userCouponService;
     private final OrderProductService orderProductService;
     private final PointQueueService pointQueueService;
 
@@ -54,33 +49,12 @@ public class OrderService {
 
     // 회원의 주문 목록 조회
     public List<OrderResponse> findOrdersByUserId(long userId){
-        return orderRepository.findByUserId(userId).stream().map(OrderResponse::from).toList();
+        return orderRepository.findByOrdererUserId(userId).stream().map(OrderResponse::from).toList();
     }
 
     // 주문 상태에 따른 주문들 조회
     public Page<OrderResponse> findOrdersByStatus(OrderStatus orderStatus, Pageable pageable) {
         return orderRepository.findOrdersByStatus(orderStatus, pageable).map(OrderResponse::from);
-    }
-
-    // TODO: OrderApplicationService 내부로 이동
-    // 비회원 주문 저장
-    public OrderResponse createGuestOrder(GuestOrderRequest guestOrderRequest){
-        int totalPrice = guestOrderRequest.getItems().stream()
-                .mapToInt(item -> item.getQty() * item.getAmount())
-                .sum();
-        Order savedOrder = orderRepository.save(guestOrderRequest.toEntity());
-        guestOrderRepository.save(new GuestOrder(savedOrder, guestOrderRequest));
-
-        int packagingPrice = orderProductService.saveOrderProduct(guestOrderRequest.getItems(), savedOrder);
-
-        // 결제 비용
-        int finalPrice = totalPrice + guestOrderRequest.getDeliveryPrice() + packagingPrice;
-
-        // 결제 정보 저장
-        Payment payment = new Payment(savedOrder, guestOrderRequest.getMethod(), 1L);
-        paymentRepository.save(payment);
-
-        return OrderResponse.from(savedOrder);
     }
 
     // 주문 배송 중으로 변경

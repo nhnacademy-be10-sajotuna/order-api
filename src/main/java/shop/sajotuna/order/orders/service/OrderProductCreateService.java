@@ -2,13 +2,11 @@ package shop.sajotuna.order.orders.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import shop.sajotuna.order.orders.dto.OrderProductRequest;
-import shop.sajotuna.order.orders.domain.Order;
 import shop.sajotuna.order.orders.domain.OrderPackaging;
 import shop.sajotuna.order.orders.domain.OrderProduct;
 import shop.sajotuna.order.orders.exception.PackageNotFoundException;
 import shop.sajotuna.order.orders.repository.OrderPackagingRepository;
-import shop.sajotuna.order.orders.repository.OrderProductRepository;
+import shop.sajotuna.order.orders.service.dto.command.CreateOrderProductCommand;
 
 import java.util.List;
 
@@ -16,21 +14,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderProductCreateService {
 
-    private final OrderProductRepository orderProductRepository;
     private final OrderPackagingRepository orderPackagingRepository;
 
-    public void saveOrderProducts(List<OrderProductRequest> orderProductRequests, Order order) {
-        List<OrderProduct> orderProducts = orderProductRequests.stream()
-                .map(item -> createOrderProduct(item, order))
+    public List<OrderProduct> createOrderProducts(List<CreateOrderProductCommand> productCommands) {
+        return productCommands.stream()
+                .map(this::createOrderProduct)
                 .toList();
-        orderProductRepository.saveAll(orderProducts);
     }
 
-    private OrderProduct createOrderProduct(OrderProductRequest item, Order order) {
-        if (item.getPackagingRequest()) {
-            return item.toEntity(order, getPackaging(item.getOrderPackagingId()));
+    private OrderProduct createOrderProduct(CreateOrderProductCommand product) {
+        if (product.isPackagingRequest()) {
+            return product.toEntity(getPackaging(product.getOrderPackagingId()));
         }
-        return item.toEntity(order, null);
+        return product.toEntity(null);
     }
 
     private OrderPackaging getPackaging(Long packagingId) {
