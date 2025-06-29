@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.orders.domain.Discounts;
 import shop.sajotuna.order.orders.domain.OrderPrice;
 import shop.sajotuna.order.orders.domain.OrderProduct;
-import shop.sajotuna.order.orders.dto.OrderResponse;
+import shop.sajotuna.order.orders.controller.dto.response.OrderResponse;
 import shop.sajotuna.order.orders.domain.Order;
 import shop.sajotuna.order.orders.repository.OrderRepository;
 import shop.sajotuna.order.orders.service.dto.command.CreateOrderCommand;

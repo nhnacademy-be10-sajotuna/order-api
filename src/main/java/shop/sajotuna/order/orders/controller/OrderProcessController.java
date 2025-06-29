@@ -5,8 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import shop.sajotuna.order.orders.dto.CreateOrderRequest;
-import shop.sajotuna.order.orders.dto.OrderResponse;
+import shop.sajotuna.order.orders.controller.dto.request.CreateOrderRequest;
+import shop.sajotuna.order.orders.controller.dto.response.OrderResponse;
 import shop.sajotuna.order.orders.service.OrderProcessService;
 
 @Slf4j

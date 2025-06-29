@@ -3,7 +3,7 @@ package shop.sajotuna.order.orders.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import shop.sajotuna.order.orders.dto.OrderProductResponse;
+import shop.sajotuna.order.orders.controller.dto.response.OrderProductResponse;
 import shop.sajotuna.order.orders.domain.OrderProduct;
 import shop.sajotuna.order.orders.exception.OrderProductNotFoundException;
 import shop.sajotuna.order.orders.repository.OrderProductRepository;

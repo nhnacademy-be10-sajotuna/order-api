@@ -5,7 +5,7 @@ import lombok.Getter;
 import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.orders.domain.OrderPackaging;
 import shop.sajotuna.order.orders.domain.OrderProduct;
-import shop.sajotuna.order.orders.dto.OrderProductRequest;
+import shop.sajotuna.order.orders.controller.dto.request.OrderProductRequest;
 
 @Getter
 @Builder
