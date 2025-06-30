@@ -27,6 +27,7 @@ X-User-Id: 1
   "shippingDate": "20250730081219",
   "deliveryPrice": 1000,
   "paymentMethod": "CARD",
+  "orderCouponId": 1,
   "usedPoint": 0,
   "items": [
     {
