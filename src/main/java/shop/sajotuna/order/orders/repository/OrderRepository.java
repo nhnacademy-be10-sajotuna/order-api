@@ -14,11 +14,11 @@ import java.util.List;
 public interface OrderRepository extends JpaRepository<Order, Long> {
     Page<Order> findAllBy(Pageable pageable);
 
-    List<Order> findByUserId(long userId);
+    List<Order> findByOrdererUserId(long userId);
 
     Page<Order> findOrdersByStatus(OrderStatus status, Pageable pageable);
 
-    @Query("SELECT o FROM Order o WHERE o.status = 'SHIPPED' AND o.shippingDate <= :time")
+    @Query("SELECT o FROM Order o WHERE o.status = 'SHIPPED' AND o.shippingInfo.shippingDate <= :time")
     List<Order> findShippedOrders(LocalDateTime time);
 
     Order findOrderByOrderNumber(String orderNumber);

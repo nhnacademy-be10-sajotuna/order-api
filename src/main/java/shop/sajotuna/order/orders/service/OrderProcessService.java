@@ -3,27 +3,44 @@ package shop.sajotuna.order.orders.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import shop.sajotuna.order.orders.dto.OrderRequest;
-import shop.sajotuna.order.orders.dto.OrderResponse;
+import shop.sajotuna.order.orders.domain.Discounts;
+import shop.sajotuna.order.orders.domain.OrderPrice;
+import shop.sajotuna.order.orders.domain.OrderProduct;
+import shop.sajotuna.order.orders.controller.dto.response.OrderResponse;
 import shop.sajotuna.order.orders.domain.Order;
-import shop.sajotuna.order.point.service.dto.event.PointEvent;
+import shop.sajotuna.order.orders.repository.OrderRepository;
+import shop.sajotuna.order.orders.service.dto.command.CreateOrderCommand;
+import shop.sajotuna.order.payment.service.PaymentService;
 import shop.sajotuna.order.point.domain.PointPolicyType;
 import shop.sajotuna.order.point.service.PointQueueService;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class OrderProcessService {
 
+    private final PricingService pricingService;
+    private final DiscountService discountService;
+    private final OrderRepository orderRepository;
+    private final PaymentService paymentService;
     private final OrderProductCreateService orderProductCreateService;
     private final PointQueueService pointQueueService;
-    private final OrderCreateService orderCreateService;
 
     @Transactional
-    public OrderResponse processUserOrder(OrderRequest orderRequest, Long userId) {
-        Order order = orderCreateService.processOrderCreation(orderRequest, userId);
-        orderProductCreateService.saveOrderProducts(orderRequest.getItems(), order);
+    public OrderResponse processUserOrder(CreateOrderCommand command) {
 
-        pointQueueService.sendEarnPointsMessage(new PointEvent(userId, PointPolicyType.PURCHASE, order.getFinalPrice()));
+        List<OrderProduct> orderProducts = orderProductCreateService.createOrderProducts(command.getItems());
+        OrderPrice orderPrice = pricingService.calculatePrices(orderProducts, command.getDeliveryPrice());
+        Discounts discounts = discountService.discount(command.getOrderCouponId(), command.getUsedPoint(), command.getUserId(), orderPrice.getTotalProductPrice());
+
+        Order order = Order.createUserOrder(command.getOrderer(), command.getShippingInfo(), orderPrice, discounts, orderProducts);
+        orderRepository.save(order);
+
+        // TODO: 결제 구현 후 수정
+        // paymentService.processUserPayment(order, command.getPaymentMethod(), command.getUserId());
+
+        pointQueueService.sendEarnPointsMessage(command.getUserId(), PointPolicyType.PURCHASE, order.getFinalPrice());
 
         return OrderResponse.from(order);
     }

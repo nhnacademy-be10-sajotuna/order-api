@@ -1,4 +1,4 @@
-package shop.sajotuna.order.orders.dto;
+package shop.sajotuna.order.orders.controller.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;

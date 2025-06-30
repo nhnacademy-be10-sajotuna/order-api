@@ -3,14 +3,9 @@ package shop.sajotuna.order.orders.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import shop.sajotuna.order.orders.dto.OrderProductRequest;
-import shop.sajotuna.order.orders.dto.OrderProductResponse;
-import shop.sajotuna.order.orders.domain.Order;
-import shop.sajotuna.order.orders.domain.OrderPackaging;
+import shop.sajotuna.order.orders.controller.dto.response.OrderProductResponse;
 import shop.sajotuna.order.orders.domain.OrderProduct;
 import shop.sajotuna.order.orders.exception.OrderProductNotFoundException;
-import shop.sajotuna.order.orders.exception.PackageNotFoundException;
-import shop.sajotuna.order.orders.repository.OrderPackagingRepository;
 import shop.sajotuna.order.orders.repository.OrderProductRepository;
 import shop.sajotuna.order.orders.repository.OrderRepository;
 import shop.sajotuna.order.point.exception.OrderNotFoundException;
@@ -23,7 +18,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OrderProductService {
     private final OrderProductRepository orderProductRepository;
-    private final OrderPackagingRepository orderPackagingRepository;
     private final OrderRepository orderRepository;
 
     // 주문 상품 조회
@@ -43,20 +37,5 @@ public class OrderProductService {
         List<OrderProduct> orderProducts = orderProductRepository.getOrderProductsByOrder_Id(orderId);
 
         return orderProducts.stream().map(OrderProductResponse::from).collect(Collectors.toList());
-    }
-
-    // 주문 상품 저장
-    public int saveOrderProduct(List<OrderProductRequest> orderProductRequest, Order order) {
-        int packagingPrice = 0;
-        for (OrderProductRequest item : orderProductRequest) {
-            OrderPackaging packaging = null;
-
-            if (item.getPackagingRequest()) {
-                packaging = orderPackagingRepository.findById(item.getOrderPackagingId()).orElseThrow(PackageNotFoundException::new);
-                packagingPrice += packaging.getPrice().getAmount();
-            }
-            orderProductRepository.save(item.toEntity(order, packaging));
-        }
-        return packagingPrice;
     }
 }

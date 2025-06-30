@@ -1,4 +1,4 @@
-package shop.sajotuna.order.orders.dto;
+package shop.sajotuna.order.orders.controller.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

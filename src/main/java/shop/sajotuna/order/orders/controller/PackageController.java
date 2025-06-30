@@ -3,7 +3,7 @@ package shop.sajotuna.order.orders.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import shop.sajotuna.order.orders.dto.PackageResponse;
+import shop.sajotuna.order.orders.controller.dto.response.PackageResponse;
 import shop.sajotuna.order.orders.service.PackageService;
 
 import java.util.List;
