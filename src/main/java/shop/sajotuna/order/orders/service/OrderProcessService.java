@@ -37,7 +37,8 @@ public class OrderProcessService {
         Order order = Order.createUserOrder(command.getOrderer(), command.getShippingInfo(), orderPrice, discounts, orderProducts);
         orderRepository.save(order);
 
-        paymentService.processUserPayment(order, command.getPaymentMethod(), command.getUserId());
+        // TODO: 결제 구현 후 수정
+        // paymentService.processUserPayment(order, command.getPaymentMethod(), command.getUserId());
 
         pointQueueService.sendEarnPointsMessage(command.getUserId(), PointPolicyType.PURCHASE, order.getFinalPrice());
 

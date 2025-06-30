@@ -20,4 +20,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query("SELECT o FROM Order o WHERE o.status = 'SHIPPED' AND o.shippingInfo.shippingDate <= :time")
     List<Order> findShippedOrders(LocalDateTime time);
+
+    Order findOrderByOrderNumber(String orderNumber);
 }

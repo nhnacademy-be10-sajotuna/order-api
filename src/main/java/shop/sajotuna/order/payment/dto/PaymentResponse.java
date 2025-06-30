@@ -16,6 +16,6 @@ public class PaymentResponse {
     private LocalDateTime createdAt;
 
     public static PaymentResponse from(Payment payment) {
-        return new PaymentResponse(payment.getId(), payment.getMethod(), payment.getAmount(), payment.getCreatedAt());
+        return new PaymentResponse(payment.getId(), payment.getMethod(), payment.getAmount().getAmount(), payment.getCreatedAt());
     }
 }

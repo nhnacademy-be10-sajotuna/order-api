@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.orders.domain.Order;
 
 import java.time.LocalDateTime;
@@ -27,19 +28,15 @@ public class Payment {
     private PaymentMethod method;
 
     @Column(nullable = false)
-    private Integer amount;
+    private Money amount;
 
     @NotNull
     private LocalDateTime createdAt;
 
-    @NotNull
-    private Long userId;
-
-    public Payment(Order order, PaymentMethod method, Long userId) {
+    public Payment(Order order, PaymentMethod method) {
         this.order = order;
         this.method = method;
-        this.amount = order.getFinalPrice().getAmount();
-        this.userId = userId;
+        this.amount = order.getFinalPrice();
         this.createdAt = LocalDateTime.now();
     }
 }
