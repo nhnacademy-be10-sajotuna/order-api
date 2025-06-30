@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import shop.sajotuna.order.orders.domain.Order;
 import shop.sajotuna.order.orders.repository.OrderRepository;
+import shop.sajotuna.order.orders.service.OrderProductService;
 import shop.sajotuna.order.payment.domain.Payment;
+import shop.sajotuna.order.payment.domain.PaymentMethod;
 import shop.sajotuna.order.payment.domain.TossPayment;
 import shop.sajotuna.order.payment.dto.PaymentConfirmRequest;
 import shop.sajotuna.order.payment.dto.PaymentResponse;
@@ -30,6 +32,7 @@ public class TossPaymentService implements ExternalPaymentService{
     private final OrderRepository orderRepository;
     private final PaymentRepository paymentRepository;
     private final TossPaymentRepository tossPaymentRepository;
+    private final OrderProductService orderProductService;
 
     @Value("${toss.payment.secret-key}")
     private String secretKey;
@@ -67,11 +70,20 @@ public class TossPaymentService implements ExternalPaymentService{
 
                 return PaymentResponse.from(payment);
             } else {
+                Order order = orderRepository.findOrderByOrderNumber(paymentConfirmRequest.getOrderNumber());
+                orderProductService.deleteByOrderId(order.getId());
+                orderRepository.delete(order);
+
                 return null;
             }
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public boolean support(PaymentMethod paymentMethod) {
+        return paymentMethod == PaymentMethod.TOSS;
     }
 
     // 결제 취소 요청

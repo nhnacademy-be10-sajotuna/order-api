@@ -38,4 +38,12 @@ public class OrderProductService {
 
         return orderProducts.stream().map(OrderProductResponse::from).collect(Collectors.toList());
     }
+
+    // 특정 주문 번호에 포함된 상품들 삭제
+    public void deleteByOrderId(Long orderId){
+        if(!orderRepository.existsById(orderId)){
+            throw new OrderNotFoundException();
+        }
+        orderProductRepository.deleteByOrder_Id(orderId);
+    }
 }
