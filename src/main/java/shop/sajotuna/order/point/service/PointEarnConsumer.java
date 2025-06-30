@@ -7,7 +7,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.point.domain.PointPolicyType;
+import shop.sajotuna.order.point.domain.UserGrade;
 import shop.sajotuna.order.point.domain.UserPoint;
+import shop.sajotuna.order.point.exception.UserGradeNotFoundException;
+import shop.sajotuna.order.point.repository.UserGradeRepository;
 import shop.sajotuna.order.point.service.dto.event.PointEvent;
 import shop.sajotuna.order.point.repository.UserPointRepository;
 
@@ -19,6 +22,7 @@ public class PointEarnConsumer {
     private final UserPointRepository userPointRepository;
     private final PointHistoryWriter pointHistoryWriter;
     private final PointPolicyService pointPolicyService;
+    private final UserGradeRepository userGradeRepository;
 
     // TODO: 역할 분리 필요
     @RabbitListener(queues = "${rabbitmq.point.queue}")
@@ -36,7 +40,11 @@ public class PointEarnConsumer {
         } else {
             amount = pointPolicyService.getPointPolicy(event.getType()).calculatePoint(event.getTotalPrice());
         }
-        userPoint.earnPoint(amount);
+
+        UserGrade userGrade = userGradeRepository.findByUserId(event.getUserId()).orElseThrow(UserGradeNotFoundException::new);
+        Money gradePoint = userGrade.getGrade().calculatePoint(event.getTotalPrice());
+
+        userPoint.earnPoint(amount.plus(gradePoint));
 
         // 포인트 이력 저장
         pointHistoryWriter.savePointEarnHistory(event.getUserId(), amount, event.getType().getDescription());

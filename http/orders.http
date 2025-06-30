@@ -28,13 +28,13 @@ X-User-Id: 1
   "deliveryPrice": 1000,
   "paymentMethod": "CARD",
   "orderCouponId": 1,
-  "usedPoint": 0,
+  "usedPoint": 1000,
   "items": [
     {
       "orderPackagingId": 1,
       "isbn": "test",
       "qty": 2,
-      "amount": 10000,
+      "amount": 70000,
       "packagingRequest": true
     },
     {
