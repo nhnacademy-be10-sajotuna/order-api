@@ -2,6 +2,7 @@ package shop.sajotuna.order.orders.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.apache.commons.lang.RandomStringUtils;
 import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.orders.exception.InvalidStatusException;
 import shop.sajotuna.order.orders.exception.TimeOutException;
@@ -70,6 +71,7 @@ public class Order {
             List<OrderProduct> orderProducts
     ) {
         Order order = Order.builder()
+                .orderNumber(getRandomOrderNumber())
                 .orderer(orderer)
                 .isUserOrder(true)
                 .shippingInfo(shippingInfo)
@@ -89,6 +91,7 @@ public class Order {
             List<OrderProduct> orderProducts
     ) {
         return Order.builder()
+                .orderNumber(getRandomOrderNumber())
                 .orderer(orderer)
                 .isUserOrder(false)
                 .shippingInfo(shippingInfo)
@@ -97,6 +100,11 @@ public class Order {
                 .status(OrderStatus.PENDING)
                 .orderProducts(orderProducts)
                 .build();
+    }
+
+    // 15자리 랜덤 OrderNumber 생성 (숫자 + 문자)
+    public static String getRandomOrderNumber() {
+        return RandomStringUtils.random(15, true, true);
     }
 
     public Money getTotalPrice() {
