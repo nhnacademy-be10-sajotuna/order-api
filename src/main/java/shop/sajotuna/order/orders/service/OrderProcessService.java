@@ -34,7 +34,7 @@ public class OrderProcessService {
         OrderPrice orderPrice = pricingService.calculatePrices(orderProducts, command.getDeliveryPrice());
         Discounts discounts = discountService.discount(command.getOrderCouponId(), command.getUsedPoint(), command.getUserId(), orderPrice.getTotalProductPrice());
 
-        Order order = Order.createUserOrder(command.getOrderer(), command.getShippingInfo(), orderPrice, discounts, orderProducts);
+        Order order = Order.createOrder(command.getOrderer(), command.getShippingInfo(), orderPrice, discounts, orderProducts);
         orderRepository.save(order);
 
         // TODO: 결제 구현 후 수정
