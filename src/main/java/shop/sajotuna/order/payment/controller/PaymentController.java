@@ -3,6 +3,7 @@ package shop.sajotuna.order.payment.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import shop.sajotuna.order.payment.dto.PaymentConfirmRequest;
 import shop.sajotuna.order.payment.dto.PaymentResponse;
 import shop.sajotuna.order.payment.service.PaymentService;
 
@@ -24,5 +25,11 @@ public class PaymentController {
     @GetMapping
     public ResponseEntity<List<PaymentResponse>> getAll() {
         return ResponseEntity.ok(paymentService.getAllPayments());
+    }
+
+    // 결제 승인
+    @PostMapping("/confirm")
+    public ResponseEntity<PaymentResponse> confirmPayment(@RequestBody PaymentConfirmRequest paymentConfirmRequest) {
+        return ResponseEntity.ok(paymentService.processUserPayment(paymentConfirmRequest));
     }
 }

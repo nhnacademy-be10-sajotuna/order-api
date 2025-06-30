@@ -21,6 +21,9 @@ public class Order {
     private Long id;
 
     @Column(nullable = false)
+    private String orderNumber;
+
+    @Column(nullable = false)
     private Boolean isMember;
 
     @Column(nullable = false)
