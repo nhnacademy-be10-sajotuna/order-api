@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class OrderResponse {
     private Long orderId;
+    private String orderNumber;
     
     // Orderer 정보
     private Long userId;
@@ -47,7 +48,8 @@ public class OrderResponse {
     public static OrderResponse from(Order order) {
         return new OrderResponse(
                 order.getId(),
-                
+                order.getOrderNumber(),
+
                 // Orderer 정보
                 order.getOrderer().getUserId(),
                 order.getOrderer().getOrdererName(),

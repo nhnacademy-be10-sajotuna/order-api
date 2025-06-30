@@ -16,6 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 public class OrderDetailResponse {
     private Long orderId;
+    private String orderNumber;
     
     // Orderer 정보
     private Long userId;
@@ -60,7 +61,8 @@ public class OrderDetailResponse {
     public static OrderDetailResponse from(Order order, List<OrderProductResponse> items, Payment payment) {
         return OrderDetailResponse.builder()
                 .orderId(order.getId())
-                
+                .orderNumber(order.getOrderNumber())
+
                 // Orderer 정보
                 .userId(order.getOrderer().getUserId())
                 .ordererName(order.getOrderer().getOrdererName())

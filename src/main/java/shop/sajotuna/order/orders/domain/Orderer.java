@@ -27,6 +27,10 @@ public class Orderer {
         this.ordererEmail = ordererEmail;
     }
 
+    public boolean isUserOrder() {
+        return this.userId != null;
+    }
+
     private void validate(Long userId, String ordererName, String ordererPhoneNumber, String ordererEmail) {
         if (userId != null) {
             validateUserId(userId);
@@ -54,11 +58,7 @@ public class Orderer {
         OrderValidationUtils.validateEmail(ordererEmail);
     }
 
-    public static Orderer createGuestOrderer(String ordererName, String ordererPhoneNumber, String ordererEmail) {
-        return new Orderer(null, ordererName, ordererPhoneNumber, ordererEmail);
-    }
-
-    public static Orderer createUserOrderer(Long userId, String ordererName, String ordererPhoneNumber, String ordererEmail) {
+    public static Orderer createOrderer(Long userId, String ordererName, String ordererPhoneNumber, String ordererEmail) {
         return new Orderer(userId, ordererName, ordererPhoneNumber, ordererEmail);
     }
 }

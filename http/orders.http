@@ -24,11 +24,11 @@ X-User-Id: 1
   "recipientPhoneNumber": "010-9876-5432",
   "recipientEmail": "kim@example.com",
   "recipientAddress": "서울시 강남구 테헤란로 123",
-  "shippingDate": "20250630081219",
+  "shippingDate": "20250730081219",
   "deliveryPrice": 1000,
   "paymentMethod": "CARD",
   "orderCouponId": 1,
-  "usedPoint": 1000,
+  "usedPoint": 0,
   "items": [
     {
       "orderPackagingId": 1,

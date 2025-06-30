@@ -2,6 +2,7 @@ package shop.sajotuna.order.orders.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.apache.commons.lang.RandomStringUtils;
 import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.orders.exception.InvalidStatusException;
 import shop.sajotuna.order.orders.exception.TimeOutException;
@@ -62,7 +63,7 @@ public class Order {
         }
     }
 
-    public static Order createUserOrder(
+    public static Order createOrder(
             Orderer orderer,
             ShippingInfo shippingInfo,
             OrderPrice orderPrice,
@@ -70,8 +71,9 @@ public class Order {
             List<OrderProduct> orderProducts
     ) {
         Order order = Order.builder()
+                .orderNumber(getRandomOrderNumber())
                 .orderer(orderer)
-                .isUserOrder(true)
+                .isUserOrder(orderer.isUserOrder())
                 .shippingInfo(shippingInfo)
                 .orderPrice(orderPrice)
                 .discounts(discounts)
@@ -81,22 +83,9 @@ public class Order {
         return order;
     }
 
-    public static Order createGuestOrder(
-            Orderer orderer,
-            ShippingInfo shippingInfo,
-            OrderPrice orderPrice,
-            Discounts discounts,
-            List<OrderProduct> orderProducts
-    ) {
-        return Order.builder()
-                .orderer(orderer)
-                .isUserOrder(false)
-                .shippingInfo(shippingInfo)
-                .orderPrice(orderPrice)
-                .discounts(discounts)
-                .status(OrderStatus.PENDING)
-                .orderProducts(orderProducts)
-                .build();
+    // 15자리 랜덤 OrderNumber 생성 (숫자 + 문자)
+    public static String getRandomOrderNumber() {
+        return RandomStringUtils.random(15, true, true);
     }
 
     public Money getTotalPrice() {

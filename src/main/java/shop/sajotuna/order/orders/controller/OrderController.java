@@ -2,13 +2,13 @@ package shop.sajotuna.order.orders.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import shop.sajotuna.order.orders.controller.dto.response.OrderDetailResponse;
 import shop.sajotuna.order.orders.controller.dto.response.OrderResponse;
 import shop.sajotuna.order.orders.service.OrderService;
-
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -23,10 +23,16 @@ public class OrderController {
         return ResponseEntity.ok(orderService.findOrderDetail(orderId));
     }
 
+    // 비회원 주문 조회
+    @GetMapping("/guest/{order-number}")
+    public ResponseEntity<OrderDetailResponse> getGuestOrder(@PathVariable("order-number") String orderNumber) {
+        return ResponseEntity.ok(orderService.findOrderDetailByOrderNumber(orderNumber));
+    }
+
     // 회원의 주문내역 조회
     @GetMapping("/user")
-    public ResponseEntity<List<OrderResponse>> getUserOrder(@RequestHeader("X-User-Id") Long userId){
-        return ResponseEntity.ok(orderService.findOrdersByUserId(userId));
+    public ResponseEntity<Page<OrderResponse>> getUserOrder(@RequestHeader("X-User-Id") Long userId, Pageable pageable){
+        return ResponseEntity.ok(orderService.findOrdersByUserId(userId, pageable));
     }
 
     // 주문 반품 처리

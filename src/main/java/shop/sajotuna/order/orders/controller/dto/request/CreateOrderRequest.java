@@ -80,7 +80,7 @@ public class CreateOrderRequest {
     }
 
     private Orderer toOrderer(Long userId) {
-        return Orderer.createUserOrderer(
+        return Orderer.createOrderer(
                 userId,
                 ordererName,
                 ordererPhoneNumber,
