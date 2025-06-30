@@ -8,6 +8,7 @@ import shop.sajotuna.order.orders.domain.Order;
 import shop.sajotuna.order.orders.repository.OrderRepository;
 import shop.sajotuna.order.orders.service.OrderProductService;
 import shop.sajotuna.order.payment.domain.Payment;
+import shop.sajotuna.order.payment.domain.PaymentMethod;
 import shop.sajotuna.order.payment.domain.TossPayment;
 import shop.sajotuna.order.payment.dto.PaymentConfirmRequest;
 import shop.sajotuna.order.payment.dto.PaymentResponse;
@@ -78,6 +79,11 @@ public class TossPaymentService implements ExternalPaymentService{
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public boolean support(PaymentMethod paymentMethod) {
+        return paymentMethod == PaymentMethod.TOSS;
     }
 
     // 결제 취소 요청

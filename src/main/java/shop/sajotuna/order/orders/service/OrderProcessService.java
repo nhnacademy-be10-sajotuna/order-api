@@ -10,7 +10,6 @@ import shop.sajotuna.order.orders.controller.dto.response.OrderResponse;
 import shop.sajotuna.order.orders.domain.Order;
 import shop.sajotuna.order.orders.repository.OrderRepository;
 import shop.sajotuna.order.orders.service.dto.command.CreateOrderCommand;
-import shop.sajotuna.order.payment.service.PaymentService;
 import shop.sajotuna.order.point.domain.PointPolicyType;
 import shop.sajotuna.order.point.service.PointQueueService;
 
@@ -23,7 +22,6 @@ public class OrderProcessService {
     private final PricingService pricingService;
     private final DiscountService discountService;
     private final OrderRepository orderRepository;
-    private final PaymentService paymentService;
     private final OrderProductCreateService orderProductCreateService;
     private final PointQueueService pointQueueService;
 
@@ -36,9 +34,6 @@ public class OrderProcessService {
 
         Order order = Order.createOrder(command.getOrderer(), command.getShippingInfo(), orderPrice, discounts, orderProducts);
         orderRepository.save(order);
-
-        // TODO: 결제 구현 후 수정
-        // paymentService.processUserPayment(order, command.getPaymentMethod(), command.getUserId());
 
         pointQueueService.sendEarnPointsMessage(command.getUserId(), PointPolicyType.PURCHASE, order.getFinalPrice());
 

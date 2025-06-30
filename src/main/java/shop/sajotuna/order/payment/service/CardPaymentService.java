@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import shop.sajotuna.order.orders.domain.Order;
 import shop.sajotuna.order.orders.repository.OrderRepository;
 import shop.sajotuna.order.payment.domain.Payment;
+import shop.sajotuna.order.payment.domain.PaymentMethod;
 import shop.sajotuna.order.payment.dto.PaymentConfirmRequest;
 import shop.sajotuna.order.payment.dto.PaymentResponse;
 import shop.sajotuna.order.payment.repository.PaymentRepository;
@@ -28,5 +29,10 @@ public class CardPaymentService implements ExternalPaymentService {
         paymentRepository.save(payment);
 
         return PaymentResponse.from(payment);
+    }
+
+    @Override
+    public boolean support(PaymentMethod paymentMethod) {
+        return paymentMethod == PaymentMethod.CARD;
     }
 }
