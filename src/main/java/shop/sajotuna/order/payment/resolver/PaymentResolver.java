@@ -2,6 +2,7 @@ package shop.sajotuna.order.payment.resolver;
 
 import org.springframework.stereotype.Component;
 import shop.sajotuna.order.payment.domain.PaymentMethod;
+import shop.sajotuna.order.payment.service.CardPaymentService;
 import shop.sajotuna.order.payment.service.ExternalPaymentService;
 import shop.sajotuna.order.payment.service.TossPaymentService;
 
@@ -17,7 +18,7 @@ public class PaymentResolver {
     public PaymentResolver(List<ExternalPaymentService> services) {
         this.serviceMap = services.stream()
                 .collect(Collectors.toMap(
-                        service -> getMethod(service), // 커스텀 로직으로 Method 구분
+                        this::getMethod, // 커스텀 로직으로 Method 구분
                         Function.identity()
                 ));
     }
@@ -28,6 +29,8 @@ public class PaymentResolver {
 
     private PaymentMethod getMethod(ExternalPaymentService service) {
         if (service instanceof TossPaymentService) return PaymentMethod.TOSS;
+        if (service instanceof CardPaymentService) return PaymentMethod.CARD;
+
         throw new IllegalArgumentException("Unknown PaymentService");
     }
 }
