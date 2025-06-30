@@ -5,7 +5,9 @@ import shop.sajotuna.order.orders.domain.DeliveryPrice;
 
 public interface DeliveryPriceRepository extends JpaRepository<DeliveryPrice, Long> {
 
+    long DEFAULT_DELIVERY_PRICE_ID = 1L;
+
     default DeliveryPrice getDefaultDeliveryPrice() {
-        return findById(1L).get();
+        return findById(DEFAULT_DELIVERY_PRICE_ID).get();
     }
 }
