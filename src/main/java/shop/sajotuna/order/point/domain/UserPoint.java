@@ -26,6 +26,7 @@ public class UserPoint {
     private Long userId;
 
     @NotNull
+    @AttributeOverride(name = "amount", column = @Column(name = "remain_point"))
     private Money remainPoint;
 
     @Version
