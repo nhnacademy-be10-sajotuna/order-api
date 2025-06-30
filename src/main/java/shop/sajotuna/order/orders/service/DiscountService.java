@@ -2,6 +2,7 @@ package shop.sajotuna.order.orders.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.coupon.domain.UserCoupon;
 import shop.sajotuna.order.coupon.exception.CouponNotFoundException;
@@ -20,6 +21,7 @@ public class DiscountService {
     private final UserCouponRepository userCouponRepository;
     private final PointHistoryWriter pointHistoryWriter;
 
+    @Transactional
     public Discounts discount(Long orderCouponId, Money usedPoint, Long userId, Money totalProductPrice) {
         Money couponDiscountAmount = Money.zero();
         if (orderCouponId != null) {
@@ -29,7 +31,7 @@ public class DiscountService {
 
         if (usedPoint.isPositive()) {
             UserPoint userPoint = getUserPointByUserId(userId);
-             userPoint.redeemPoint(usedPoint);
+            userPoint.redeemPoint(usedPoint);
             pointHistoryWriter.savePointRedeemHistory(userId, usedPoint);
         }
         return new Discounts(couponDiscountAmount, usedPoint);

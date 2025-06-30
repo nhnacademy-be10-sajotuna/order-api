@@ -29,13 +29,13 @@ public class OrderProcessService {
     public OrderResponse processUserOrder(CreateOrderCommand command) {
 
         List<OrderProduct> orderProducts = orderProductCreateService.createOrderProducts(command.getItems());
-        OrderPrice orderPrice = pricingService.calculatePrices(orderProducts, command.getDeliveryPrice());
+        OrderPrice orderPrice = pricingService.calculatePrices(orderProducts);
         Discounts discounts = discountService.discount(command.getOrderCouponId(), command.getUsedPoint(), command.getUserId(), orderPrice.getTotalProductPrice());
 
         Order order = Order.createOrder(command.getOrderer(), command.getShippingInfo(), orderPrice, discounts, orderProducts);
         orderRepository.save(order);
 
-        pointQueueService.sendEarnPointsMessage(command.getUserId(), PointPolicyType.PURCHASE, order.getFinalPrice());
+        pointQueueService.sendEarnPointsMessage(command.getUserId(), PointPolicyType.PURCHASE, order.getFinalProductPrice());
 
         return OrderResponse.from(order);
     }
