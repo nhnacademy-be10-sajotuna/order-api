@@ -22,4 +22,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findShippedOrders(LocalDateTime time);
 
     Order findOrderByOrderNumber(String orderNumber);
+
+    List<Order> findByOrdererUserIdAndCreatedAtAfter(Long userId, LocalDateTime createdAt);
 }
