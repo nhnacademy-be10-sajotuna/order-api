@@ -98,7 +98,7 @@ public class OrderDetailResponse {
                 
                 // Payment 정보
                 .paymentMethod(payment.getMethod())
-                .paymentAmount(payment.getAmount())
+                .paymentAmount(payment.getAmount().getAmount())
                 .paymentCreatedAt(payment.getCreatedAt())
                 .build();
     }

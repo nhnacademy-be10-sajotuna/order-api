@@ -84,7 +84,7 @@ public class OrderService {
 
         // 반품시 결제금액은 포인트로 적립됨
         Payment payment = paymentRepository.getPaymentByOrder_Id(orderId);
-        pointQueueService.sendEarnPointsMessage(new PointEvent(userId, PointPolicyType.RETURNED, Money.of(payment.getAmount())));
+        pointQueueService.sendEarnPointsMessage(new PointEvent(userId, PointPolicyType.RETURNED, payment.getAmount()));
     }
 
     // 주문 취소 처리
