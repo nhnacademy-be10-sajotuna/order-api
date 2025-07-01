@@ -2,7 +2,6 @@ package shop.sajotuna.order.orders.controller.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
-import shop.sajotuna.order.orders.domain.OrderPackaging;
 import shop.sajotuna.order.orders.domain.OrderProduct;
 
 @Getter
@@ -10,7 +9,7 @@ import shop.sajotuna.order.orders.domain.OrderProduct;
 public class OrderProductResponse {
     private Long id;
     private String isbn;
-    private OrderPackaging orderPackaging;
+    private PackageResponse packageResponse;
     private int qty;
     private int amount;
     private Boolean packagingRequest;
@@ -19,7 +18,9 @@ public class OrderProductResponse {
         return OrderProductResponse.builder()
                 .id(product.getId())
                 .isbn(product.getIsbn())
-                .orderPackaging(product.getOrderPackaging())
+                .packageResponse(
+                        product.getOrderPackaging() != null ? PackageResponse.from(product.getOrderPackaging()) : null
+                )
                 .qty(product.getQty())
                 .amount(product.getAmount().getAmount())
                 .packagingRequest(product.getPackagingRequest())
