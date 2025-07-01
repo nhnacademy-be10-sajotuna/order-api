@@ -21,9 +21,15 @@ public class OrderProcessController {
     public ResponseEntity<OrderResponse> createUserOrders(@RequestHeader("X-User-Id") Long userId, @RequestBody @Valid CreateOrderRequest request) {
         log.info("createUserOrders: userId = {}, request = {}", userId, request.getOrderCouponId());
 
-        OrderResponse orderResponse = orderProcessService.processUserOrder(request.toCommand(userId));
+        OrderResponse orderResponse = orderProcessService.processOrder(request.toCommand(userId));
         return ResponseEntity.ok(orderResponse);
     }
 
-    // TODO: 비회원 주문
+    // 비회원 주문
+    @PostMapping("/guest")
+    public ResponseEntity<OrderResponse> createGuestOrders(@RequestBody @Valid CreateOrderRequest request) {
+        OrderResponse orderResponse = orderProcessService.processOrder(request.toCommand(null));
+
+        return ResponseEntity.ok(orderResponse);
+    }
 }

@@ -1,5 +1,6 @@
 package shop.sajotuna.order.payment.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +30,7 @@ public class PaymentController {
 
     // 결제 승인
     @PostMapping("/confirm")
-    public ResponseEntity<PaymentResponse> confirmPayment(@RequestBody PaymentConfirmRequest paymentConfirmRequest) {
+    public ResponseEntity<PaymentResponse> confirmPayment(@RequestBody @Valid PaymentConfirmRequest paymentConfirmRequest) {
         return ResponseEntity.ok(paymentService.processUserPayment(paymentConfirmRequest));
     }
 }

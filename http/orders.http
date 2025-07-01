@@ -24,8 +24,7 @@ X-User-Id: 1
   "recipientPhoneNumber": "010-9876-5432",
   "recipientEmail": "kim@example.com",
   "recipientAddress": "서울시 강남구 테헤란로 123",
-  "shippingDate": "20250730081219",
-  "paymentMethod": "CARD",
+  "shippingDate": "20250710081219",
   "orderCouponId": 1,
   "usedPoint": 1000,
   "items": [
@@ -50,19 +49,20 @@ POST localhost:10366/api/orders/guest
 Content-Type: application/json
 
 {
-  "name": "test",
-  "phoneNumber": "010-1234-5678",
-  "email": "test@gmail.com",
-  "shippingDate": "20250612123456",
-  "streetAddress": "test",
-  "deliveryPrice": 1000,
-  "method": "CARD",
+  "ordererName": "홍길동",
+  "ordererPhoneNumber": "010-1234-5678",
+  "ordererEmail": "hong@example.com",
+  "recipientName": "김수령",
+  "recipientPhoneNumber": "010-9876-5432",
+  "recipientEmail": "kim@example.com",
+  "recipientAddress": "서울시 강남구 테헤란로 123",
+  "shippingDate": "20250710081219",
   "items": [
     {
       "orderPackagingId": 1,
       "isbn": "test",
       "qty": 2,
-      "amount": 10000,
+      "amount": 70000,
       "packagingRequest": true
     },
     {
@@ -106,7 +106,7 @@ GET localhost:10366/api/admin/orders/pending?page=0&size=5
 PUT localhost:10366/api/admin/orders/pending/1
 
 ### package 추가
-POST localhost:10366/api/admin/orders/package
+POST localhost:10366/api/admin/packages/package
 Content-Type: application/json
 
 {
@@ -115,7 +115,7 @@ Content-Type: application/json
 }
 
 ### package 수정
-PUT localhost:10366/api/admin/orders/package/1
+PUT localhost:10366/api/admin/packages/package/1
 Content-Type: application/json
 
 {
