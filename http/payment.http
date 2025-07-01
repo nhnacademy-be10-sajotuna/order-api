@@ -3,3 +3,24 @@ GET localhost:10366/api/payments/1
 
 ### 모든 결제 정보 조회
 GET localhost:10366/api/payments
+
+### 결제 승인 (card)
+POST localhost:10366/api/payments/confirm
+Content-Type: application/json
+
+{
+  "paymentMethod": "CARD",
+  "orderNumber": "bYY4mqih9Jvs5CH"
+}
+
+
+### 결제 승인 (toss)
+POST localhost:10366/api/payments/confirm
+Content-Type: application/json
+
+{
+  "paymentMethod": "TOSS",
+  "paymentKey": "paefekok4fdfsae",
+  "amount": 100000,
+  "orderNumber": "bYY4mqih9Jvs5CH"
+}

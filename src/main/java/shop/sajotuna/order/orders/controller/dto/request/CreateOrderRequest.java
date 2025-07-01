@@ -11,7 +11,6 @@ import shop.sajotuna.order.orders.domain.ShippingInfo;
 import shop.sajotuna.order.orders.service.dto.command.CreateOrderCommand;
 import shop.sajotuna.order.orders.service.dto.command.CreateOrderProductCommand;
 import shop.sajotuna.order.orders.validation.annotation.PhoneNumber;
-import shop.sajotuna.order.payment.domain.PaymentMethod;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -49,9 +48,6 @@ public class CreateOrderRequest {
     @JsonFormat(pattern = "yyyyMMddHHmmss")
     private LocalDateTime shippingDate;
 
-    @NotNull
-    private PaymentMethod paymentMethod;
-
     private Long orderCouponId;
 
     @Min(0)
@@ -62,10 +58,13 @@ public class CreateOrderRequest {
     private List<OrderProductRequest> items;
 
     public CreateOrderCommand toCommand(Long userId) {
+        if(usedPoint == null) {
+            usedPoint = 0;
+        }
+
         return CreateOrderCommand.builder()
                 .orderer(toOrderer(userId))
                 .shippingInfo(toShippingInfo())
-                .paymentMethod(paymentMethod)
                 .orderCouponId(orderCouponId)
                 .usedPoint(Money.of(usedPoint))
                 .items(items.stream()
