@@ -24,7 +24,7 @@ public class OrderStatusService {
     private final PaymentRepository paymentRepository;
     private final PointQueueService pointQueueService;
 
-    private final String SCHEDULE = "0 0 12 * * *";
+    private static final String SCHEDULE = "0 0 12 * * *";
 
     // 주문 배송 중으로 변경
     @Transactional
