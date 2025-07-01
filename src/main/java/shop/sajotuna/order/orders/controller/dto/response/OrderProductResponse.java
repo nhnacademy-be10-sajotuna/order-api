@@ -1,12 +1,12 @@
 package shop.sajotuna.order.orders.controller.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 import shop.sajotuna.order.orders.domain.OrderPackaging;
 import shop.sajotuna.order.orders.domain.OrderProduct;
 
-@Data
-@AllArgsConstructor
+@Getter
+@Builder
 public class OrderProductResponse {
     private Long id;
     private String isbn;
@@ -16,6 +16,13 @@ public class OrderProductResponse {
     private Boolean packagingRequest;
 
     public static OrderProductResponse from(OrderProduct product) {
-        return new OrderProductResponse(product.getId(), product.getIsbn(), product.getOrderPackaging(), product.getQty(), product.getAmount().getAmount(), product.getPackagingRequest());
+        return OrderProductResponse.builder()
+                .id(product.getId())
+                .isbn(product.getIsbn())
+                .orderPackaging(product.getOrderPackaging())
+                .qty(product.getQty())
+                .amount(product.getAmount().getAmount())
+                .packagingRequest(product.getPackagingRequest())
+                .build();
     }
 }

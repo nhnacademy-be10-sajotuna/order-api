@@ -24,8 +24,8 @@ X-User-Id: 1
   "recipientPhoneNumber": "010-9876-5432",
   "recipientEmail": "kim@example.com",
   "recipientAddress": "서울시 강남구 테헤란로 123",
-  "shippingDate": "20250710081219",
-  "orderCouponId": 1,
+  "expectedDeliveryDate": "20250710081219",
+  "orderCouponId": 6,
   "usedPoint": 1000,
   "items": [
     {

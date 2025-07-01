@@ -2,12 +2,12 @@ package shop.sajotuna.order.coupon.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import shop.sajotuna.order.coupon.domain.Coupon;
 import shop.sajotuna.order.coupon.domain.CouponPolicyType;
 import shop.sajotuna.order.coupon.domain.CouponType;
 
-@Data
+@Getter
 @Builder
 @AllArgsConstructor
 public class CouponResponse {

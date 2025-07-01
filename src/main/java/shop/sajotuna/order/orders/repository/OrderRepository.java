@@ -18,7 +18,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     Page<Order> findOrdersByStatus(OrderStatus status, Pageable pageable);
 
-    @Query("SELECT o FROM Order o WHERE o.status = 'SHIPPED' AND o.shippingInfo.shippingDate <= :time")
+    @Query("SELECT o FROM Order o WHERE o.status = 'SHIPPED' AND o.shippingInfo.shippingStartDate <= :time")
     List<Order> findShippedOrders(LocalDateTime time);
 
     Order findOrderByOrderNumber(String orderNumber);

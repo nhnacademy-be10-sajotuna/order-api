@@ -1,14 +1,14 @@
 package shop.sajotuna.order.payment.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 import shop.sajotuna.order.payment.domain.Payment;
 import shop.sajotuna.order.payment.domain.PaymentMethod;
 
 import java.time.LocalDateTime;
 
-@Data
-@AllArgsConstructor
+@Getter
+@Builder
 public class PaymentResponse {
     private Long id;
     private PaymentMethod method;
@@ -16,6 +16,11 @@ public class PaymentResponse {
     private LocalDateTime createdAt;
 
     public static PaymentResponse from(Payment payment) {
-        return new PaymentResponse(payment.getId(), payment.getMethod(), payment.getAmount().getAmount(), payment.getCreatedAt());
+        return PaymentResponse.builder()
+                .id(payment.getId())
+                .method(payment.getMethod())
+                .amount(payment.getAmount().getAmount())
+                .createdAt(payment.getCreatedAt())
+                .build();
     }
 }
