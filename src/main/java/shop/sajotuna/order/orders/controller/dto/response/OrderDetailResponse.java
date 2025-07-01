@@ -2,7 +2,7 @@ package shop.sajotuna.order.orders.controller.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import shop.sajotuna.order.orders.domain.Order;
 import shop.sajotuna.order.orders.domain.OrderStatus;
 import shop.sajotuna.order.payment.domain.Payment;
@@ -11,7 +11,7 @@ import shop.sajotuna.order.payment.domain.PaymentMethod;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
+@Getter
 @Builder
 @AllArgsConstructor
 public class OrderDetailResponse {

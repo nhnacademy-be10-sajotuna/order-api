@@ -1,14 +1,14 @@
 package shop.sajotuna.order.orders.controller.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 import shop.sajotuna.order.orders.domain.Order;
 import shop.sajotuna.order.orders.domain.OrderStatus;
 
 import java.time.LocalDateTime;
 
-@Data
-@AllArgsConstructor
+@Getter
+@Builder
 public class OrderInfoResponse {
     private Long orderId;
     private String orderNumber;
@@ -23,14 +23,14 @@ public class OrderInfoResponse {
         
         int totalProductCount = order.getOrderProducts().size();
         
-        return new OrderInfoResponse(
-                order.getId(),
-                order.getOrderNumber(),
-                order.getFinalPrice().getAmount(),
-                order.getStatus(),
-                order.getCreatedAt(),
-                firstProductIsbn,
-                totalProductCount
-        );
+        return OrderInfoResponse.builder()
+                .orderId(order.getId())
+                .orderNumber(order.getOrderNumber())
+                .finalPrice(order.getFinalPrice().getAmount())
+                .status(order.getStatus())
+                .createdAt(order.getCreatedAt())
+                .firstProductIsbn(firstProductIsbn)
+                .totalProductCount(totalProductCount)
+                .build();
     }
 }

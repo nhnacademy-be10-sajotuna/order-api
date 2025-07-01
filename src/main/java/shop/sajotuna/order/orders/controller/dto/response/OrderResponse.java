@@ -1,14 +1,14 @@
 package shop.sajotuna.order.orders.controller.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 import shop.sajotuna.order.orders.domain.Order;
 import shop.sajotuna.order.orders.domain.OrderStatus;
 
 import java.time.LocalDateTime;
 
-@Data
-@AllArgsConstructor
+@Getter
+@Builder
 public class OrderResponse {
     private Long orderId;
     private String orderNumber;
@@ -26,7 +26,9 @@ public class OrderResponse {
     private String recipientPhoneNumber;
     private String recipientEmail;
     private String recipientAddress;
-    private LocalDateTime shippingDate;
+    private LocalDateTime expectedDeliveryDate;
+    private LocalDateTime shippingStartDate;
+    private LocalDateTime shippingEndDate;
     
     // OrderPrice 정보
     private int totalProductPrice;
@@ -46,41 +48,43 @@ public class OrderResponse {
     private LocalDateTime createdAt;
 
     public static OrderResponse from(Order order) {
-        return new OrderResponse(
-                order.getId(),
-                order.getOrderNumber(),
-
-                // Orderer 정보
-                order.getOrderer().getUserId(),
-                order.getOrderer().getOrdererName(),
-                order.getOrderer().getOrdererPhoneNumber(),
-                order.getOrderer().getOrdererEmail(),
+        return OrderResponse.builder()
+                .orderId(order.getId())
+                .orderNumber(order.getOrderNumber())
                 
-                order.isUserOrder(),
+                // Orderer 정보
+                .userId(order.getOrderer().getUserId())
+                .ordererName(order.getOrderer().getOrdererName())
+                .ordererPhoneNumber(order.getOrderer().getOrdererPhoneNumber())
+                .ordererEmail(order.getOrderer().getOrdererEmail())
+                
+                .isUserOrder(order.isUserOrder())
                 
                 // ShippingInfo 정보
-                order.getShippingInfo().getRecipientName(),
-                order.getShippingInfo().getRecipientPhoneNumber(),
-                order.getShippingInfo().getRecipientEmail(),
-                order.getShippingInfo().getRecipientAddress(),
-                order.getShippingInfo().getExpectedDeliveryDate(),
+                .recipientName(order.getShippingInfo().getRecipientName())
+                .recipientPhoneNumber(order.getShippingInfo().getRecipientPhoneNumber())
+                .recipientEmail(order.getShippingInfo().getRecipientEmail())
+                .recipientAddress(order.getShippingInfo().getRecipientAddress())
+                .expectedDeliveryDate(order.getShippingInfo().getExpectedDeliveryDate())
+                .shippingStartDate(order.getShippingInfo().getShippingStartDate())
+                .shippingEndDate(order.getShippingInfo().getShippingEndDate())
                 
                 // OrderPrice 정보
-                order.getOrderPrice().getTotalProductPrice().getAmount(),
-                order.getOrderPrice().getPackagingPrice().getAmount(),
-                order.getOrderPrice().getDeliveryPrice().getAmount(),
-                order.getTotalPrice().getAmount(),
+                .totalProductPrice(order.getOrderPrice().getTotalProductPrice().getAmount())
+                .packagingPrice(order.getOrderPrice().getPackagingPrice().getAmount())
+                .deliveryPrice(order.getOrderPrice().getDeliveryPrice().getAmount())
+                .totalPrice(order.getTotalPrice().getAmount())
                 
                 // Discounts 정보
-                order.getDiscounts().getCouponDiscountAmount().getAmount(),
-                order.getDiscounts().getUsedPoint().getAmount(),
-                order.getDiscounts().getTotalDiscountAmount().getAmount(),
+                .couponDiscountAmount(order.getDiscounts().getCouponDiscountAmount().getAmount())
+                .usedPoint(order.getDiscounts().getUsedPoint().getAmount())
+                .totalDiscountAmount(order.getDiscounts().getTotalDiscountAmount().getAmount())
                 
                 // 최종 금액
-                order.getFinalPrice().getAmount(),
+                .finalPrice(order.getFinalPrice().getAmount())
                 
-                order.getStatus(),
-                order.getCreatedAt()
-        );
+                .status(order.getStatus())
+                .createdAt(order.getCreatedAt())
+                .build();
     }
 }

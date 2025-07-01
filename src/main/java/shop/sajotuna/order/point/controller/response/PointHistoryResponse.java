@@ -1,13 +1,13 @@
 package shop.sajotuna.order.point.controller.response;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import shop.sajotuna.order.point.domain.PointHistory;
 import shop.sajotuna.order.point.domain.PointHistoryType;
 
 import java.time.LocalDateTime;
 
-@AllArgsConstructor
+@Builder
 @Getter
 public class PointHistoryResponse {
     private Long id;
@@ -23,13 +23,13 @@ public class PointHistoryResponse {
     private LocalDateTime createdAt;
 
     public static PointHistoryResponse from(PointHistory pointHistory) {
-        return new PointHistoryResponse(
-                pointHistory.getId(),
-                pointHistory.getUserId(),
-                pointHistory.getAmount().getAmount(),
-                pointHistory.getType(),
-                pointHistory.getDescription(),
-                pointHistory.getCreatedAt()
-        );
+        return PointHistoryResponse.builder()
+                .id(pointHistory.getId())
+                .userId(pointHistory.getUserId())
+                .amount(pointHistory.getAmount().getAmount())
+                .type(pointHistory.getType())
+                .description(pointHistory.getDescription())
+                .createdAt(pointHistory.getCreatedAt())
+                .build();
     }
 }

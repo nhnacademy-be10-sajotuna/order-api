@@ -1,12 +1,12 @@
 package shop.sajotuna.order.point.controller.response;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import shop.sajotuna.order.point.domain.CalculationMode;
 import shop.sajotuna.order.point.domain.PointPolicy;
 import shop.sajotuna.order.point.domain.PointPolicyType;
 
-@AllArgsConstructor
+@Builder
 @Getter
 public class PointPolicyResponse {
     private Long id;
@@ -18,11 +18,11 @@ public class PointPolicyResponse {
     private CalculationMode calculationMode;
 
     public static PointPolicyResponse from(PointPolicy pointPolicy) {
-        return new PointPolicyResponse(
-                pointPolicy.getId(),
-                pointPolicy.getType(),
-                pointPolicy.getValue(),
-                pointPolicy.getCalculationMode()
-        );
+        return PointPolicyResponse.builder()
+                .id(pointPolicy.getId())
+                .type(pointPolicy.getType())
+                .value(pointPolicy.getValue())
+                .calculationMode(pointPolicy.getCalculationMode())
+                .build();
     }
 }
