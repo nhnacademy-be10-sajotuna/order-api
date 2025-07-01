@@ -47,7 +47,7 @@ public class CreateOrderRequest {
 
     @Future
     @JsonFormat(pattern = "yyyyMMddHHmmss")
-    private LocalDateTime shippingDate;
+    private LocalDateTime expectedDeliveryDate;
 
     @NotNull
     @Min(0)
@@ -93,7 +93,7 @@ public class CreateOrderRequest {
                 recipientPhoneNumber,
                 recipientEmail,
                 recipientAddress,
-                shippingDate
+                expectedDeliveryDate
         );
     }
 }

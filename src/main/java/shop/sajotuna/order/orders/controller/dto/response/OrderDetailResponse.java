@@ -31,7 +31,10 @@ public class OrderDetailResponse {
     private String recipientPhoneNumber;
     private String recipientEmail;
     private String recipientAddress;
-    private LocalDateTime shippingDate;
+    private LocalDateTime expectedDeliveryDate;
+    private LocalDateTime shippingStartDate;
+    private LocalDateTime shippingEndDate;
+
     
     // OrderPrice 정보
     private int totalProductPrice;
@@ -76,7 +79,9 @@ public class OrderDetailResponse {
                 .recipientPhoneNumber(order.getShippingInfo().getRecipientPhoneNumber())
                 .recipientEmail(order.getShippingInfo().getRecipientEmail())
                 .recipientAddress(order.getShippingInfo().getRecipientAddress())
-                .shippingDate(order.getShippingInfo().getShippingDate())
+                .expectedDeliveryDate(order.getShippingInfo().getExpectedDeliveryDate())
+                .shippingStartDate(order.getShippingInfo().getShippingStartDate())
+                .shippingEndDate(order.getShippingInfo().getShippingEndDate())
                 
                 // OrderPrice 정보
                 .totalProductPrice(order.getOrderPrice().getTotalProductPrice().getAmount())

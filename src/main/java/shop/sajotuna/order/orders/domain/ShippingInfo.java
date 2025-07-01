@@ -5,10 +5,12 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.springframework.cglib.core.Local;
 import shop.sajotuna.order.common.exception.NullValueException;
 import shop.sajotuna.order.orders.validation.validator.OrderValidationUtils;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Embeddable
 @Getter
@@ -22,28 +24,36 @@ public class ShippingInfo {
     private String recipientEmail;
     private String recipientAddress;
 
-    private LocalDateTime shippingDate;
+    private LocalDateTime expectedDeliveryDate;
+    private LocalDateTime shippingStartDate;
+    private LocalDateTime shippingEndDate;
 
-    private ShippingInfo(String recipientName, String recipientPhoneNumber, String recipientEmail, String recipientAddress, LocalDateTime shippingDate) {
+    private ShippingInfo(String recipientName, String recipientPhoneNumber, String recipientEmail, String recipientAddress, LocalDateTime expectedDeliveryDate) {
         this.recipientName = recipientName;
         this.recipientPhoneNumber = recipientPhoneNumber;
         this.recipientEmail = recipientEmail;
         this.recipientAddress = recipientAddress;
-        this.shippingDate = shippingDate;
+        this.expectedDeliveryDate = expectedDeliveryDate;
+        this.shippingStartDate = null;
+        this.shippingEndDate = null;
     }
 
-    public static ShippingInfo create(String recipientName, String recipientPhoneNumber, String recipientEmail, String recipientAddress, LocalDateTime shippingDate) {
+    public static ShippingInfo create(String recipientName, String recipientPhoneNumber, String recipientEmail, String recipientAddress, LocalDateTime expectedDeliveryDate) {
         validateRecipientName(recipientName);
         validateRecipientPhoneNumber(recipientPhoneNumber);
         validateRecipientEmail(recipientEmail);
         validateRecipientAddress(recipientAddress);
-        validateShippingDate(shippingDate);
+        validateExpectedDeliveryDate(expectedDeliveryDate);
 
-        return new ShippingInfo(recipientName, recipientPhoneNumber, recipientEmail, recipientAddress, shippingDate);
+        return new ShippingInfo(recipientName, recipientPhoneNumber, recipientEmail, recipientAddress, expectedDeliveryDate);
     }
 
     public void startShipping() {
-        this.shippingDate = LocalDateTime.now();
+        this.shippingStartDate = LocalDateTime.now();
+    }
+
+    public void endShipping() {
+        this.shippingEndDate = LocalDateTime.now();
     }
 
     private static void validateRecipientName(String recipientName) {
@@ -66,13 +76,14 @@ public class ShippingInfo {
             throw new IllegalArgumentException("배송 주소는 200자를 초과할 수 없습니다.");
         }
     }
+    // TODO: 배송 날짜 지정 로직 고도화
 
-    private static void validateShippingDate(LocalDateTime shippingDate) {
+    private static void validateExpectedDeliveryDate(LocalDateTime shippingDate) {
         if (shippingDate == null) {
-            throw new NullValueException("배송 날짜를 입력하세요.");
+            shippingDate = LocalDateTime.now().plusDays(2);
         }
-        if (shippingDate.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("배송 날짜는 현재 시간 이후여야 합니다.");
+        if (shippingDate.isBefore(LocalDateTime.now().plusDays(2))) {
+            throw new IllegalArgumentException("배송 날짜는 최소 2일 이후로 설정해야 합니다.");
         }
     }
 }

@@ -63,7 +63,7 @@ public class OrderResponse {
                 order.getShippingInfo().getRecipientPhoneNumber(),
                 order.getShippingInfo().getRecipientEmail(),
                 order.getShippingInfo().getRecipientAddress(),
-                order.getShippingInfo().getShippingDate(),
+                order.getShippingInfo().getExpectedDeliveryDate(),
                 
                 // OrderPrice 정보
                 order.getOrderPrice().getTotalProductPrice().getAmount(),

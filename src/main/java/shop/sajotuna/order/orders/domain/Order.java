@@ -114,6 +114,7 @@ public class Order {
         if (!this.status.equals(OrderStatus.SHIPPED)) {
             throw new InvalidStatusException();
         }
+        shippingInfo.endShipping();
         this.status = OrderStatus.DELIVERED;
     }
 
@@ -130,7 +131,7 @@ public class Order {
         if (!this.status.equals(OrderStatus.DELIVERED)) {
             throw new InvalidStatusException();
         }
-        if (ChronoUnit.DAYS.between(shippingInfo.getShippingDate(), LocalDateTime.now()) > 10) {
+        if (ChronoUnit.DAYS.between(shippingInfo.getExpectedDeliveryDate(), LocalDateTime.now()) > 10) {
             throw new TimeOutException();
         }
 
