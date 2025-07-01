@@ -46,7 +46,7 @@ public class CreateOrderRequest {
 
     @Future
     @JsonFormat(pattern = "yyyyMMddHHmmss")
-    private LocalDateTime shippingDate;
+    private LocalDateTime expectedDeliveryDate;
 
     private Long orderCouponId;
 
@@ -87,7 +87,7 @@ public class CreateOrderRequest {
                 recipientPhoneNumber,
                 recipientEmail,
                 recipientAddress,
-                shippingDate
+                expectedDeliveryDate
         );
     }
 }

@@ -22,57 +22,64 @@ public class ShippingInfo {
     private String recipientEmail;
     private String recipientAddress;
 
-    private LocalDateTime shippingDate;
+    private LocalDateTime expectedDeliveryDate;
+    private LocalDateTime shippingStartDate;
+    private LocalDateTime shippingEndDate;
 
-    private ShippingInfo(String recipientName, String recipientPhoneNumber, String recipientEmail, String recipientAddress, LocalDateTime shippingDate) {
-        this.recipientName = recipientName;
-        this.recipientPhoneNumber = recipientPhoneNumber;
-        this.recipientEmail = recipientEmail;
-        this.recipientAddress = recipientAddress;
-        this.shippingDate = shippingDate;
+    private ShippingInfo(String recipientName, String recipientPhoneNumber, String recipientEmail, String recipientAddress, LocalDateTime expectedDeliveryDate) {
+        setRecipientName(recipientName);
+        setRecipientPhoneNumber(recipientPhoneNumber);
+        setRecipientEmail(recipientEmail);
+        setRecipientAddress(recipientAddress);
+        setExpectedDeliveryDate(expectedDeliveryDate);
+        this.shippingStartDate = null;
+        this.shippingEndDate = null;
     }
 
-    public static ShippingInfo create(String recipientName, String recipientPhoneNumber, String recipientEmail, String recipientAddress, LocalDateTime shippingDate) {
-        validateRecipientName(recipientName);
-        validateRecipientPhoneNumber(recipientPhoneNumber);
-        validateRecipientEmail(recipientEmail);
-        validateRecipientAddress(recipientAddress);
-        validateShippingDate(shippingDate);
-
-        return new ShippingInfo(recipientName, recipientPhoneNumber, recipientEmail, recipientAddress, shippingDate);
+    public static ShippingInfo create(String recipientName, String recipientPhoneNumber, String recipientEmail, String recipientAddress, LocalDateTime expectedDeliveryDate) {
+        return new ShippingInfo(recipientName, recipientPhoneNumber, recipientEmail, recipientAddress, expectedDeliveryDate);
     }
 
-    public void startShipping() {
-        this.shippingDate = LocalDateTime.now();
+    protected void startShipping() {
+        this.shippingStartDate = LocalDateTime.now();
     }
 
-    private static void validateRecipientName(String recipientName) {
+    protected void endShipping() {
+        this.shippingEndDate = LocalDateTime.now();
+    }
+
+    private void setRecipientName(String recipientName) {
         OrderValidationUtils.validateName(recipientName);
+        this.recipientName = recipientName;
     }
 
-    private static void validateRecipientPhoneNumber(String recipientPhoneNumber) {
+    private void setRecipientPhoneNumber(String recipientPhoneNumber) {
         OrderValidationUtils.validatePhoneNumber(recipientPhoneNumber);
+        this.recipientPhoneNumber = recipientPhoneNumber;
     }
 
-    private static void validateRecipientEmail(String recipientEmail) {
+    private void setRecipientEmail(String recipientEmail) {
         OrderValidationUtils.validateEmail(recipientEmail);
+        this.recipientEmail = recipientEmail;
     }
 
-    private static void validateRecipientAddress(String recipientAddress) {
+    private void setRecipientAddress(String recipientAddress) {
         if (recipientAddress == null || recipientAddress.trim().isEmpty()) {
             throw new NullValueException("배송 주소를 입력하세요.");
         }
         if (recipientAddress.trim().length() > 200) {
             throw new IllegalArgumentException("배송 주소는 200자를 초과할 수 없습니다.");
         }
+        this.recipientAddress = recipientAddress;
     }
 
-    private static void validateShippingDate(LocalDateTime shippingDate) {
-        if (shippingDate == null) {
-            throw new NullValueException("배송 날짜를 입력하세요.");
+    // TODO: 배송 날짜 지정 로직 고도화
+    private void setExpectedDeliveryDate(LocalDateTime expectedDeliveryDate) {
+        if (expectedDeliveryDate == null) {
+            expectedDeliveryDate = LocalDateTime.now().plusDays(2);
+        } else if (expectedDeliveryDate.isBefore(LocalDateTime.now().plusDays(2))) {
+            throw new IllegalArgumentException("배송 날짜는 최소 2일 이후로 설정해야 합니다.");
         }
-        if (shippingDate.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("배송 날짜는 현재 시간 이후여야 합니다.");
-        }
+        this.expectedDeliveryDate = expectedDeliveryDate;
     }
 }
