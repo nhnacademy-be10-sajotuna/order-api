@@ -40,6 +40,7 @@ public class OrderProductService {
     }
 
     // 특정 주문 번호에 포함된 상품들 삭제
+    @Transactional
     public void deleteByOrderId(Long orderId){
         if(!orderRepository.existsById(orderId)){
             throw new OrderNotFoundException();

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.apache.commons.lang.RandomStringUtils;
 import shop.sajotuna.order.common.domain.Money;
+import shop.sajotuna.order.common.exception.NullValueException;
 import shop.sajotuna.order.orders.exception.InvalidStatusException;
 import shop.sajotuna.order.orders.exception.TimeOutException;
 
@@ -56,7 +57,7 @@ public class Order {
     private void addOrderProduct(List<OrderProduct> orderProducts) {
         for (OrderProduct orderProduct : orderProducts) {
             if (orderProduct == null) {
-                throw new IllegalArgumentException("주문 상품은 null일 수 없습니다.");
+                throw new NullValueException("주문 상품은 null일 수 없습니다.");
             }
             orderProduct.setOrder(this);
             this.orderProducts.add(orderProduct);

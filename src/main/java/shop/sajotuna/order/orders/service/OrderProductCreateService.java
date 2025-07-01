@@ -2,6 +2,7 @@ package shop.sajotuna.order.orders.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.orders.domain.OrderPackaging;
 import shop.sajotuna.order.orders.domain.OrderProduct;
 import shop.sajotuna.order.orders.exception.PackageNotFoundException;
@@ -16,6 +17,7 @@ public class OrderProductCreateService {
 
     private final OrderPackagingRepository orderPackagingRepository;
 
+    @Transactional(readOnly = true)
     public List<OrderProduct> createOrderProducts(List<CreateOrderProductCommand> productCommands) {
         return productCommands.stream()
                 .map(this::createOrderProduct)

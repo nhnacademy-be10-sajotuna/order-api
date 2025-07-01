@@ -1,5 +1,5 @@
 ### 쿠폰 발급
-POST localhost:10366/api/coupons
+POST localhost:10366/api/admin/coupons
 Content-Type: application/json
 
 {
@@ -18,6 +18,6 @@ Content-Type: application/json
 
 {
   "userId": 1,
-  "couponId": 2,
+  "couponId": 5,
   "issuedAt": "20250620151112"
 }

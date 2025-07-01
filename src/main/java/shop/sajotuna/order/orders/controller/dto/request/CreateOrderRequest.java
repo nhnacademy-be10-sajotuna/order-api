@@ -50,10 +50,6 @@ public class CreateOrderRequest {
     private LocalDateTime shippingDate;
 
     @NotNull
-    @Min(0)
-    private Integer deliveryPrice;
-
-    @NotNull
     private PaymentMethod paymentMethod;
 
     private Long orderCouponId;
@@ -69,7 +65,6 @@ public class CreateOrderRequest {
         return CreateOrderCommand.builder()
                 .orderer(toOrderer(userId))
                 .shippingInfo(toShippingInfo())
-                .deliveryPrice(Money.of(deliveryPrice))
                 .paymentMethod(paymentMethod)
                 .orderCouponId(orderCouponId)
                 .usedPoint(Money.of(usedPoint))

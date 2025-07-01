@@ -2,9 +2,12 @@ package shop.sajotuna.order.orders.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.common.domain.Money;
+import shop.sajotuna.order.orders.domain.DeliveryPrice;
 import shop.sajotuna.order.orders.domain.OrderProduct;
 import shop.sajotuna.order.orders.domain.OrderPrice;
+import shop.sajotuna.order.orders.repository.DeliveryPriceRepository;
 
 import java.util.List;
 
@@ -12,7 +15,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PricingService {
 
-    public OrderPrice calculatePrices(List<OrderProduct> orderProducts, Money deliveryPrice) {
+    private final DeliveryPriceRepository deliveryPriceRepository;
+
+    @Transactional(readOnly = true)
+    public OrderPrice calculatePrices(List<OrderProduct> orderProducts) {
         Money totalProductPrice = orderProducts.stream()
                 .map(OrderProduct::getTotalPrice)
                 .reduce(Money.zero(), Money::plus);
@@ -20,6 +26,9 @@ public class PricingService {
         Money packagingPrice = orderProducts.stream()
                 .map(OrderProduct::getPackagingPrice)
                 .reduce(Money.zero(), Money::plus);
+
+        DeliveryPrice deliveryPricePolicy = deliveryPriceRepository.getDefaultDeliveryPrice();
+        Money deliveryPrice = deliveryPricePolicy.calculateDeliveryPrice(totalProductPrice);
 
         return OrderPrice.create(totalProductPrice, packagingPrice, deliveryPrice);
     }

@@ -14,7 +14,6 @@ import java.util.List;
 public class CreateOrderCommand {
     private final Orderer orderer;
     private final ShippingInfo shippingInfo;
-    private final Money deliveryPrice;
     private final PaymentMethod paymentMethod;
     private final Long orderCouponId;
     private final Money usedPoint;
