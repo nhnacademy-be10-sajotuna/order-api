@@ -44,3 +44,6 @@ logging:
     com.netflix.discovery: off
     com.netflix.eureka: off
     org.springframework.cloud.netflix.eureka: off
+toss:
+  payment:
+    secret-key: testkeytestkeytestkeytestkeytestkeytestkey
