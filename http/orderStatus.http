@@ -1,0 +1,17 @@
+### 주문 취소
+PUT localhost:10366/api/orders/1/cancel
+
+### 주문 반품 처리 - 미사용 반품 (10일 이내, 택배비 차감)
+PUT localhost:10366/api/orders/7/return?return-reason=UNUSED
+X-User-Id: 1
+
+### 주문 반품 처리 - 파손 반품 (30일 이내, 택배비 차감 없음)
+PUT localhost:10366/api/orders/1/return?return-reason=DAMAGED
+X-User-Id: 1
+
+### 주문 반품 처리 - 파본 반품 (30일 이내, 택배비 차감 없음)
+PUT localhost:10366/api/orders/1/return?return-reason=DEFECTIVE
+X-User-Id: 1
+
+### 주문 취소 처리
+PUT localhost:10366/api/orders/1/cancel

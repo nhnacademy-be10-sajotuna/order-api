@@ -1,0 +1,26 @@
+### 상품 재고 생성
+POST localhost:10366/api/stocks
+Content-Type: application/json
+
+{
+  "isbn": "test2",
+  "quantity": 100
+}
+
+### 재고 증가
+PUT localhost:10366/api/stocks/increase
+Content-Type: application/json
+
+{
+  "isbn": "test2",
+  "quantity": 50
+}
+
+### 재고 감소
+PUT localhost:10366/api/stocks/decrease
+Content-Type: application/json
+
+{
+  "isbn": "test2",
+  "quantity": 10
+}
