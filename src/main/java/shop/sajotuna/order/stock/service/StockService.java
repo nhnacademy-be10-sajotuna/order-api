@@ -50,6 +50,9 @@ public class StockService {
     }
 
     public BookStockResponse createStock(String isbn, int quantity) {
+        if (bookStockRepository.existsByIsbn(isbn)) {
+            throw new DuplicateBookStockException();
+        }
         BookStock bookStock = new BookStock(isbn, Stock.of(quantity));
         bookStockRepository.save(bookStock);
         return BookStockResponse.from(bookStock);

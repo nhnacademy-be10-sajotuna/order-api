@@ -38,7 +38,7 @@ public class Stock {
 
     protected Stock decrease(Stock stock) {
         if (stock == null) {
-            throw new NullValueException("증가할 재고는 null일 수 없습니다.");
+            throw new NullValueException("감소할 재고는 null일 수 없습니다.");
         }
         if (isSoldOut()) {
             throw new InsufficientStockException();
