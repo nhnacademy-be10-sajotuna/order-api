@@ -5,6 +5,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.orders.domain.Order;
+import shop.sajotuna.order.orders.domain.ReturnReason;
 import shop.sajotuna.order.orders.repository.OrderRepository;
 import shop.sajotuna.order.payment.domain.Payment;
 import shop.sajotuna.order.payment.repository.PaymentRepository;
@@ -12,6 +13,7 @@ import shop.sajotuna.order.point.domain.PointPolicyType;
 import shop.sajotuna.order.point.exception.OrderNotFoundException;
 import shop.sajotuna.order.point.service.PointQueueService;
 import shop.sajotuna.order.point.service.dto.event.PointEvent;
+import shop.sajotuna.order.stock.service.StockService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,8 +23,8 @@ import java.util.List;
 public class OrderStatusService {
 
     private final OrderRepository orderRepository;
-    private final PaymentRepository paymentRepository;
     private final PointQueueService pointQueueService;
+    private final StockService stockService;
 
     private static final String SCHEDULE = "0 0 12 * * *";
 
@@ -45,13 +47,16 @@ public class OrderStatusService {
 
     // 주문 반품 처리
     @Transactional
-    public void returnedOrder(Long userId, Long orderId) {
-        Order order = orderRepository.findById(orderId).orElseThrow(OrderNotFoundException::new);
-        order.returned();
+    public void returnOrder(Long userId, Long orderId, ReturnReason returnReason) {
+        Order order = orderRepository.findByIdWithOrderProducts(orderId).orElseThrow(OrderNotFoundException::new);
+        order.returned(returnReason);
 
         // 반품시 결제금액은 포인트로 적립됨
-        Payment payment = paymentRepository.getPaymentByOrder_Id(orderId);
-        pointQueueService.sendEarnPointsMessage(new PointEvent(userId, PointPolicyType.RETURNED, payment.getAmount()));
+        order.getOrderProducts().forEach(
+                product -> stockService.increaseStock(product.getIsbn(), product.getQty())
+        );
+
+        pointQueueService.sendEarnPointsMessage(new PointEvent(userId, PointPolicyType.RETURNED, order.getReturnPrice(returnReason)));
     }
 
     // 주문 취소 처리
