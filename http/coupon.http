@@ -21,3 +21,75 @@ Content-Type: application/json
   "couponId": 5,
   "issuedAt": "20250620151112"
 }
+
+### 쿠폰 상세 조회
+GET localhost:10366/api/coupons/1
+
+### 회원의 쿠폰 목록 조회
+GET localhost:10366/api/coupons/users
+X-User-Id: 1
+
+### 도서별 사용 가능 쿠폰 조회
+GET localhost:10366/api/coupons/available-coupons/book?isbn=9781234567890&price=15000
+X-User-Id: 1
+
+### 주문별 사용 가능 쿠폰 조회
+POST localhost:10366/api/coupons/available-coupons/order
+Content-Type: application/json
+X-User-Id: 1
+
+25000
+
+### 도서별 쿠폰 생성
+POST localhost:10366/api/admin/coupons/book?isbn=9781234567890
+Content-Type: application/json
+
+{
+  "name": "특정 도서 할인 쿠폰",
+  "couponType": "BOOK",
+  "policyType": "FIXED",
+  "discountAmount": 2000,
+  "minOrderAmount": 10000,
+  "maxDiscountAmount": 2000,
+  "validDays": 30
+}
+
+### 카테고리별 쿠폰 생성
+POST localhost:10366/api/admin/coupons/category?categoryId=1
+Content-Type: application/json
+
+{
+  "name": "카테고리 할인 쿠폰",
+  "couponType": "CATEGORY",
+  "policyType": "PERCENTAGE",
+  "discountAmount": 10,
+  "minOrderAmount": 20000,
+  "maxDiscountAmount": 5000,
+  "validDays": 60
+}
+
+### 쿠폰 수정
+PUT localhost:10366/api/admin/coupons/1
+Content-Type: application/json
+
+{
+  "name": "수정된 쿠폰",
+  "couponType": "ORDER",
+  "policyType": "FIXED",
+  "discountAmount": 1500,
+  "minOrderAmount": 15000,
+  "maxDiscountAmount": 1500,
+  "validDays": 90
+}
+
+### 쿠폰 삭제
+DELETE localhost:10366/api/admin/coupons/1
+
+### 웰컴 쿠폰 발급
+POST localhost:10366/api/coupons/users/issue-welcome
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "userEmail": "welcome@example.com"
+}

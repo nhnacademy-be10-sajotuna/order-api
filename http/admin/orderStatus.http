@@ -1,0 +1,2 @@
+### 배송중으로 전환
+PUT localhost:10366/api/admin/orders/7/delivery
