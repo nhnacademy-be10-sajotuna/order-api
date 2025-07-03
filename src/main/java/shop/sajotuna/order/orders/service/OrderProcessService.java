@@ -13,6 +13,7 @@ import shop.sajotuna.order.orders.repository.OrderRepository;
 import shop.sajotuna.order.orders.service.dto.command.CreateOrderCommand;
 import shop.sajotuna.order.point.domain.PointPolicyType;
 import shop.sajotuna.order.point.service.PointQueueService;
+import shop.sajotuna.order.stock.service.StockService;
 
 import java.util.List;
 
@@ -25,11 +26,17 @@ public class OrderProcessService {
     private final OrderRepository orderRepository;
     private final OrderProductCreateService orderProductCreateService;
     private final PointQueueService pointQueueService;
+    private final StockService stockService;
 
     @Transactional
     public OrderResponse processOrder(CreateOrderCommand command) {
 
         List<OrderProduct> orderProducts = orderProductCreateService.createOrderProducts(command.getItems());
+
+        orderProducts.forEach(product ->
+                stockService.decreaseStock(product.getIsbn(), product.getQty())
+        );
+
         OrderPrice orderPrice = pricingService.calculatePrices(orderProducts);
 
         Discounts discounts = new Discounts(Money.zero(), Money.zero());

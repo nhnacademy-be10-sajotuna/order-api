@@ -8,6 +8,7 @@ import shop.sajotuna.order.orders.domain.OrderProduct;
 import shop.sajotuna.order.orders.exception.PackageNotFoundException;
 import shop.sajotuna.order.orders.repository.OrderPackagingRepository;
 import shop.sajotuna.order.orders.service.dto.command.CreateOrderProductCommand;
+import shop.sajotuna.order.stock.service.StockService;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class OrderProductCreateService {
 
     private final OrderPackagingRepository orderPackagingRepository;
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<OrderProduct> createOrderProducts(List<CreateOrderProductCommand> productCommands) {
         return productCommands.stream()
                 .map(this::createOrderProduct)
