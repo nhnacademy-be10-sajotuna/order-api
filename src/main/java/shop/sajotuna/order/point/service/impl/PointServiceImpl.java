@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.point.domain.PointHistory;
+import shop.sajotuna.order.point.domain.PointHistoryType;
 import shop.sajotuna.order.point.domain.UserPoint;
 import shop.sajotuna.order.point.exception.UserPointNotFoundException;
 import shop.sajotuna.order.point.controller.response.PointHistoryResponse;
@@ -29,6 +30,23 @@ public class PointServiceImpl implements PointService {
         return pointHistoryRepository.getPointHistoriesByUserId(userId).stream()
                 .map(PointHistoryResponse::from)
                 .toList();
+    }
+
+    @Override
+    public Integer getAvailablePointByUserId(Long userId) {
+        List<PointHistory> histories = pointHistoryRepository.getPointHistoriesByUserId(userId);
+
+        int availablePoints = 0;
+
+        for (PointHistory pointHistory : histories) {
+            if(pointHistory.getType() == PointHistoryType.EARNED) {
+                availablePoints += pointHistory.getAmount().getAmount();
+            } else {
+                availablePoints -= pointHistory.getAmount().getAmount();
+            }
+        }
+
+        return Math.max(availablePoints, 0);
     }
 
     @Override

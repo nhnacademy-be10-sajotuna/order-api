@@ -9,5 +9,7 @@ public interface PointService {
 
     List<PointHistoryResponse> getPointsByUserId(Long userId);
 
+    Integer getAvailablePointByUserId(Long userId);
+
     PointHistoryResponse redeemPoints(Long userId, Money pointAmount);
 }
