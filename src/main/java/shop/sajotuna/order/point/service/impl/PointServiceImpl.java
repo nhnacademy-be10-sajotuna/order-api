@@ -32,6 +32,7 @@ public class PointServiceImpl implements PointService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Integer getAvailablePointByUserId(Long userId) {
         UserPoint userPoint = userPointRepository.findByUserId(userId).orElseThrow(UserPointNotFoundException::new);
 
