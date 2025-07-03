@@ -6,10 +6,8 @@ import org.apache.commons.lang.RandomStringUtils;
 import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.common.exception.NullValueException;
 import shop.sajotuna.order.orders.exception.InvalidStatusException;
-import shop.sajotuna.order.orders.exception.TimeOutException;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -101,6 +99,14 @@ public class Order {
         return orderPrice.getTotalProductPrice().minus(discounts.getTotalDiscountAmount());
     }
 
+    public Money getReturnPrice(ReturnReason returnReason) {
+        Money baseReturnPrice = getFinalPrice().minus(orderPrice.getDeliveryPrice());
+        if (returnReason.isDeductShippingFee()) {
+            return baseReturnPrice.minus(orderPrice.getDeliveryPrice());
+        }
+        return baseReturnPrice;
+    }
+
     // 주문 발송
     public void shipped() {
         if (!this.status.equals(OrderStatus.PENDING)) {
@@ -128,13 +134,13 @@ public class Order {
     }
 
     // 주문 반품
-    public void returned() {
+    public void returned(ReturnReason returnReason) {
         if (!this.status.equals(OrderStatus.DELIVERED)) {
             throw new InvalidStatusException();
         }
-        if (ChronoUnit.DAYS.between(shippingInfo.getShippingStartDate(), LocalDateTime.now()) > 10) {
-            throw new TimeOutException();
-        }
+
+        LocalDateTime shippingStartDate = shippingInfo.getShippingStartDate();
+        returnReason.validateReturnPeriod(shippingStartDate);
 
         this.status = OrderStatus.RETURNED;
     }
