@@ -19,4 +19,10 @@ public class PointController {
     public ResponseEntity<List<PointHistoryResponse>> getPointsByUserId(@RequestHeader("X-User-Id") Long userId) {
         return ResponseEntity.ok(pointService.getPointsByUserId(userId));
     }
+
+    // 회원의 사용 가능 포인트 가져오기
+    @GetMapping("/available")
+    public ResponseEntity<Integer> getAvailablePoint(@RequestHeader("X-User-Id") Long userId) {
+        return ResponseEntity.ok(pointService.getAvailablePointByUserId(userId));
+    }
 }
