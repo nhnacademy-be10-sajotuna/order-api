@@ -41,10 +41,14 @@ public class PointEarnConsumer {
             amount = pointPolicyService.getPointPolicy(event.getType()).calculatePoint(event.getTotalPrice());
         }
 
-        UserGrade userGrade = userGradeRepository.findByUserId(event.getUserId()).orElseThrow(UserGradeNotFoundException::new);
-        Money gradePoint = userGrade.getGrade().calculatePoint(event.getTotalPrice());
+        if (event.getType() == PointPolicyType.PURCHASE) {
+            UserGrade userGrade = userGradeRepository.findByUserId(event.getUserId()).orElseThrow(UserGradeNotFoundException::new);
+            Money gradePoint = userGrade.getGrade().calculatePoint(event.getTotalPrice());
 
-        userPoint.earnPoint(amount.plus(gradePoint));
+            amount = amount.plus(gradePoint);
+        }
+
+        userPoint.earnPoint(amount);
 
         // 포인트 이력 저장
         pointHistoryWriter.savePointEarnHistory(event.getUserId(), amount, event.getType().getDescription());
