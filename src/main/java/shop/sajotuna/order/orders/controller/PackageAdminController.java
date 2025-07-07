@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import shop.sajotuna.order.orders.controller.dto.request.PackageRequest;
 import shop.sajotuna.order.orders.controller.dto.response.PackageResponse;
-import shop.sajotuna.order.orders.service.PackageService;
+import shop.sajotuna.order.orders.service.product.PackageService;
 
 @RestController
 @RequestMapping("/api/admin/packages")
