@@ -1,5 +1,6 @@
 package shop.sajotuna.order.stock.service;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -8,12 +9,15 @@ import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import shop.sajotuna.order.stock.controller.request.CreateStockRequest;
 import shop.sajotuna.order.stock.controller.response.BookStockResponse;
 import shop.sajotuna.order.stock.domain.BookStock;
 import shop.sajotuna.order.stock.domain.Stock;
 import shop.sajotuna.order.stock.exception.BookStockNotFoundException;
 import shop.sajotuna.order.stock.exception.StockProcessingFailedException;
 import shop.sajotuna.order.stock.repository.BookStockRepository;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -68,6 +72,22 @@ public class StockService {
     public void recoverIncreaseStock(OptimisticLockingFailureException ex, String isbn, int quantity) {
         log.error("재고 증가 최종 실패 - ISBN: {}, 수량: {}, 재시도 횟수 초과", isbn, quantity, ex);
         throw new StockProcessingFailedException(isbn, quantity);
+    }
+
+    public void createStocks(List<CreateStockRequest> createStockRequest) {
+        List<String> isbns = createStockRequest.stream()
+                .map(CreateStockRequest::getIsbn)
+                .toList();
+
+        if (bookStockRepository.existsByIsbnIn(isbns)) {
+            throw new DuplicateBookStockException();
+        }
+
+        List<BookStock> bookStocks = createStockRequest.stream()
+                .map(request -> new BookStock(request.getIsbn(), Stock.of(request.getQuantity())))
+                .toList();
+
+        bookStockRepository.saveAll(bookStocks);
     }
 
 }

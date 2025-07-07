@@ -9,6 +9,8 @@ import shop.sajotuna.order.stock.controller.request.StockRequest;
 import shop.sajotuna.order.stock.controller.response.BookStockResponse;
 import shop.sajotuna.order.stock.service.StockService;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/stocks")
@@ -31,5 +33,11 @@ public class StockController {
     @PostMapping
     public ResponseEntity<BookStockResponse> createStock(@RequestBody @Valid CreateStockRequest createStockRequest) {
         return ResponseEntity.ok(stockService.createStock(createStockRequest.getIsbn(), createStockRequest.getQuantity()));
+    }
+
+    @PostMapping("/batch")
+    public ResponseEntity<Void> createStocks(@RequestBody @Valid List<CreateStockRequest> createStockRequest) {
+        stockService.createStocks(createStockRequest);
+        return ResponseEntity.ok().build();
     }
 }
