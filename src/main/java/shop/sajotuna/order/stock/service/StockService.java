@@ -74,20 +74,27 @@ public class StockService {
         throw new StockProcessingFailedException(isbn, quantity);
     }
 
-    public void createStocks(List<CreateStockRequest> createStockRequest) {
+    public List<BookStockResponse> createStocks(List<CreateStockRequest> createStockRequest) {
         List<String> isbns = createStockRequest.stream()
                 .map(CreateStockRequest::getIsbn)
                 .toList();
 
-        if (bookStockRepository.existsByIsbnIn(isbns)) {
-            throw new DuplicateBookStockException();
-        }
+        // 이미 존재하는 ISBN 조회
+        List<String> existingIsbns = bookStockRepository.findByIsbnIn(isbns).stream()
+                .map(BookStock::getIsbn)
+                .toList();
 
+        // 중복되지 않은 것만 필터링
         List<BookStock> bookStocks = createStockRequest.stream()
+                .filter(request -> !existingIsbns.contains(request.getIsbn()))
                 .map(request -> new BookStock(request.getIsbn(), Stock.of(request.getQuantity())))
                 .toList();
 
-        bookStockRepository.saveAll(bookStocks);
+        List<BookStock> savedStocks = bookStockRepository.saveAll(bookStocks);
+
+        return savedStocks.stream()
+                .map(BookStockResponse::from)
+                .toList();
     }
 
 }

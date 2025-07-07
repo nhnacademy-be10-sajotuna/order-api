@@ -24,3 +24,55 @@ Content-Type: application/json
   "isbn": "test2",
   "quantity": 10
 }
+
+###  다중 재고 생성
+POST http://localhost:10366/api/stocks/batch
+Content-Type: application/json
+
+[
+  {
+    "isbn": "9788936456002",
+    "quantity": 50
+  },
+  {
+    "isbn": "9788936456006",
+    "quantity": 30
+  },
+  {
+    "isbn": "9788936456003",
+    "quantity": 75
+  }
+]
+
+### 다중 재고 생성 - 일부 중복 테스트 (에러 발생)
+POST http://localhost:10366/api/stocks/batch
+Content-Type: application/json
+
+[
+  {
+    "isbn": "9788936456789",
+    "quantity": 40
+  },
+  {
+    "isbn": "9788936456004",
+    "quantity": 60
+  }
+]
+
+### 잘못된 데이터 테스트 (Validation 에러)
+POST http://localhost:10366/api/stocks
+Content-Type: application/json
+
+{
+  "isbn": "",
+  "quantity": -10
+}
+
+### 존재하지 않는 재고 증가 테스트 (에러 발생)
+PUT http://localhost:10366/api/stocks/increase
+Content-Type: application/json
+
+{
+  "isbn": "9999999999999",
+  "quantity": 10
+}

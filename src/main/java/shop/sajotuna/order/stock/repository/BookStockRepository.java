@@ -11,5 +11,5 @@ public interface BookStockRepository extends JpaRepository<BookStock, Long> {
 
     boolean existsByIsbn(String isbn);
 
-    boolean existsByIsbnIn(List<String> isbns);
+    List<BookStock> findByIsbnIn(List<String> isbns);
 }
