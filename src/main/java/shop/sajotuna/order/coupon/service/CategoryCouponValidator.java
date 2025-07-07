@@ -1,0 +1,31 @@
+package shop.sajotuna.order.coupon.service;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+import shop.sajotuna.order.coupon.exception.CouponNotFoundException;
+import shop.sajotuna.order.coupon.repository.CategoryCouponRepository;
+import shop.sajotuna.order.coupon.repository.UserCouponRepository;
+
+import java.util.Set;
+
+@Component
+@RequiredArgsConstructor
+public class CategoryCouponValidator {
+
+    private final CategoryCouponRepository categoryCouponRepository;
+    private final UserCouponRepository userCouponRepository;
+
+    public void validateCoupon(Long userId, Long couponId, Set<Long> categoryIds) {
+        hasCoupon(couponId, userId);
+
+        if (!categoryCouponRepository.existsByCouponIdAndCategoryIdIn(couponId, categoryIds)) {
+            throw new CouponNotFoundException();
+        }
+    }
+
+    private void hasCoupon(Long couponId, Long userId) {
+        if (!userCouponRepository.existsByUserIdAndCouponId(userId, couponId)) {
+            throw new CouponNotFoundException();
+        }
+    }
+}
