@@ -6,7 +6,7 @@ GET localhost:10366/api/orders/user
 X-User-Id: 1
 
 ### 회원 주문
-POST localhost:10366/api/orders/user
+POST localhost:10366/api/orders
 Content-Type: application/json
 X-User-Id: 1
 
@@ -54,7 +54,7 @@ GET localhost:10366/api/admin/orders/pending?page=0&size=5
 GET localhost:10366/api/orders/guest/bYY4mqih9Jvs5CH
 
 ### 게스트 주문 생성
-POST localhost:10366/api/orders/guest
+POST localhost:10366/api/orders
 Content-Type: application/json
 
 {
