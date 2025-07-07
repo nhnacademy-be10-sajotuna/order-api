@@ -4,10 +4,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
-import shop.sajotuna.order.common.domain.Money;
-import shop.sajotuna.order.orders.domain.Order;
-import shop.sajotuna.order.orders.domain.OrderPackaging;
-import shop.sajotuna.order.orders.domain.OrderProduct;
+
+import java.util.Set;
 
 @Data
 public class OrderProductRequest {
@@ -18,24 +16,18 @@ public class OrderProductRequest {
 
     @NotNull
     @PositiveOrZero
-    private int qty;
+    private Integer qty;
 
     @NotNull
     @PositiveOrZero
-    private int amount;
+    private Integer amount;
 
-    //TODO: 상품 쿠폰 추가
+    // 상품별 쿠폰 ID (선택적)
+    private Long bookCouponId;
 
     @NotNull
     private Boolean packagingRequest;
 
-    public OrderProduct toEntity(Order order, OrderPackaging orderPackaging){
-        return OrderProduct.builder()
-                .order(order)
-                .orderPackaging(orderPackaging)
-                .amount(Money.of(amount))
-                .qty(qty)
-                .isbn(isbn)
-                .packagingRequest(packagingRequest).build();
-    }
+    // 카테고리 ID 목록 (선택적)
+    private Set<Long> categoryIds;
 }
