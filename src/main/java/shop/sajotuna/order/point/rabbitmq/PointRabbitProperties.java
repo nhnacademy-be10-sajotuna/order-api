@@ -1,4 +1,4 @@
-package shop.sajotuna.order.common.rabbitmq;
+package shop.sajotuna.order.point.rabbitmq;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

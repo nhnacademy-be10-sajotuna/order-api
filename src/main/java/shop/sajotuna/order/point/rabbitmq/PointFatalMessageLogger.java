@@ -1,4 +1,4 @@
-package shop.sajotuna.order.common.rabbitmq;
+package shop.sajotuna.order.point.rabbitmq;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,12 +11,12 @@ import java.time.LocalDateTime;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class FatalMessageLogger {
+public class PointFatalMessageLogger {
 
-    private final FatalMessageRepository fatalMessageRepository;
+    private final PointFatalMessageRepository fatalMessageRepository;
 
-    public void logFatalMessage(Message message, Throwable t) {
-        FatalMessageLog log = FatalMessageLog.builder()
+    public void logPointFatalMessageLog(Message message, Throwable t) {
+        PointFatalMessageLog log = PointFatalMessageLog.builder()
                 .payload(new String(message.getBody(), StandardCharsets.UTF_8))
                 .headers(message.getMessageProperties().getHeaders().toString())
                 .exceptionType(t.getCause().getClass().getSimpleName())
@@ -28,7 +28,7 @@ public class FatalMessageLogger {
     }
 
     public void logParkingLotMessage(Message message) {
-        FatalMessageLog log = FatalMessageLog.builder()
+        PointFatalMessageLog log = PointFatalMessageLog.builder()
                 .payload(new String(message.getBody(), StandardCharsets.UTF_8))
                 .headers(message.getMessageProperties().getHeaders().toString())
                 .exceptionType("RetryableException")

@@ -1,4 +1,4 @@
-package shop.sajotuna.order.common.rabbitmq;
+package shop.sajotuna.order.point.rabbitmq;
 
 import org.springframework.amqp.rabbit.listener.ConditionalRejectingErrorHandler;
 import org.springframework.amqp.rabbit.listener.FatalExceptionStrategy;
@@ -7,7 +7,7 @@ import shop.sajotuna.order.point.exception.InvalidUserIdException;
 import shop.sajotuna.order.point.exception.NegativePointException;
 import shop.sajotuna.order.point.exception.UserPointNotFoundException;
 
-public class CustomExceptionStrategy implements FatalExceptionStrategy {
+public class CustomPointExceptionStrategy implements FatalExceptionStrategy {
 
     private final FatalExceptionStrategy fatalExceptionStrategy = new ConditionalRejectingErrorHandler.DefaultExceptionStrategy();
 

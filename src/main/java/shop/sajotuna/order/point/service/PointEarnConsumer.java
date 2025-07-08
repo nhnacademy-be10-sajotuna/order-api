@@ -25,7 +25,7 @@ public class PointEarnConsumer {
     private final UserGradeRepository userGradeRepository;
 
     // TODO: 역할 분리 필요
-    @RabbitListener(queues = "${rabbitmq.point.queue}")
+    @RabbitListener(queues = "${rabbitmq.point.queue}", containerFactory = "pointListenerContainerFactory")
     @Transactional
     public void onMessage(PointEvent event) {
         log.info("Point Earned Event Received: {}", event);

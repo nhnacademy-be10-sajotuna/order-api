@@ -3,9 +3,9 @@ package shop.sajotuna.order.point.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import shop.sajotuna.order.common.rabbitmq.FatalMessageLog;
-import shop.sajotuna.order.common.rabbitmq.FatalMessageRepository;
-import shop.sajotuna.order.common.rabbitmq.PointRabbitProperties;
+import shop.sajotuna.order.point.rabbitmq.PointFatalMessageLog;
+import shop.sajotuna.order.point.rabbitmq.PointFatalMessageRepository;
+import shop.sajotuna.order.point.rabbitmq.PointRabbitProperties;
 import org.junit.jupiter.api.Test;
 import org.awaitility.Awaitility;
 import shop.sajotuna.order.point.service.dto.event.PointEvent;
@@ -28,7 +28,7 @@ public class FatalExceptionLogTest {
     private PointRabbitProperties pointRabbitProperties;
 
     @Autowired
-    private FatalMessageRepository fatalMessageRepository;
+    private PointFatalMessageRepository fatalMessageRepository;
 
     @Test
     void whenFatalException_throwsImmediateAcknowledgeAmqpExceptionAndSaveLog() {
@@ -38,7 +38,7 @@ public class FatalExceptionLogTest {
         Awaitility.await()
                 .atMost(Duration.ofSeconds(5))
                 .untilAsserted(() -> {
-                    List<FatalMessageLog> logs = fatalMessageRepository.findAll();
+                    List<PointFatalMessageLog> logs = fatalMessageRepository.findAll();
                     assertFalse(logs.isEmpty());
                 });
     }
