@@ -8,6 +8,7 @@ import shop.sajotuna.order.common.exception.NullValueException;
 import shop.sajotuna.order.orders.exception.InvalidStatusException;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -82,9 +83,14 @@ public class Order {
         return order;
     }
 
-    // 15자리 랜덤 OrderNumber 생성 (숫자 + 문자)
+    // 오늘 날짜 + 16자리 랜덤 OrderNumber 생성 (숫자 + 문자)
     public static String getRandomOrderNumber() {
-        return RandomStringUtils.random(15, true, true);
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String now = dtf.format(LocalDateTime.now());
+
+        String randomString = RandomStringUtils.randomAlphanumeric(16);
+
+        return now + randomString;
     }
 
     public Money getTotalPrice() {
