@@ -16,15 +16,7 @@ public class CategoryCouponValidator {
     private final UserCouponRepository userCouponRepository;
 
     public void validateCoupon(Long userId, Long couponId, Set<Long> categoryIds) {
-        hasCoupon(couponId, userId);
-
         if (!categoryCouponRepository.existsByCouponIdAndCategoryIdIn(couponId, categoryIds)) {
-            throw new CouponNotFoundException();
-        }
-    }
-
-    private void hasCoupon(Long couponId, Long userId) {
-        if (!userCouponRepository.existsByUserIdAndCouponId(userId, couponId)) {
             throw new CouponNotFoundException();
         }
     }

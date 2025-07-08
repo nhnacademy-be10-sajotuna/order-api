@@ -15,6 +15,7 @@ import shop.sajotuna.order.orders.exception.PackageNotFoundException;
 import shop.sajotuna.order.orders.repository.OrderPackagingRepository;
 import shop.sajotuna.order.orders.service.dto.command.CreateOrderProductCommand;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Set;
 
@@ -63,6 +64,7 @@ public class OrderProductCreateService {
     private UserCoupon getUserCoupon(Long userId, Long userCouponId, String isbn, Set<Long> categoryIds) {
         UserCoupon userCoupon = userCouponRepository.findByIdWithCoupon(userCouponId)
                 .orElseThrow(CouponNotFoundException::new);
+        hasCoupon(userCouponId, userId);
 
         if (userCoupon.getCoupon().getCouponType() == CouponType.BOOK) {
             bookCouponValidator.validateCoupon(userId, userCoupon.getCoupon().getId(), isbn);
@@ -71,5 +73,11 @@ public class OrderProductCreateService {
             categoryCouponValidator.validateCoupon(userId, userCoupon.getCoupon().getId(), categoryIds);
         }
         return userCoupon;
+    }
+
+    private void hasCoupon(Long couponId, Long userId) {
+        if (!userCouponRepository.existsByUserIdAndCouponId(userId, couponId)) {
+            throw new CouponNotFoundException();
+        }
     }
 }

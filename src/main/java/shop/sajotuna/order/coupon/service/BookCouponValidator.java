@@ -14,15 +14,7 @@ public class BookCouponValidator {
     private final UserCouponRepository userCouponRepository;
 
     public void validateCoupon(Long userId, Long couponId, String isbn) {
-        hasCoupon(couponId, userId);
-
         if (!bookCouponRepository.existsByCouponIdAndIsbn(couponId, isbn)) {
-            throw new CouponNotFoundException();
-        }
-    }
-
-    private void hasCoupon(Long couponId, Long userId) {
-        if (!userCouponRepository.existsByUserIdAndCouponId(userId, couponId)) {
             throw new CouponNotFoundException();
         }
     }
