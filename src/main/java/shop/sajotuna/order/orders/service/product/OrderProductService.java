@@ -49,7 +49,11 @@ public class OrderProductService {
         orderProductRepository.deleteByOrder_Id(orderId);
     }
 
+    @Transactional(readOnly = true)
     public boolean isEligibleForReview(Long userId, String isbn) {
+        if (userId == null || isbn == null || isbn.trim().isEmpty()) {
+            return false;
+        }
         return orderProductRepository.existsByOrderOrdererUserIdAndIsbnAndOrderStatus(userId, isbn, OrderStatus.DELIVERED);
     }
 }
