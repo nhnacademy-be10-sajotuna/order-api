@@ -1,4 +1,4 @@
-package shop.sajotuna.order.coupon.dto;
+package shop.sajotuna.order.coupon.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotNull;

@@ -1,13 +1,12 @@
 package shop.sajotuna.order.coupon.scheduler;
 
-import jakarta.persistence.Column;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import shop.sajotuna.order.coupon.client.BirthdayClient;
 import shop.sajotuna.order.coupon.domain.Coupon;
-import shop.sajotuna.order.coupon.dto.BirthdayUserResponse;
-import shop.sajotuna.order.coupon.dto.UserCouponRequest;
+import shop.sajotuna.order.coupon.dto.response.BirthdayUserResponse;
+import shop.sajotuna.order.coupon.dto.request.UserCouponRequest;
 import shop.sajotuna.order.coupon.exception.CouponNotFoundException;
 import shop.sajotuna.order.coupon.repository.CouponRepository;
 import shop.sajotuna.order.coupon.service.UserCouponService;

@@ -4,9 +4,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import shop.sajotuna.order.coupon.dto.UserCouponRequest;
-import shop.sajotuna.order.coupon.dto.UserCouponResponse;
-import shop.sajotuna.order.coupon.dto.WelcomeCouponRequest;
+import shop.sajotuna.order.coupon.dto.request.UserCouponRequest;
+import shop.sajotuna.order.coupon.dto.response.UserCouponDetailResponse;
+import shop.sajotuna.order.coupon.dto.response.UserCouponResponse;
+import shop.sajotuna.order.coupon.dto.request.WelcomeCouponRequest;
 import shop.sajotuna.order.coupon.service.UserCouponService;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public class UserCouponController {
 
     // 유저가 가진 쿠폰 목록 조회
     @GetMapping
-    public ResponseEntity<List<UserCouponResponse>> getUserCoupons(@RequestHeader(name = "X-User-Id") Long userId) {
+    public ResponseEntity<List<UserCouponDetailResponse>> getUserCoupons(@RequestHeader(name = "X-User-Id") Long userId) {
         return ResponseEntity.ok(userCouponService.getUserCoupons(userId));
     }
 
