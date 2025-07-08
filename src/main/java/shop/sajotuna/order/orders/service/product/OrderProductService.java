@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.orders.controller.dto.response.OrderProductResponse;
 import shop.sajotuna.order.orders.domain.OrderProduct;
+import shop.sajotuna.order.orders.domain.OrderStatus;
 import shop.sajotuna.order.orders.exception.OrderProductNotFoundException;
 import shop.sajotuna.order.orders.repository.OrderProductRepository;
 import shop.sajotuna.order.orders.repository.OrderRepository;
@@ -46,5 +47,9 @@ public class OrderProductService {
             throw new OrderNotFoundException();
         }
         orderProductRepository.deleteByOrder_Id(orderId);
+    }
+
+    public boolean isEligibleForReview(Long userId, String isbn) {
+        return orderProductRepository.existsByOrderOrdererUserIdAndIsbnAndOrderStatus(userId, isbn, OrderStatus.DELIVERED);
     }
 }

@@ -25,4 +25,9 @@ public class OrderProductController {
     public ResponseEntity<List<OrderProductResponse>> getOrderProducts(@PathVariable Long orderId){
         return ResponseEntity.ok(productService.findByOrderId(orderId));
     }
+
+    @GetMapping("/{userId}/{isbn}")
+    public ResponseEntity<Boolean> isEligibleForReview(@PathVariable Long userId, @PathVariable String isbn) {
+        return ResponseEntity.ok(productService.isEligibleForReview(userId, isbn));
+    }
 }
