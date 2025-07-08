@@ -27,6 +27,15 @@ public class OrderQueryService {
     private final PaymentRepository paymentRepository;
     private final OrderProductService orderProductService;
 
+    public OrderInfoResponse getOrderInfo(String orderNumber){
+        Order order = orderRepository.findOrderByOrderNumber(orderNumber);
+        if(order == null){
+            throw new OrderNotFoundException();
+        }
+
+        return OrderInfoResponse.from(order);
+    }
+
     // 주문 조회
     public OrderDetailResponse findOrderDetail(long orderId){
         Order order = orderRepository.findById(orderId).orElseThrow(OrderNotFoundException::new);

@@ -17,14 +17,19 @@ import shop.sajotuna.order.orders.service.OrderQueryService;
 public class OrderController {
     private final OrderQueryService orderQueryService;
 
+    @GetMapping("/info/{order-number}")
+    public ResponseEntity<OrderInfoResponse> getOrderInfo(@PathVariable("order-number") String orderNumber){
+        return ResponseEntity.ok(orderQueryService.getOrderInfo(orderNumber));
+    }
+
     // 주문 조회
-    @GetMapping("/{order-id}")
+    @GetMapping("/detail/{order-id}")
     public ResponseEntity<OrderDetailResponse> getOrder(@PathVariable("order-id") Long orderId) {
         return ResponseEntity.ok(orderQueryService.findOrderDetail(orderId));
     }
 
     // 비회원 주문 조회
-    @GetMapping("/guest/{order-number}")
+    @GetMapping("/detail/guest/{order-number}")
     public ResponseEntity<OrderDetailResponse> getGuestOrder(@PathVariable("order-number") String orderNumber) {
         return ResponseEntity.ok(orderQueryService.findOrderDetailByOrderNumber(orderNumber));
     }
