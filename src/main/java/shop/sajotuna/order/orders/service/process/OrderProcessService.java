@@ -1,18 +1,17 @@
-package shop.sajotuna.order.orders.service;
+package shop.sajotuna.order.orders.service.process;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.orders.domain.Discounts;
 import shop.sajotuna.order.orders.domain.OrderPrice;
 import shop.sajotuna.order.orders.domain.OrderProduct;
 import shop.sajotuna.order.orders.controller.dto.response.OrderResponse;
 import shop.sajotuna.order.orders.domain.Order;
 import shop.sajotuna.order.orders.repository.OrderRepository;
+import shop.sajotuna.order.orders.service.product.OrderProductCreateService;
+import shop.sajotuna.order.orders.service.pricing.PricingService;
 import shop.sajotuna.order.orders.service.dto.command.CreateOrderCommand;
-import shop.sajotuna.order.point.domain.PointPolicyType;
-import shop.sajotuna.order.point.service.PointQueueService;
 import shop.sajotuna.order.stock.service.StockService;
 
 import java.util.List;
@@ -22,16 +21,16 @@ import java.util.List;
 public class OrderProcessService {
 
     private final PricingService pricingService;
-    private final DiscountService discountService;
     private final OrderRepository orderRepository;
     private final OrderProductCreateService orderProductCreateService;
-    private final PointQueueService pointQueueService;
     private final StockService stockService;
+    private final OrderProcessorFactory orderProcessorFactory;
 
     @Transactional
     public OrderResponse processOrder(CreateOrderCommand command) {
 
-        List<OrderProduct> orderProducts = orderProductCreateService.createOrderProducts(command.getItems());
+        //여기서 쿠폰을 가진 OrderProduct 생성
+        List<OrderProduct> orderProducts = orderProductCreateService.createOrderProducts(command.getItems(), command.getUserId());
 
         orderProducts.forEach(product ->
                 stockService.decreaseStock(product.getIsbn(), product.getQty())
@@ -39,20 +38,15 @@ public class OrderProcessService {
 
         OrderPrice orderPrice = pricingService.calculatePrices(orderProducts);
 
-        Discounts discounts = new Discounts(Money.zero(), Money.zero());
-
-        // 비회원 주문일 경우 할인이 적용되지 않음
-        if (command.getUserId() != null) {
-            discounts = discountService.discount(command.getOrderCouponId(), command.getUsedPoint(), command.getUserId(), orderPrice.getTotalProductPrice());
-        }
+        // Factory를 통해 적절한 Processor 선택
+        OrderProcessor orderProcessor = orderProcessorFactory.getOrderProcessor(command.getUserId());
+        Discounts discounts = orderProcessor.processDiscounts(command, orderProducts);
 
         Order order = Order.createOrder(command.getOrderer(), command.getShippingInfo(), orderPrice, discounts, orderProducts);
         orderRepository.save(order);
 
-        // 비회원 주문일 경우 포인트 적립이 되지 않음
-        if(command.getUserId() != null) {
-            pointQueueService.sendEarnPointsMessage(command.getUserId(), PointPolicyType.PURCHASE, order.getFinalProductPrice());
-        }
+        // 포인트 적립 처리
+        orderProcessor.processPointEarn(command, order);
 
         return OrderResponse.from(order);
     }

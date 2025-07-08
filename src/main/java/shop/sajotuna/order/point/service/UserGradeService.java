@@ -3,7 +3,7 @@ package shop.sajotuna.order.point.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import shop.sajotuna.order.common.domain.Money;
-import shop.sajotuna.order.orders.service.OrderTotalPriceService;
+import shop.sajotuna.order.orders.service.pricing.OrderTotalPriceService;
 import shop.sajotuna.order.point.controller.response.GradePointPolicyResponse;
 import shop.sajotuna.order.point.domain.Grade;
 import shop.sajotuna.order.point.domain.GradePointPolicy;

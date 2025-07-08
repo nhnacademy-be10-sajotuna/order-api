@@ -1,8 +1,8 @@
 package shop.sajotuna.order.coupon.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.coupon.domain.Coupon;
 import shop.sajotuna.order.coupon.domain.CouponType;
@@ -63,6 +63,7 @@ public class UserCouponService {
     }
 
     // 사용 가능한 책 쿠폰 조회
+    @Transactional(readOnly = true)
     public List<CouponResponse> getAvailableCoupons(Long userId, BookInfo bookInfo) {
 
         List<UserCoupon> userCoupons = userCouponRepository.findByUserId(userId);
@@ -86,6 +87,7 @@ public class UserCouponService {
     }
 
     // 사용 가능한 오더 쿠폰 조회
+    @Transactional(readOnly = true)
     public List<CouponResponse> getAvailableOrderCoupons(Long userId, Money totalPrice){
         List<UserCoupon> userCoupons = userCouponRepository.findByUserId(userId);
 

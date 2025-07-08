@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import shop.sajotuna.order.orders.controller.dto.request.CreateOrderRequest;
 import shop.sajotuna.order.orders.controller.dto.response.OrderResponse;
-import shop.sajotuna.order.orders.service.OrderProcessService;
+import shop.sajotuna.order.orders.service.process.OrderProcessService;
 
 @RestController
 @RequestMapping("/api/orders")

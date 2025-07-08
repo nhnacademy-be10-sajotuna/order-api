@@ -14,7 +14,6 @@ import java.math.RoundingMode;
 @Builder
 @NoArgsConstructor
 @Table(name = "coupon")
-//TODO: Coupon 내부 금액 관련 필드 Money로 변경
 public class Coupon {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,9 +58,9 @@ public class Coupon {
         }
 
         Money discount = totalProductPrice.percentage(discountAmount, RoundingMode.DOWN);
-            if (discount.isGreaterThan(this.maxDiscountAmount)) {
-                discount = this.maxDiscountAmount;
-            }
+        if (discount.isGreaterThan(this.maxDiscountAmount)) {
+            discount = this.maxDiscountAmount;
+        }
         // 할인 금액이 주문 금액을 초과하지 않도록 제한
         if (discount.isGreaterThan(totalProductPrice)) {
             discount = totalProductPrice;

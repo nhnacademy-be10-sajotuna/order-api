@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import shop.sajotuna.order.orders.controller.dto.response.OrderProductResponse;
-import shop.sajotuna.order.orders.service.OrderProductService;
+import shop.sajotuna.order.orders.service.product.OrderProductService;
 
 import java.util.List;
 

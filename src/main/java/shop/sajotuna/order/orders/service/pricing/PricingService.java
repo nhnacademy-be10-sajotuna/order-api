@@ -1,4 +1,4 @@
-package shop.sajotuna.order.orders.service;
+package shop.sajotuna.order.orders.service.pricing;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

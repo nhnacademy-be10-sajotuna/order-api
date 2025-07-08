@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import shop.sajotuna.order.orders.domain.Order;
 import shop.sajotuna.order.orders.repository.OrderRepository;
-import shop.sajotuna.order.orders.service.OrderProductService;
+import shop.sajotuna.order.orders.service.product.OrderProductService;
 import shop.sajotuna.order.payment.domain.Payment;
 import shop.sajotuna.order.payment.domain.PaymentMethod;
 import shop.sajotuna.order.payment.domain.TossPayment;
