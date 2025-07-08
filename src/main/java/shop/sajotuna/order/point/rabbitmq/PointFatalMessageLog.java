@@ -1,4 +1,4 @@
-package shop.sajotuna.order.common.rabbitmq;
+package shop.sajotuna.order.point.rabbitmq;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class FatalMessageLog {
+public class PointFatalMessageLog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

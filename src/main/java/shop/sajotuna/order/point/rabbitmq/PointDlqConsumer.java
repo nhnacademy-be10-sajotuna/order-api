@@ -1,4 +1,4 @@
-package shop.sajotuna.order.common.rabbitmq;
+package shop.sajotuna.order.point.rabbitmq;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ public class PointDlqConsumer {
 
     private final RabbitTemplate rabbitTemplate;
     private final PointRabbitProperties pointRabbitProperties;
-    private final FatalMessageLogger fatalMessageLogger;
+    private final PointFatalMessageLogger fatalMessageLogger;
 
     @RabbitListener(queues = "${rabbitmq.point.dlx-queue}")
     public void consumeDlqMessage(Message dlqMessage) {

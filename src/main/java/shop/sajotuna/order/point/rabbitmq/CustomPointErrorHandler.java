@@ -1,4 +1,4 @@
-package shop.sajotuna.order.common.rabbitmq;
+package shop.sajotuna.order.point.rabbitmq;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.AmqpRejectAndDontRequeueException;
@@ -8,15 +8,15 @@ import org.springframework.amqp.rabbit.support.ListenerExecutionFailedException;
 import org.springframework.util.ErrorHandler;
 
 @RequiredArgsConstructor
-public class CustomErrorHandler implements ErrorHandler {
+public class CustomPointErrorHandler implements ErrorHandler {
 
     private final FatalExceptionStrategy exceptionStrategy;
-    private final FatalMessageLogger fatalMessageLogger;
+    private final PointFatalMessageLogger fatalMessageLogger;
 
     @Override
     public void handleError(Throwable t) {
         if (exceptionStrategy.isFatal(t) && t instanceof ListenerExecutionFailedException ex) {
-            fatalMessageLogger.logFatalMessage(ex.getFailedMessage(), t);
+            fatalMessageLogger.logPointFatalMessageLog(ex.getFailedMessage(), t);
 
             throw new ImmediateAcknowledgeAmqpException(
                     "Fatal exception encountered. Retry is futile: " + t.getMessage(), t);
