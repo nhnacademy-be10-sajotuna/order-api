@@ -1,6 +1,8 @@
 package shop.sajotuna.order.point.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.common.domain.Money;
@@ -29,6 +31,13 @@ public class PointServiceImpl implements PointService {
         return pointHistoryRepository.getPointHistoriesByUserId(userId).stream()
                 .map(PointHistoryResponse::from)
                 .toList();
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public Page<PointHistoryResponse> getPointsByUserId(Long userId, Pageable pageable) {
+        return pointHistoryRepository.getPointHistoriesByUserId(userId, pageable)
+                .map(PointHistoryResponse::from);
     }
 
     @Override
