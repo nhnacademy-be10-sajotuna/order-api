@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import shop.sajotuna.order.common.domain.Money;
-import shop.sajotuna.order.coupon.dto.BookInfo;
-import shop.sajotuna.order.coupon.dto.CouponResponse;
+import shop.sajotuna.order.coupon.dto.request.BookInfo;
+import shop.sajotuna.order.coupon.dto.response.CouponResponse;
 import shop.sajotuna.order.coupon.service.UserCouponService;
 
 import java.util.List;

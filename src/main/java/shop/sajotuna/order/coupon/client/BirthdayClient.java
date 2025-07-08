@@ -2,7 +2,7 @@ package shop.sajotuna.order.coupon.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
-import shop.sajotuna.order.coupon.dto.BirthdayUserResponse;
+import shop.sajotuna.order.coupon.dto.response.BirthdayUserResponse;
 
 import java.util.List;
 

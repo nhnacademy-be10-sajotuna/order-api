@@ -8,10 +8,11 @@ import shop.sajotuna.order.coupon.domain.Coupon;
 import shop.sajotuna.order.coupon.domain.CouponType;
 import shop.sajotuna.order.coupon.domain.UserCoupon;
 import shop.sajotuna.order.coupon.domain.UserCouponType;
-import shop.sajotuna.order.coupon.dto.BookInfo;
-import shop.sajotuna.order.coupon.dto.CouponResponse;
-import shop.sajotuna.order.coupon.dto.UserCouponRequest;
-import shop.sajotuna.order.coupon.dto.UserCouponResponse;
+import shop.sajotuna.order.coupon.dto.request.BookInfo;
+import shop.sajotuna.order.coupon.dto.response.CouponResponse;
+import shop.sajotuna.order.coupon.dto.request.UserCouponRequest;
+import shop.sajotuna.order.coupon.dto.response.UserCouponDetailResponse;
+import shop.sajotuna.order.coupon.dto.response.UserCouponResponse;
 import shop.sajotuna.order.coupon.repository.BookCouponRepository;
 import shop.sajotuna.order.coupon.repository.CategoryCouponRepository;
 import shop.sajotuna.order.coupon.repository.UserCouponRepository;
@@ -21,7 +22,6 @@ import shop.sajotuna.order.coupon.exception.CouponNotFoundException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -34,11 +34,14 @@ public class UserCouponService {
 
     // 유저가 가진 쿠폰 목록 조회
     @Transactional
-    public List<UserCouponResponse> getUserCoupons(Long userId) {
+    public List<UserCouponDetailResponse> getUserCoupons(Long userId) {
         List<UserCoupon> userCoupons = userCouponRepository.findByUserId(userId);
         userCoupons.forEach(UserCoupon::updateExpiredCoupon);
 
-        return userCoupons.stream().map(UserCouponResponse::from).collect(Collectors.toList());
+        return userCoupons.stream()
+                .map(userCoupon ->
+                        UserCouponDetailResponse.from(userCoupon, userCoupon.getCoupon()))
+                .toList();
     }
 
     // 유저 쿠폰 생성

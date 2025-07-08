@@ -1,4 +1,4 @@
-package shop.sajotuna.order.coupon.dto;
+package shop.sajotuna.order.coupon.dto.response;
 
 import lombok.Data;
 
