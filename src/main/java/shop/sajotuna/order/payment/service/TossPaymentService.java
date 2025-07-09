@@ -106,7 +106,10 @@ public class TossPaymentService implements ExternalPaymentService{
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            if(response.statusCode() != 200){
+            if(response.statusCode() == 200){
+                // TODO: 사용한 쿠폰, 포인트 반환
+
+            } else {
                 throw new PaymentFailException();
             }
         } catch (IOException | InterruptedException e) {

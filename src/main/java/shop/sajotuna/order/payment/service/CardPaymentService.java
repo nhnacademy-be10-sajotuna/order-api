@@ -33,7 +33,7 @@ public class CardPaymentService implements ExternalPaymentService {
 
     @Override
     public void requestPaymentCancel(Payment payment, String cancelReason) {
-
+        // TODO: 사용한 쿠폰, 포인트 반환
     }
 
     @Override
