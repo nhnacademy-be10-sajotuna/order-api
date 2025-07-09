@@ -12,6 +12,7 @@ import shop.sajotuna.order.payment.domain.PaymentMethod;
 import shop.sajotuna.order.payment.domain.TossPayment;
 import shop.sajotuna.order.payment.dto.PaymentConfirmRequest;
 import shop.sajotuna.order.payment.dto.PaymentResponse;
+import shop.sajotuna.order.payment.exception.PaymentNotFoundException;
 import shop.sajotuna.order.payment.repository.PaymentRepository;
 import shop.sajotuna.order.payment.repository.TossPaymentRepository;
 import shop.sajotuna.order.point.exception.OrderNotFoundException;
@@ -90,6 +91,9 @@ public class TossPaymentService implements ExternalPaymentService{
     @Override
     public void requestPaymentCancel(Payment payment, String cancelReason) {
         TossPayment tossPayment = tossPaymentRepository.getByPayment_Id(payment.getId());
+        if(tossPayment == null){
+            throw new PaymentNotFoundException();
+        }
 
         try(HttpClient client = HttpClient.newHttpClient()) {
             HttpRequest request = HttpRequest.newBuilder()
