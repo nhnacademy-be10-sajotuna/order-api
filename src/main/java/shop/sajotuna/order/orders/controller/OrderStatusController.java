@@ -24,8 +24,8 @@ public class OrderStatusController {
 
     // 주문 취소 처리
     @PutMapping("/cancel")
-    public ResponseEntity<Void> cancelOrder(@PathVariable("order-id") Long orderId){
-        orderStatusService.cancelOrder(orderId);
+    public ResponseEntity<Void> cancelOrder(@RequestHeader("X-User-Id") Long userId, @PathVariable("order-id") Long orderId){
+        orderStatusService.cancelOrder(userId, orderId);
 
         return ResponseEntity.noContent().build();
     }

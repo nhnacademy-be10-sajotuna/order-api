@@ -7,9 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.orders.domain.Order;
 import shop.sajotuna.order.orders.domain.ReturnReason;
 import shop.sajotuna.order.orders.repository.OrderRepository;
-import shop.sajotuna.order.payment.domain.Payment;
-import shop.sajotuna.order.payment.repository.PaymentRepository;
+import shop.sajotuna.order.payment.service.PaymentService;
 import shop.sajotuna.order.point.domain.PointPolicyType;
+import shop.sajotuna.order.point.exception.InvalidUserIdException;
 import shop.sajotuna.order.point.exception.OrderNotFoundException;
 import shop.sajotuna.order.point.service.PointQueueService;
 import shop.sajotuna.order.point.service.dto.event.PointEvent;
@@ -17,6 +17,7 @@ import shop.sajotuna.order.stock.service.StockService;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +26,7 @@ public class OrderStatusService {
     private final OrderRepository orderRepository;
     private final PointQueueService pointQueueService;
     private final StockService stockService;
+    private final PaymentService paymentService;
 
     private static final String SCHEDULE = "0 0 12 * * *";
 
@@ -61,8 +63,14 @@ public class OrderStatusService {
 
     // 주문 취소 처리
     @Transactional
-    public void cancelOrder(Long orderId) {
+    public void cancelOrder(Long userId, Long orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(OrderNotFoundException::new);
+
+        if(!Objects.equals(userId, order.getOrderer().getUserId())) {
+            throw new InvalidUserIdException();
+        }
         order.cancelled();
+        // 결제 취소 요청
+        paymentService.cancelPayment(orderId, "cancel");
     }
 }

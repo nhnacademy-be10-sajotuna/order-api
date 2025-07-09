@@ -12,6 +12,7 @@ import shop.sajotuna.order.payment.domain.PaymentMethod;
 import shop.sajotuna.order.payment.domain.TossPayment;
 import shop.sajotuna.order.payment.dto.PaymentConfirmRequest;
 import shop.sajotuna.order.payment.dto.PaymentResponse;
+import shop.sajotuna.order.payment.exception.PaymentFailException;
 import shop.sajotuna.order.payment.exception.PaymentNotFoundException;
 import shop.sajotuna.order.payment.repository.PaymentRepository;
 import shop.sajotuna.order.payment.repository.TossPaymentRepository;
@@ -75,7 +76,7 @@ public class TossPaymentService implements ExternalPaymentService{
                 orderProductService.deleteByOrderId(order.getId());
                 orderRepository.delete(order);
 
-                return null;
+                throw new PaymentFailException();
             }
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
@@ -103,7 +104,11 @@ public class TossPaymentService implements ExternalPaymentService{
                     .method("POST", HttpRequest.BodyPublishers.ofString("{\"cancelReason\":" + cancelReason + "\"}"))
                     .build();
 
-            client.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if(response.statusCode() != 200){
+                throw new PaymentFailException();
+            }
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
