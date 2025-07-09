@@ -39,6 +39,13 @@ rabbitmq:
     parking-lot-queue: sajotuna.point.parking.queue
     parking-lot-exchange: sajotuna.point.parking.exchange
     parking-lot-routing-key: sajotuna.point.earn.dead
+
+  coupon:
+    queue: sajotuna.coupon.queue
+    exchange: sajotuna.coupon.exchange
+    routing-key: sajotuna.coupon.issue
+
+
 logging:
   level:
     com.netflix.discovery: off

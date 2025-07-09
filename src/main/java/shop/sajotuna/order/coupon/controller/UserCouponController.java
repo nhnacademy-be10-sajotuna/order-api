@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.*;
 import shop.sajotuna.order.coupon.dto.UserCouponRequest;
 import shop.sajotuna.order.coupon.dto.UserCouponResponse;
 import shop.sajotuna.order.coupon.dto.WelcomeCouponRequest;
+import shop.sajotuna.order.coupon.service.CouponQueueService;
 import shop.sajotuna.order.coupon.service.UserCouponService;
+import shop.sajotuna.order.coupon.service.dto.event.CouponEvent;
 
 import java.util.List;
 
@@ -16,6 +18,7 @@ import java.util.List;
 @RequestMapping("/api/coupons/users")
 public class UserCouponController {
     private final UserCouponService userCouponService;
+    private final CouponQueueService couponQueueService;
 
     // 유저가 가진 쿠폰 목록 조회
     @GetMapping
@@ -34,4 +37,9 @@ public class UserCouponController {
         return ResponseEntity.ok(userCouponService.issueWelcomeCoupon(welcomeCouponRequest.getUserId()));
     }
 
+    @PostMapping("/request-issue")
+    public ResponseEntity<Void> requestUserCoupon(@RequestBody @Valid CouponEvent couponEvent) {
+        couponQueueService.sendIssueCouponMessage(couponEvent);
+        return ResponseEntity.ok().build();
+    }
 }
