@@ -3,7 +3,7 @@ package shop.sajotuna.order.coupon.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import shop.sajotuna.order.coupon.dto.CouponResponse;
+import shop.sajotuna.order.coupon.dto.response.CouponResponse;
 import shop.sajotuna.order.coupon.service.CouponService;
 
 @RestController

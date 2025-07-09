@@ -2,10 +2,12 @@ package shop.sajotuna.order.stock.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import shop.sajotuna.order.stock.controller.request.CreateStockRequest;
 import shop.sajotuna.order.stock.controller.request.StockRequest;
+import shop.sajotuna.order.stock.controller.request.UpdateStockRequest;
 import shop.sajotuna.order.stock.controller.response.BookStockResponse;
 import shop.sajotuna.order.stock.service.StockService;
 
@@ -38,6 +40,12 @@ public class StockController {
     @PostMapping("/batch")
     public ResponseEntity<Void> createStocks(@RequestBody @Valid List<CreateStockRequest> createStockRequest) {
         stockService.createStocks(createStockRequest);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PutMapping
+    public ResponseEntity<Void> updateStock(@RequestBody @Valid UpdateStockRequest updateStockRequest) {
+        stockService.updateStock(updateStockRequest.getIsbn(), updateStockRequest.getQuantity());
+        return ResponseEntity.noContent().build();
     }
 }

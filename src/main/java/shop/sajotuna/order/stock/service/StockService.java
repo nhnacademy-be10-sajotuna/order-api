@@ -1,6 +1,5 @@
 package shop.sajotuna.order.stock.service;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -97,4 +96,8 @@ public class StockService {
                 .toList();
     }
 
+    public void updateStock(String isbn, int quantity) {
+        BookStock bookStock = bookStockRepository.findByIsbn(isbn).orElseThrow(BookStockNotFoundException::new);
+        bookStock.update(Stock.of(quantity));
+    }
 }
