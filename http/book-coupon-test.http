@@ -95,32 +95,18 @@ GET localhost:10366/api/coupons/users
 X-User-Id: 1
 
 ### 10단계: 도서별 사용 가능 쿠폰 조회 (첫 번째 도서)
-GET localhost:10366/api/coupons/available-coupons/book
+GET localhost:10366/api/coupons/available-coupons/book?isbn=9781234567890&price=15000
 X-User-Id: 1
-Content-Type: application/json
-
-{
-  "isbn": "9781234567890",
-  "price": 15000
-}
 
 ### 11단계: 도서별 사용 가능 쿠폰 조회 (두 번째 도서)
-GET localhost:10366/api/coupons/available-coupons/book
+GET localhost:10366/api/coupons/available-coupons/book?isbn=9781234567891&price=20000&categoryIds=1,2,3
 X-User-Id: 1
 Content-Type: application/json
-
-{
-  "isbn": "9781234567891",
-  "price": 20000,
-  "categoryIds" : [1,2,3]
-}
 
 ### 12단계: 주문별 사용 가능 쿠폰 조회
-GET localhost:10366/api/coupons/available-coupons/order
+GET localhost:10366/api/coupons/available-coupons/order?totalPrice=35000
 Content-Type: application/json
 X-User-Id: 1
-
-35000
 
 ### 13단계: 패키지 생성 (테스트용)
 POST localhost:10366/api/admin/packages/package
@@ -144,7 +130,7 @@ X-User-Id: 1
   "recipientPhoneNumber": "010-9876-5432",
   "recipientEmail": "kim@example.com",
   "recipientAddress": "서울시 강남구 테헤란로 123",
-  "expectedDeliveryDate": "20250710120000",
+  "expectedDeliveryDate": "20250730120000",
   "orderCouponId": 1,
   "usedPoint": 1000,
   "items": [

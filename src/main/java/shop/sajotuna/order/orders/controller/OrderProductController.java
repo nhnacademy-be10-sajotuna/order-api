@@ -25,4 +25,10 @@ public class OrderProductController {
     public ResponseEntity<List<OrderProductResponse>> getOrderProducts(@PathVariable Long orderId){
         return ResponseEntity.ok(productService.findByOrderId(orderId));
     }
+
+    // 사용자가 특정 상품에 대해 리뷰를 작성할 수 있는지 확인
+    @GetMapping("/review-eligible/{userId}/{isbn}")
+    public ResponseEntity<Boolean> isEligibleForReview(@PathVariable Long userId, @PathVariable String isbn) {
+        return ResponseEntity.ok(productService.isEligibleForReview(userId, isbn));
+    }
 }

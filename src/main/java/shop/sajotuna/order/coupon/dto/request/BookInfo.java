@@ -1,4 +1,4 @@
-package shop.sajotuna.order.coupon.dto;
+package shop.sajotuna.order.coupon.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

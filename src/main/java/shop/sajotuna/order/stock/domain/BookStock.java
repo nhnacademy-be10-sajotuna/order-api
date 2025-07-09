@@ -48,4 +48,11 @@ public class BookStock {
     public boolean isSoldOut() {
         return this.stock.isSoldOut();
     }
+
+    public void update(Stock stock) {
+        if (stock == null) {
+            throw new NullValueException("재고 정보는 null일 수 없습니다.");
+        }
+        this.stock = stock;
+    }
 }
