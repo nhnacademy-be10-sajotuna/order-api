@@ -35,10 +35,10 @@ public class PaymentController {
     }
 
     // 결제 취소
-    @PutMapping("/cancel/{payment-id}")
-    public ResponseEntity<Void> cancelPayment(@PathVariable("payment-id") Long paymentId,
+    @PutMapping("/cancel/{order-id}")
+    public ResponseEntity<Void> cancelPayment(@PathVariable("order-id") Long orderId,
                                               @RequestParam String cancelReason) {
-        paymentService.cancelPayment(paymentId, cancelReason);
+        paymentService.cancelPayment(orderId, cancelReason);
 
         return ResponseEntity.ok().build();
     }

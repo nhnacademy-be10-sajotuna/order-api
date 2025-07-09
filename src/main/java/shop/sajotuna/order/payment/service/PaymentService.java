@@ -42,9 +42,11 @@ public class PaymentService {
     }
 
     // 결제 취소 요청
-    public void cancelPayment(Long paymentId, String cancelReason){
-        Payment payment = paymentRepository.findById(paymentId).orElseThrow(PaymentNotFoundException::new);
-
+    public void cancelPayment(Long orderId, String cancelReason){
+        Payment payment = paymentRepository.getPaymentByOrder_Id(orderId);
+        if(payment == null){
+            throw new PaymentNotFoundException();
+        }
         ExternalPaymentService service = getExternalPaymentService(payment.getMethod());
 
         service.requestPaymentCancel(payment, cancelReason);
