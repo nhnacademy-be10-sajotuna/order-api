@@ -78,3 +78,7 @@ Content-Type: application/json
     }
   ]
 }
+
+### 주문 폼 데이터 조회
+GET localhost:10366/api/orders/form
+X-User-Id: 1

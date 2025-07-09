@@ -44,6 +44,21 @@ public class UserCouponService {
                 .toList();
     }
 
+    @Transactional
+    public List<UserCouponDetailResponse> getAllAvailableCoupons(Long userId) {
+        List<UserCoupon> userCoupons = userCouponRepository.findByUserId(userId);
+
+        userCoupons.forEach(UserCoupon::updateExpiredCoupon);
+
+        List<UserCoupon> availableCoupons = userCoupons.stream()
+                .filter(coupon -> coupon.getType() == UserCouponType.AVAILABLE)
+                .toList();
+
+        return availableCoupons.stream()
+                .map(userCoupon -> UserCouponDetailResponse.from(userCoupon, userCoupon.getCoupon()))
+                .toList();
+    }
+
     // 유저 쿠폰 생성
     @Transactional
     public UserCouponResponse saveUserCoupon(UserCouponRequest userCouponRequest) {
