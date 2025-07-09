@@ -7,8 +7,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import shop.sajotuna.order.orders.controller.dto.response.OrderDetailResponse;
+import shop.sajotuna.order.orders.controller.dto.response.OrderFormResponse;
 import shop.sajotuna.order.orders.controller.dto.response.OrderInfoResponse;
 import shop.sajotuna.order.orders.service.OrderQueryService;
+import shop.sajotuna.order.orders.service.OrderFormService;
 
 @Slf4j
 @RestController
@@ -16,6 +18,7 @@ import shop.sajotuna.order.orders.service.OrderQueryService;
 @RequiredArgsConstructor
 public class OrderController {
     private final OrderQueryService orderQueryService;
+    private final OrderFormService orderFormService;
 
     @GetMapping("/info/{order-number}")
     public ResponseEntity<OrderInfoResponse> getOrderInfo(@PathVariable("order-number") String orderNumber){
@@ -38,5 +41,10 @@ public class OrderController {
     @GetMapping("/user")
     public ResponseEntity<Page<OrderInfoResponse>> getUserOrder(@RequestHeader("X-User-Id") Long userId, Pageable pageable){
         return ResponseEntity.ok(orderQueryService.findOrdersByUserId(userId, pageable));
+    }
+
+    @GetMapping("/form")
+    public ResponseEntity<OrderFormResponse> getOrderForm(@RequestHeader(value = "X-User-Id") Long userId) {
+        return ResponseEntity.ok(orderFormService.getOrderForm(userId));
     }
 }
