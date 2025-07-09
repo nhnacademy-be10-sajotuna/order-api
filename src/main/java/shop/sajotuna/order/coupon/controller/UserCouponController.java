@@ -26,18 +26,12 @@ public class UserCouponController {
         return ResponseEntity.ok(userCouponService.getUserCoupons(userId));
     }
 
-    // 유저 쿠폰 발급
-    @PostMapping
-    public ResponseEntity<UserCouponResponse> createUserCoupon(@RequestBody @Valid UserCouponRequest userCouponRequest) {
-        return ResponseEntity.ok(userCouponService.saveUserCoupon(userCouponRequest));
-    }
-
     @PostMapping("/issue-welcome")
     public ResponseEntity<UserCouponResponse> issueWelcomeCoupon(@RequestBody @Valid WelcomeCouponRequest welcomeCouponRequest) {
         return ResponseEntity.ok(userCouponService.issueWelcomeCoupon(welcomeCouponRequest.getUserId()));
     }
 
-    @PostMapping("/request-issue")
+    @PostMapping
     public ResponseEntity<Void> requestUserCoupon(@RequestBody @Valid CouponEvent couponEvent) {
         couponQueueService.sendIssueCouponMessage(couponEvent);
         return ResponseEntity.ok().build();
