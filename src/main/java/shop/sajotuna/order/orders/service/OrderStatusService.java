@@ -69,6 +69,8 @@ public class OrderStatusService {
         if(!Objects.equals(userId, order.getOrderer().getUserId())) {
             throw new InvalidUserIdException();
         }
+        // TODO: 사용한 쿠폰, 포인트 반환
+
         order.cancelled();
         // 결제 취소 요청
         paymentService.cancelPayment(orderId, "cancel");
