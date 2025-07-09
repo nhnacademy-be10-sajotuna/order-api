@@ -98,7 +98,7 @@ public class TossPaymentService implements ExternalPaymentService{
 
         try(HttpClient client = HttpClient.newHttpClient()) {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("<https://api.tosspayments.com/v1/payments/" + tossPayment.getPaymentKey() + "/cancel"))
+                    .uri(URI.create("https://api.tosspayments.com/v1/payments/" + tossPayment.getPaymentKey() + "/cancel"))
                     .header("Authorization", getAuthorizations())
                     .header("Content-Type", "application/json")
                     .method("POST", HttpRequest.BodyPublishers.ofString("{\"cancelReason\":" + cancelReason + "\"}"))
