@@ -7,6 +7,7 @@ import shop.sajotuna.order.payment.domain.PaymentMethod;
 import shop.sajotuna.order.payment.dto.PaymentConfirmRequest;
 import shop.sajotuna.order.payment.dto.PaymentResponse;
 import shop.sajotuna.order.payment.domain.Payment;
+import shop.sajotuna.order.payment.exception.PaymentNotFoundException;
 import shop.sajotuna.order.payment.repository.PaymentRepository;
 
 import java.util.List;
@@ -38,5 +39,14 @@ public class PaymentService {
         ExternalPaymentService service = getExternalPaymentService(paymentConfirmRequest.getPaymentMethod());
 
         return service.requestPaymentConfirm(paymentConfirmRequest);
+    }
+
+    // 결제 취소 요청
+    public void cancelPayment(Long paymentId, String cancelReason){
+        Payment payment = paymentRepository.findById(paymentId).orElseThrow(PaymentNotFoundException::new);
+
+        ExternalPaymentService service = getExternalPaymentService(payment.getMethod());
+
+        service.requestPaymentCancel(payment, cancelReason);
     }
 }

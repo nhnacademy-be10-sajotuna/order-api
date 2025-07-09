@@ -33,4 +33,13 @@ public class PaymentController {
     public ResponseEntity<PaymentResponse> confirmPayment(@RequestBody @Valid PaymentConfirmRequest paymentConfirmRequest) {
         return ResponseEntity.ok(paymentService.processUserPayment(paymentConfirmRequest));
     }
+
+    // 결제 취소
+    @PutMapping("/cancel/{payment-id}")
+    public ResponseEntity<Void> cancelPayment(@PathVariable("payment-id") Long paymentId,
+                                              @RequestParam String cancelReason) {
+        paymentService.cancelPayment(paymentId, cancelReason);
+
+        return ResponseEntity.ok().build();
+    }
 }

@@ -86,17 +86,20 @@ public class TossPaymentService implements ExternalPaymentService{
         return paymentMethod == PaymentMethod.TOSS;
     }
 
-    // 결제 취소 요청
-    public HttpResponse<String> requestPaymentCancel(String paymentKey, String cancelReason) {
+    // 토스 결제 취소 요청
+    @Override
+    public void requestPaymentCancel(Payment payment, String cancelReason) {
+        TossPayment tossPayment = tossPaymentRepository.getByPayment_Id(payment.getId());
+
         try(HttpClient client = HttpClient.newHttpClient()) {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("<https://api.tosspayments.com/v1/payments/" + paymentKey + "/cancel"))
+                    .uri(URI.create("<https://api.tosspayments.com/v1/payments/" + tossPayment.getPaymentKey() + "/cancel"))
                     .header("Authorization", getAuthorizations())
                     .header("Content-Type", "application/json")
                     .method("POST", HttpRequest.BodyPublishers.ofString("{\"cancelReason\":" + cancelReason + "\"}"))
                     .build();
 
-            return client.send(request, HttpResponse.BodyHandlers.ofString());
+            client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }

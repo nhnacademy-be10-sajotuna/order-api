@@ -32,6 +32,11 @@ public class CardPaymentService implements ExternalPaymentService {
     }
 
     @Override
+    public void requestPaymentCancel(Payment payment, String cancelReason) {
+
+    }
+
+    @Override
     public boolean support(PaymentMethod paymentMethod) {
         return paymentMethod == PaymentMethod.CARD;
     }
