@@ -38,6 +38,13 @@ public class PackageService {
         orderPackagingRepository.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
+    public PackageResponse getPackage(long id) {
+        OrderPackaging orderPackaging = orderPackagingRepository.findById(id).orElseThrow(PackageNotFoundException::new);
+
+        return PackageResponse.from(orderPackaging);
+    }
+
     // package 목록 조회
     @Transactional(readOnly = true)
     public List<PackageResponse> getPackages(){
