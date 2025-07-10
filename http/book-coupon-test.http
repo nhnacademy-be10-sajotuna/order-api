@@ -66,8 +66,7 @@ Content-Type: application/json
 
 {
   "userId": 1,
-  "couponId": 1,
-  "issuedAt": "20250703120000"
+  "couponId": 1
 }
 
 ### 7단계: 사용자에게 첫 번째 도서 쿠폰 발급
@@ -76,8 +75,7 @@ Content-Type: application/json
 
 {
   "userId": 1,
-  "couponId": 2,
-  "issuedAt": "20250703120000"
+  "couponId": 2
 }
 
 ### 8단계: 사용자에게 두 번째 도서 쿠폰 발급
@@ -86,8 +84,7 @@ Content-Type: application/json
 
 {
   "userId": 1,
-  "couponId": 3,
-  "issuedAt": "20250703120000"
+  "couponId": 3
 }
 
 ### 9단계: 사용자 쿠폰 목록 확인
