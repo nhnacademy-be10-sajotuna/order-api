@@ -5,7 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import shop.sajotuna.order.coupon.dto.UserCouponRequest;
+
+import shop.sajotuna.order.coupon.dto.request.UserCouponRequest;
 import shop.sajotuna.order.coupon.service.dto.event.CouponEvent;
 
 import java.time.LocalDateTime;
