@@ -20,4 +20,9 @@ public class PackageController {
         List<PackageResponse> packages = packageService.getPackages();
         return ResponseEntity.ok(packages);
     }
+
+    @GetMapping("/{package-id}")
+    public ResponseEntity<PackageResponse> getPackageById(@PathVariable("package-id") Long packageId) {
+        return ResponseEntity.ok(packageService.getPackage(packageId));
+    }
 }
