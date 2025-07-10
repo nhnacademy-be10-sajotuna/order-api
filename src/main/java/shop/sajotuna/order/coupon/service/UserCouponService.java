@@ -1,6 +1,7 @@
 package shop.sajotuna.order.coupon.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.common.domain.Money;
@@ -23,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class UserCouponService {
@@ -83,7 +85,7 @@ public class UserCouponService {
     // 사용 가능한 책 쿠폰 조회
     @Transactional(readOnly = true)
     public List<CouponResponse> getAvailableCoupons(Long userId, BookInfo bookInfo) {
-
+        log.info("bookInfo categoryIds: {}", bookInfo.getCategoryIds().toString());
         List<UserCoupon> userCoupons = userCouponRepository.findByUserId(userId);
 
         userCoupons.forEach(UserCoupon::updateExpiredCoupon);
