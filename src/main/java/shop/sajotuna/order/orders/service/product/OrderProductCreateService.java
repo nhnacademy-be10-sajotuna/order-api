@@ -60,10 +60,10 @@ public class OrderProductCreateService {
                 .orElseThrow(PackageNotFoundException::new);
     }
 
-    private UserCoupon getUserCoupon(Long userId, Long userCouponId, String isbn, Set<Long> categoryIds) {
-        UserCoupon userCoupon = userCouponRepository.findByIdWithCoupon(userCouponId)
-                .orElseThrow(()-> new CouponNotFoundException(userCouponId));
-        hasCoupon(userCouponId, userId);
+    private UserCoupon getUserCoupon(Long userId, Long bookCouponId, String isbn, Set<Long> categoryIds) {
+        UserCoupon userCoupon = userCouponRepository.findByUserIdAndCouponIdWithCoupon(userId, bookCouponId)
+                .orElseThrow(()-> new CouponNotFoundException(bookCouponId));
+        hasCoupon(bookCouponId, userId);
 
         if (userCoupon.getCoupon().getCouponType() == CouponType.BOOK) {
             bookCouponValidator.validateCoupon(userCoupon.getCoupon().getId(), isbn);
