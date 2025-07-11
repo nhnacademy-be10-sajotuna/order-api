@@ -13,6 +13,8 @@ import shop.sajotuna.order.coupon.repository.BookCouponRepository;
 import shop.sajotuna.order.coupon.repository.CategoryCouponRepository;
 import shop.sajotuna.order.coupon.repository.CouponRepository;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 @Transactional
@@ -21,6 +23,13 @@ public class CouponService {
     private final CouponRepository couponRepository;
     private final BookCouponRepository bookCouponRepository;
     private final CategoryCouponRepository categoryCouponRepository;
+
+    @Transactional(readOnly = true)
+    public List<CouponResponse> getAllCoupons() {
+        List<Coupon> coupons = couponRepository.findAll();
+
+        return coupons.stream().map(CouponResponse::from).toList();
+    }
 
     // 쿠폰 조회
     @Transactional(readOnly = true)
@@ -51,6 +60,13 @@ public class CouponService {
         categoryCouponRepository.save(new CouponSpecificCategory(categoryId, coupon));
 
         return CouponResponse.from(coupon);
+    }
+
+    // 쿠폰 정보 수정
+    public void editCoupon(Long couponId, CouponRequest couponRequest) {
+        Coupon coupon = couponRepository.findById(couponId).orElseThrow(EntityNotFoundException::new);
+
+        coupon.updateCoupon(couponRequest);
     }
 
     // 쿠폰 삭제

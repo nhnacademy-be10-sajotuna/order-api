@@ -8,12 +8,20 @@ import shop.sajotuna.order.coupon.dto.request.CouponRequest;
 import shop.sajotuna.order.coupon.dto.response.CouponResponse;
 import shop.sajotuna.order.coupon.service.CouponService;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/admin/coupons")
 public class CouponAdminController {
 
     private final CouponService couponService;
+
+    // 모든 쿠폰 조회
+    @GetMapping
+    public ResponseEntity<List<CouponResponse>> getAllCoupons(){
+        return ResponseEntity.ok(couponService.getAllCoupons());
+    }
 
     // 쿠폰 생성
     @PostMapping
@@ -36,6 +44,8 @@ public class CouponAdminController {
     // 쿠폰 수정
     @PutMapping("/{coupon-id}")
     public ResponseEntity<Void> updateCoupon(@PathVariable(name = "coupon-id") Long couponId, @RequestBody @Valid CouponRequest couponRequest) {
+        couponService.editCoupon(couponId, couponRequest);
+
         return ResponseEntity.noContent().build();
     }
 

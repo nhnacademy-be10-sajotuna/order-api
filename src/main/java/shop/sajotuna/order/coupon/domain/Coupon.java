@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.common.exception.NullValueException;
+import shop.sajotuna.order.coupon.dto.request.CouponRequest;
 
 import java.math.RoundingMode;
 
@@ -43,6 +44,16 @@ public class Coupon {
 
     @Column(nullable = false)
     private Integer validDays;
+
+    public void updateCoupon(CouponRequest couponRequest) {
+        this.name = couponRequest.getName();
+        this.couponType = couponRequest.getCouponType();
+        this.policyType = couponRequest.getPolicyType();
+        this.discountAmount = couponRequest.getDiscountAmount();
+        this.minOrderAmount = Money.of(couponRequest.getMinOrderAmount());
+        this.maxDiscountAmount = Money.of(couponRequest.getMaxDiscountAmount());
+        this.validDays = couponRequest.getValidDays();
+    }
 
     public Money calculateDiscount(Money totalProductPrice) {
         if (totalProductPrice == null) {
