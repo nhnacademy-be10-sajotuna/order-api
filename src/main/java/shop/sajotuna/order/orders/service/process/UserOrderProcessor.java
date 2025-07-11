@@ -1,6 +1,7 @@
 package shop.sajotuna.order.orders.service.process;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import shop.sajotuna.order.orders.domain.Discounts;
 import shop.sajotuna.order.orders.domain.Order;
@@ -8,7 +9,7 @@ import shop.sajotuna.order.orders.domain.OrderProduct;
 import shop.sajotuna.order.orders.service.pricing.DiscountService;
 import shop.sajotuna.order.orders.service.dto.command.CreateOrderCommand;
 import shop.sajotuna.order.point.domain.PointPolicyType;
-import shop.sajotuna.order.point.service.PointQueueService;
+import shop.sajotuna.order.point.service.dto.event.PointEvent;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ import java.util.List;
 public class UserOrderProcessor implements OrderProcessor {
     
     private final DiscountService discountService;
-    private final PointQueueService pointQueueService;
+    private final ApplicationEventPublisher eventPublisher;
     
     @Override
     public Discounts processDiscounts(CreateOrderCommand command, List<OrderProduct> orderProducts) {
@@ -31,10 +32,11 @@ public class UserOrderProcessor implements OrderProcessor {
     
     @Override
     public void processPointEarn(CreateOrderCommand command, Order order) {
-        pointQueueService.sendEarnPointsMessage(
+        PointEvent event = new PointEvent(
             command.getUserId(),
             PointPolicyType.PURCHASE,
             order.getFinalProductPrice()
         );
+        eventPublisher.publishEvent(event);
     }
 }
