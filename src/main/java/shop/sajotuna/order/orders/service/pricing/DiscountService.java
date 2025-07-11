@@ -56,6 +56,6 @@ public class DiscountService {
 
     private UserCoupon getUserCouponById(Long userCouponId) {
         return userCouponRepository.findByIdWithCoupon(userCouponId)
-                .orElseThrow(CouponNotFoundException::new);
+                .orElseThrow(() -> new CouponNotFoundException(userCouponId));
     }
 }

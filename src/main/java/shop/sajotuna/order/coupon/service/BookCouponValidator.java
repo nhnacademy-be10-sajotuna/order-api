@@ -11,11 +11,10 @@ import shop.sajotuna.order.coupon.repository.UserCouponRepository;
 public class BookCouponValidator {
 
     private final BookCouponRepository bookCouponRepository;
-    private final UserCouponRepository userCouponRepository;
 
-    public void validateCoupon(Long userId, Long couponId, String isbn) {
+    public void validateCoupon(Long couponId, String isbn) {
         if (!bookCouponRepository.existsByCouponIdAndIsbn(couponId, isbn)) {
-            throw new CouponNotFoundException();
+            throw new CouponNotFoundException(couponId);
         }
     }
 }
