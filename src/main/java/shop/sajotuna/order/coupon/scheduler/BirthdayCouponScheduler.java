@@ -26,7 +26,7 @@ public class BirthdayCouponScheduler {
     public void issueBirthdayCoupons() {
         List<BirthdayUserResponse> users = birthdayClient.getBirthdayUsers();
         for (BirthdayUserResponse user : users) {
-            Coupon birthdayCoupon = couponRepository.findByName(COUPON_NAME).orElseThrow(CouponNotFoundException::new);
+            Coupon birthdayCoupon = couponRepository.findByName(COUPON_NAME).orElseThrow(()-> new CouponNotFoundException(COUPON_NAME));
             UserCouponRequest userCouponRequest = new UserCouponRequest(user.getId(), birthdayCoupon.getId(), LocalDateTime.now());
 
             userCouponService.saveUserCoupon(userCouponRequest);

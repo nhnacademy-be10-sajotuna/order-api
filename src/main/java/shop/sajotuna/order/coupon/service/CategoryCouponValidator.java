@@ -13,11 +13,10 @@ import java.util.Set;
 public class CategoryCouponValidator {
 
     private final CategoryCouponRepository categoryCouponRepository;
-    private final UserCouponRepository userCouponRepository;
 
-    public void validateCoupon(Long userId, Long couponId, Set<Long> categoryIds) {
+    public void validateCoupon(Long couponId, Set<Long> categoryIds) {
         if (!categoryCouponRepository.existsByCouponIdAndCategoryIdIn(couponId, categoryIds)) {
-            throw new CouponNotFoundException();
+            throw new CouponNotFoundException(couponId);
         }
     }
 }

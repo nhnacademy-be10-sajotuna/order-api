@@ -64,7 +64,7 @@ public class UserCouponService {
     // 유저 쿠폰 생성
     @Transactional
     public UserCouponResponse saveUserCoupon(UserCouponRequest userCouponRequest) {
-        Coupon coupon = couponRepository.findById(userCouponRequest.getCouponId()).orElseThrow(CouponNotFoundException::new);
+        Coupon coupon = couponRepository.findById(userCouponRequest.getCouponId()).orElseThrow(()->new CouponNotFoundException(userCouponRequest.getCouponId()));
 
         UserCoupon userCoupon = userCouponRepository.save(new UserCoupon(coupon, userCouponRequest.getUserId(), userCouponRequest.getIssuedAt(), coupon.getValidDays()));
 
@@ -74,7 +74,7 @@ public class UserCouponService {
     // 웰컴 쿠폰 발급
     @Transactional
     public UserCouponResponse issueWelcomeCoupon(Long userId) {
-        Coupon coupon = couponRepository.findByName(COUPON_NAME).orElseThrow(CouponNotFoundException::new);
+        Coupon coupon = couponRepository.findByName(COUPON_NAME).orElseThrow(()->new CouponNotFoundException(COUPON_NAME));
 
         UserCoupon userCoupon = new UserCoupon(coupon, userId, LocalDateTime.now(), coupon.getValidDays());
         userCouponRepository.save(userCoupon);
