@@ -83,7 +83,7 @@ public class UserCouponService {
     }
 
     // 사용 가능한 책 쿠폰 조회
-    @Transactional(readOnly = true)
+    @Transactional
     public List<CouponResponse> getAvailableCoupons(Long userId, BookInfo bookInfo) {
         log.info("bookInfo categoryIds: {}", bookInfo.getCategoryIds().toString());
         List<UserCoupon> userCoupons = userCouponRepository.findByUserId(userId);
@@ -107,7 +107,7 @@ public class UserCouponService {
     }
 
     // 사용 가능한 오더 쿠폰 조회
-    @Transactional(readOnly = true)
+    @Transactional
     public List<CouponResponse> getAvailableOrderCoupons(Long userId, Money totalPrice){
         List<UserCoupon> userCoupons = userCouponRepository.findByUserId(userId);
 
