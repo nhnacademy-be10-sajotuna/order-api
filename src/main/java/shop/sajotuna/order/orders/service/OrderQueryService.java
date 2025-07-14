@@ -63,7 +63,7 @@ public class OrderQueryService {
 
     // 회원의 주문 목록 조회
     public Page<OrderInfoResponse> findOrdersByUserId(long userId, Pageable pageable){
-        return orderRepository.findOrdersByOrdererUserId(userId, pageable).map(OrderInfoResponse::from);
+        return orderRepository.findOrdersByOrdererUserIdOrderByCreatedAtDesc(userId, pageable).map(OrderInfoResponse::from);
     }
 
     // 주문 상태에 따른 주문들 조회

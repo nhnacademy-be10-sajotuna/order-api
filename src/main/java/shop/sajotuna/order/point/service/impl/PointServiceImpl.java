@@ -45,7 +45,7 @@ public class PointServiceImpl implements PointService {
     @Override
     @Transactional(readOnly = true)
     public Page<PointHistoryResponse> getPointsByUserId(Long userId, Pageable pageable) {
-        return pointHistoryRepository.getPointHistoriesByUserId(userId, pageable)
+        return pointHistoryRepository.getPointHistoriesByUserIdOrderByCreatedAtDesc(userId, pageable)
                 .map(PointHistoryResponse::from);
     }
 

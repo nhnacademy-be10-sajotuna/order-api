@@ -11,5 +11,5 @@ import java.util.List;
 public interface PointHistoryRepository extends JpaRepository<PointHistory, Long> {
     List<PointHistory> getPointHistoriesByUserId(@NotNull Long userId);
     
-    Page<PointHistory> getPointHistoriesByUserId(@NotNull Long userId, Pageable pageable);
+    Page<PointHistory> getPointHistoriesByUserIdOrderByCreatedAtDesc(@NotNull Long userId, Pageable pageable);
 }

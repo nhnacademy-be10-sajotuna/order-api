@@ -3,7 +3,7 @@ GET localhost:10366/api/orders/1
 
 ### 회원의 주문내역 조회
 GET localhost:10366/api/orders/user
-X-User-Id: 1
+X-User-Id: 19
 
 ### 회원 주문
 POST localhost:10366/api/orders
