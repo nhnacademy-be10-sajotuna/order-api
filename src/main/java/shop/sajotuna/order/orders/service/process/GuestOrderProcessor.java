@@ -15,7 +15,7 @@ public class GuestOrderProcessor implements OrderProcessor{
     @Override
     public Discounts processDiscounts(CreateOrderCommand command, List<OrderProduct> orderProducts) {
         // 비회원은 할인 혜택 없음
-        return new Discounts(Money.zero(), Money.zero());
+        return new Discounts(Money.zero(), Money.zero(), null);
     }
     
     @Override
