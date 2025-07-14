@@ -3,6 +3,7 @@ package shop.sajotuna.order.orders.domain;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.hibernate.mapping.ToOne;
 import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.common.exception.NullValueException;
 import shop.sajotuna.order.coupon.domain.UserCoupon;
@@ -38,7 +39,7 @@ public class OrderProduct {
     @Column(nullable = false)
     private Boolean packagingRequest;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_coupon_id")
     private UserCoupon appliedCoupon;
 
