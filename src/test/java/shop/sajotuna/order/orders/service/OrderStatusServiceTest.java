@@ -207,7 +207,7 @@ class OrderStatusServiceTest {
             LocalDateTime.now().plusDays(3)
         );
         OrderPrice orderPrice = OrderPrice.create(Money.of(17000), Money.of(0), Money.of(3000));
-        Discounts discounts = new Discounts(Money.of(0), Money.of(0));
+        Discounts discounts = new Discounts(Money.of(0), Money.of(0), null);
         
         Order order = Order.createOrder(orderer, shippingInfo, orderPrice, discounts, List.of());
         order.shipped();
