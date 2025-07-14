@@ -5,11 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import shop.sajotuna.order.common.domain.Money;
-import shop.sajotuna.order.point.domain.PointPolicyType;
-import shop.sajotuna.order.point.domain.UserGrade;
+import shop.sajotuna.order.point.domain.PointPolicy;
 import shop.sajotuna.order.point.domain.UserPoint;
-import shop.sajotuna.order.point.exception.UserGradeNotFoundException;
 import shop.sajotuna.order.point.repository.UserGradeRepository;
 import shop.sajotuna.order.point.service.dto.event.PointEvent;
 import shop.sajotuna.order.point.repository.UserPointRepository;
@@ -33,24 +30,14 @@ public class PointEarnConsumer {
         UserPoint userPoint = userPointRepository.findByUserId(event.getUserId())
                 .orElseGet(() -> userPointRepository.save(UserPoint.create(event.getUserId())));
 
-        // 포인트 계산 및 적립
-        Money amount;
-        if (event.getType() == PointPolicyType.RETURNED) {
-            amount = event.getTotalPrice();
+        if (event.getPointAmount() == null) {
+            PointPolicy pointPolicy = pointPolicyService.getPointPolicy(event.getType());
+            userPoint.earnPoint(pointPolicy.getFixedPoint());
         } else {
-            amount = pointPolicyService.getPointPolicy(event.getType()).calculatePoint(event.getTotalPrice());
+            userPoint.earnPoint(event.getPointAmount());
         }
-
-        if (event.getType() == PointPolicyType.PURCHASE) {
-            UserGrade userGrade = userGradeRepository.findByUserId(event.getUserId()).orElseThrow(UserGradeNotFoundException::new);
-            Money gradePoint = userGrade.getGrade().calculatePoint(event.getTotalPrice());
-
-            amount = amount.plus(gradePoint);
-        }
-
-        userPoint.earnPoint(amount);
 
         // 포인트 이력 저장
-        pointHistoryWriter.savePointEarnHistory(event.getUserId(), amount, event.getType().getDescription());
+        pointHistoryWriter.savePointEarnHistory(event.getUserId(), event.getPointAmount(), event.getType().getDescription());
     }
 }

@@ -170,7 +170,7 @@ class OrderStatusServiceTest {
         verify(pointQueueService).sendEarnPointsMessage(argThat(pointEvent -> 
             pointEvent.getUserId().equals(userId) &&
             pointEvent.getType().equals(PointPolicyType.RETURNED) &&
-            pointEvent.getTotalPrice().equals(order.getReturnPrice(returnReason))
+            pointEvent.getPointAmount().equals(order.getReturnPrice(returnReason))
         ));
     }
 
@@ -195,7 +195,7 @@ class OrderStatusServiceTest {
         verify(pointQueueService).sendEarnPointsMessage(argThat(pointEvent -> 
             pointEvent.getUserId().equals(userId) &&
             pointEvent.getType().equals(PointPolicyType.RETURNED) &&
-            pointEvent.getTotalPrice().equals(order.getReturnPrice(returnReason))
+            pointEvent.getPointAmount().equals(order.getReturnPrice(returnReason))
         ));
     }
 

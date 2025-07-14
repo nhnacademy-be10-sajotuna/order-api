@@ -106,7 +106,7 @@ public class Order {
     }
 
     public Money getReturnPrice(ReturnReason returnReason) {
-        Money baseReturnPrice = getFinalPrice().minus(orderPrice.getDeliveryPrice());
+        Money baseReturnPrice = getFinalPrice().plus(discounts.getUsedPoint());
         if (returnReason.isDeductShippingFee()) {
             return baseReturnPrice.minus(orderPrice.getDeliveryPrice());
         }
@@ -149,5 +149,13 @@ public class Order {
         returnReason.validateReturnPeriod(shippingStartDate);
 
         this.status = OrderStatus.RETURNED;
+    }
+
+    public void setEarnedPoint(Money earnedPoint) {
+        discounts.setEarnedPoint(earnedPoint);
+    }
+
+    public Money getEarnedPoint() {
+        return discounts.getEarnedPoint();
     }
 }

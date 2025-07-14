@@ -45,7 +45,7 @@ public class DiscountService {
             pointService.redeemPoints(userId, usedPoint);
         }
         
-        return new Discounts(totalCouponDiscountAmount, usedPoint);
+        return new Discounts(totalCouponDiscountAmount, usedPoint, orderCouponId);
     }
     
     private Money calculateTotalProductPrice(List<OrderProduct> orderProducts) {

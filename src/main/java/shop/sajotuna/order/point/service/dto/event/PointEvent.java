@@ -12,5 +12,5 @@ import shop.sajotuna.order.point.domain.PointPolicyType;
 public class PointEvent {
     Long userId;
     PointPolicyType type;
-    Money totalPrice;
+    Money pointAmount;
 }

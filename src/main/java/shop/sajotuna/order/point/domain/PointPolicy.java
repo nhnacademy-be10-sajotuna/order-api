@@ -48,6 +48,10 @@ public class PointPolicy {
         return totalPrice.percentage(value, RoundingMode.DOWN);
     }
 
+    public Money getFixedPoint() {
+        return Money.of(value);
+    }
+
     public void update(int value) {
         if (calculationMode == CalculationMode.RATE) {
             if (value > MAX_PERCENTAGE) {

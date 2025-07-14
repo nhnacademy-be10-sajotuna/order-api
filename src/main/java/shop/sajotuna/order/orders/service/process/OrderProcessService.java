@@ -3,6 +3,7 @@ package shop.sajotuna.order.orders.service.process;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.orders.domain.Discounts;
 import shop.sajotuna.order.orders.domain.OrderPrice;
 import shop.sajotuna.order.orders.domain.OrderProduct;
@@ -47,6 +48,7 @@ public class OrderProcessService {
 
         // 포인트 적립 처리
         orderProcessor.processPointEarn(command, order);
+//        order.setEarnedPoint(earnedPoint);
 
         return OrderResponse.from(order);
     }

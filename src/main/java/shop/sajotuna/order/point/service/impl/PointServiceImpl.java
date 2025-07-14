@@ -7,12 +7,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.point.domain.PointHistory;
+import shop.sajotuna.order.point.domain.PointPolicyType;
+import shop.sajotuna.order.point.domain.UserGrade;
 import shop.sajotuna.order.point.domain.UserPoint;
+import shop.sajotuna.order.point.exception.UserGradeNotFoundException;
 import shop.sajotuna.order.point.exception.UserPointNotFoundException;
 import shop.sajotuna.order.point.controller.response.PointHistoryResponse;
 import shop.sajotuna.order.point.repository.PointHistoryRepository;
+import shop.sajotuna.order.point.repository.UserGradeRepository;
 import shop.sajotuna.order.point.repository.UserPointRepository;
+import shop.sajotuna.order.point.service.PointPolicyService;
 import shop.sajotuna.order.point.service.PointService;
+import shop.sajotuna.order.point.service.dto.event.PointEvent;
 
 import java.util.List;
 
@@ -22,8 +28,11 @@ import java.util.List;
 public class PointServiceImpl implements PointService {
 
     public static final String REDEEM_MESSAGE = "구매 사용";
+    private static final String RETURN_MESSAGE = "환불로 인한 포인트 환급";
     private final PointHistoryRepository pointHistoryRepository;
     private final UserPointRepository userPointRepository;
+    private final PointPolicyService pointPolicyService;
+    private final UserGradeRepository userGradeRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -57,4 +66,26 @@ public class PointServiceImpl implements PointService {
         PointHistory pointHistory = pointHistoryRepository.save(PointHistory.createRedeemHistory(userId, pointAmount, REDEEM_MESSAGE));
         return PointHistoryResponse.from(pointHistory);
     }
+
+    @Override
+    public void returnPoints(Long userId, Money pointAmount) {
+        UserPoint userPoint = userPointRepository.findByUserId(userId)
+                .orElseThrow(UserPointNotFoundException::new);
+
+        userPoint.redeemPoint(pointAmount);
+        PointHistory pointHistory = pointHistoryRepository.save(PointHistory.createRedeemHistory(userId, pointAmount, RETURN_MESSAGE));
+    }
+
+    @Override
+    public PointEvent earnPoints(Long userId, PointPolicyType type, Money pointAmount) {
+        Money amount = pointPolicyService.getPointPolicy(type).calculatePoint(pointAmount);
+
+        UserGrade userGrade = userGradeRepository.findByUserId(userId).orElseThrow(UserGradeNotFoundException::new);
+        Money gradePoint = userGrade.getGrade().calculatePoint(pointAmount);
+
+        amount = amount.plus(gradePoint);
+
+        return new PointEvent(userId, type, amount);
+    }
+
 }

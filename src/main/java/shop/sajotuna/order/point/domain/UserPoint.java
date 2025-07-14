@@ -33,18 +33,12 @@ public class UserPoint {
     private Long version;
 
     public void earnPoint(Money amount) {
-        if (!amount.isPositive()) {
-            throw new NegativePointException();
-        }
         this.remainPoint = this.remainPoint.plus(amount);
     }
 
     public void redeemPoint(Money pointAmount) {
         if (remainPoint.isLessThan(pointAmount)) {
             throw new InsufficientPointException(remainPoint, pointAmount.minus(remainPoint));
-        }
-        if (!pointAmount.isPositive()) {
-            throw new NegativePointException();
         }
         this.remainPoint = this.remainPoint.minus(pointAmount);
     }

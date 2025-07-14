@@ -8,6 +8,7 @@ import lombok.Setter;
 import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.coupon.exception.ExpiredCouponException;
 import shop.sajotuna.order.coupon.exception.AlreadyUsedCouponException;
+import shop.sajotuna.order.coupon.exception.NotUsedCouponException;
 
 import java.time.LocalDateTime;
 
@@ -71,5 +72,12 @@ public class UserCoupon {
 
         this.type = UserCouponType.USED;
         return coupon.calculateDiscount(totalProductPrice);
+    }
+
+    public void returnCoupon() {
+        if (type != UserCouponType.USED) {
+            throw new NotUsedCouponException(this.getId());
+        }
+        this.type = UserCouponType.AVAILABLE;
     }
 }

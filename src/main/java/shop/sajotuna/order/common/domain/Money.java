@@ -123,5 +123,9 @@ public class Money {
     public Money percentage(int percentage, RoundingMode roundingMode) {
         return percentage(BigDecimal.valueOf(percentage), roundingMode);
     }
+
+    public Money negate() {
+        return new Money(-this.amount);
+    }
 }
 

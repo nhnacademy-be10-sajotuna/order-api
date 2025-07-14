@@ -1,8 +1,6 @@
 package shop.sajotuna.order.orders.domain;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Null;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.sajotuna.order.common.domain.Money;
@@ -21,10 +19,17 @@ public class Discounts {
     @AttributeOverride(name = "amount", column = @Column(name = "used_point"))
     private Money usedPoint;
 
-    public Discounts(Money couponDiscountAmount, Money usedPoint) {
+    @Embedded
+    @AttributeOverride(name = "amount", column = @Column(name = "earned_point"))
+    private Money earnedPoint;
+
+    private Long usedCouponId;
+
+    public Discounts(Money couponDiscountAmount, Money usedPoint, Long usedCouponId) {
         validateDiscounts(couponDiscountAmount, usedPoint);
         this.couponDiscountAmount = couponDiscountAmount;
         this.usedPoint = usedPoint;
+        this.usedCouponId = usedCouponId;
     }
 
     private void validateDiscounts(Money couponDiscountAmount, Money usedPoint) {
@@ -38,5 +43,12 @@ public class Discounts {
 
     public Money getTotalDiscountAmount() {
         return couponDiscountAmount.plus(usedPoint);
+    }
+
+    public void setEarnedPoint(Money earnedPoint) {
+        if (earnedPoint == null) {
+            throw new NullValueException("적립된 포인트는 필수입니다.");
+        }
+        this.earnedPoint = earnedPoint;
     }
 }
