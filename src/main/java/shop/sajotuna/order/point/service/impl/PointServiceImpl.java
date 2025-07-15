@@ -28,7 +28,7 @@ import java.util.List;
 public class PointServiceImpl implements PointService {
 
     public static final String REDEEM_MESSAGE = "구매 사용";
-    private static final String RETURN_MESSAGE = "환불로 인한 포인트 환급";
+    private static final String RETURN_MESSAGE = "환불로 인한 포인트 환수";
     private final PointHistoryRepository pointHistoryRepository;
     private final UserPointRepository userPointRepository;
     private final PointPolicyService pointPolicyService;
