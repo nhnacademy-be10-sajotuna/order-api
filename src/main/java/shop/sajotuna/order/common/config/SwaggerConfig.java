@@ -11,14 +11,7 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
-                .components(new Components())
-                .info(info());
-    }
-
-    private Info info() {
-        return new Info()
-                .title("Mongo Basic API")
-                .description("Mongo API reference for developers")
-                .version("1.0");
+                .components(new Components());
     }
 }
+

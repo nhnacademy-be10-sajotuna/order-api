@@ -107,7 +107,12 @@ public class OrderStatusService {
 
     private void returnCoupon(Order order) {
         order.getOrderProducts().forEach(
-                product -> product.getAppliedCoupon().returnCoupon()
+                product -> {
+                    UserCoupon appliedCoupon = product.getAppliedCoupon();
+                    if (appliedCoupon != null) {
+                        appliedCoupon.returnCoupon();
+                    }
+                }
         );
 
         Long usedOrderCouponId = order.getDiscounts().getUsedCouponId();
