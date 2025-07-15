@@ -48,7 +48,6 @@ public class OrderProcessService {
 
         // 포인트 적립 처리
         orderProcessor.processPointEarn(command, order);
-//        order.setEarnedPoint(earnedPoint);
 
         return OrderResponse.from(order);
     }

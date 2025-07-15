@@ -19,8 +19,7 @@ public class GuestOrderProcessor implements OrderProcessor{
     }
     
     @Override
-    public Money processPointEarn(CreateOrderCommand command, Order order) {
+    public void processPointEarn(CreateOrderCommand command, Order order) {
         // 비회원은 포인트 적립 없음
-        return null;
     }
 }

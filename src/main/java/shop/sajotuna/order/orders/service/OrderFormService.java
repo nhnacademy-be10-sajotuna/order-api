@@ -26,10 +26,19 @@ public class OrderFormService {
     private final DeliveryPriceRepository deliveryPriceRepository;
 
     public OrderFormResponse getOrderForm(Long userId) {
-        Integer point = pointService.getAvailablePointByUserId(userId);
-        List<UserCouponDetailResponse> coupons = userCouponService.getAllAvailableCoupons(userId);
+
         List<PackageResponse> packages = packageService.getPackages();
         DeliveryPrice deliveryPrice = deliveryPriceRepository.getDefaultDeliveryPrice();
+
+        if (userId == null) {
+            return OrderFormResponse.builder()
+                    .packages(packageService.getPackages())
+                    .deliveryPrice(DeliveryPriceResponse.of(deliveryPrice))
+                    .build();
+        }
+
+        Integer point = pointService.getAvailablePointByUserId(userId);
+        List<UserCouponDetailResponse> coupons = userCouponService.getAllAvailableCoupons(userId);
 
         return OrderFormResponse.builder()
                 .point(point)

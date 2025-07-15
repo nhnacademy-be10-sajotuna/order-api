@@ -44,7 +44,7 @@ public class OrderController {
     }
 
     @GetMapping("/form")
-    public ResponseEntity<OrderFormResponse> getOrderForm(@RequestHeader(value = "X-User-Id") Long userId) {
+    public ResponseEntity<OrderFormResponse> getOrderForm(@RequestHeader(value = "X-User-Id", required = false) Long userId) {
         return ResponseEntity.ok(orderFormService.getOrderForm(userId));
     }
 }
