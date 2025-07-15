@@ -28,7 +28,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class UserCouponService {
-    public static final String COUPON_NAME = "WELCOME";
+    public static final String COUPON_NAME = "신규 회원 가입 축하 쿠폰";
     private final UserCouponRepository userCouponRepository;
     private final CouponRepository couponRepository;
     private final BookCouponRepository bookCouponRepository;

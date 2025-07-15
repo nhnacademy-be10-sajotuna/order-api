@@ -1,6 +1,7 @@
 package shop.sajotuna.order.payment.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import shop.sajotuna.order.orders.domain.Order;
 import shop.sajotuna.order.orders.repository.OrderRepository;
@@ -11,6 +12,7 @@ import shop.sajotuna.order.payment.dto.PaymentResponse;
 import shop.sajotuna.order.payment.repository.PaymentRepository;
 import shop.sajotuna.order.point.exception.OrderNotFoundException;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class CardPaymentService implements ExternalPaymentService {
@@ -33,7 +35,7 @@ public class CardPaymentService implements ExternalPaymentService {
 
     @Override
     public void requestPaymentCancel(Payment payment, String cancelReason) {
-        // TODO: 사용한 쿠폰, 포인트 반환
+        log.info("결제가 취소되었습니다.");
     }
 
     @Override
