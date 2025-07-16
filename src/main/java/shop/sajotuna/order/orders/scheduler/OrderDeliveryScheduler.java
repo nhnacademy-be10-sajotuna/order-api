@@ -21,12 +21,16 @@ public class OrderDeliveryScheduler {
     // 배송중으로 변경된 주문은 일정 시간경과 후 완료 처리 됨
     @Scheduled(cron = SCHEDULE) // 매일 낮 12시 마다 실행됨
     @Transactional
-    public void deliveredOrder() {
-        // 현재 시간 기준으로 1일 이상 지난 주문들을 가져온다
-        List<Order> orders = orderRepository.findShippedOrders(LocalDateTime.now().minusDays(1));
-        // 배송 날짜와 1일 이상 차이가 난다면 배송완료로 변경
-        orders.forEach(Order::delivered);
+    public void deliverOrders() {
+        try{
+            // 출고 날짜로부터 1일 이상 경과한 주문들을 배송완료로 변경
+            List<Order> orders = orderRepository.findShippedOrders(LocalDateTime.now().minusDays(1));
+            orders.forEach(Order::delivered);
 
-        log.info("Orders delivered");
+            log.info("Orders delivered");
+        } catch (Exception e) {
+            log.error("주문 배송완료 처리 중 오류 발생");
+            throw e;
+        }
     }
 }
