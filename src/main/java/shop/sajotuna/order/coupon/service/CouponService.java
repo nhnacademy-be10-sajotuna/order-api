@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.coupon.domain.Coupon;
 import shop.sajotuna.order.coupon.domain.CouponSpecificBook;
 import shop.sajotuna.order.coupon.domain.CouponSpecificCategory;
+import shop.sajotuna.order.coupon.dto.request.BookInfo;
 import shop.sajotuna.order.coupon.dto.request.CouponRequest;
 import shop.sajotuna.order.coupon.dto.response.CouponResponse;
 import shop.sajotuna.order.coupon.repository.BookCouponRepository;
@@ -14,6 +15,9 @@ import shop.sajotuna.order.coupon.repository.CategoryCouponRepository;
 import shop.sajotuna.order.coupon.repository.CouponRepository;
 
 import java.util.List;
+import java.util.stream.Stream;
+
+import static java.util.Arrays.stream;
 
 @RequiredArgsConstructor
 @Service
@@ -83,4 +87,24 @@ public class CouponService {
         }
         couponRepository.deleteById(couponId);
     }
+
+    // 책 쿠폰 + 카테고리 쿠폰 조회
+    @Transactional(readOnly = true)
+    public List<CouponResponse> findBookCoupons(BookInfo bookInfo) {
+        List<CouponSpecificBook> couponSpecificBooks = bookCouponRepository.findByIsbn(bookInfo.getIsbn());
+        List<Coupon> isbnCoupons = couponSpecificBooks.stream()
+                .map(CouponSpecificBook::getCoupon)
+                .toList();
+
+        List<CouponSpecificCategory> couponSpecificCategories = categoryCouponRepository.findByCategoryIdIn((bookInfo.getCategoryIds()));
+        List<Coupon> categoryCoupons = couponSpecificCategories.stream()
+                .map(CouponSpecificCategory::getCoupon)
+                .toList();
+
+        return Stream.concat(isbnCoupons.stream(), categoryCoupons.stream())
+                .distinct()
+                .map(CouponResponse::from)
+                .toList();
+    }
+
 }
