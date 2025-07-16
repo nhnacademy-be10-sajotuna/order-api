@@ -3,6 +3,7 @@ package shop.sajotuna.order.coupon.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import shop.sajotuna.order.coupon.domain.CouponSpecificCategory;
 
+import java.util.List;
 import java.util.Set;
 
 public interface CategoryCouponRepository extends JpaRepository<CouponSpecificCategory, Long> {
@@ -11,4 +12,6 @@ public interface CategoryCouponRepository extends JpaRepository<CouponSpecificCa
     void deleteByCoupon_Id(Long couponId);
 
     boolean existsByCouponIdAndCategoryIdIn(Long couponId, Set<Long> categoryIds);
+
+    List<CouponSpecificCategory> findByCategoryIdIn(Set<Long> categoryIds);
 }
