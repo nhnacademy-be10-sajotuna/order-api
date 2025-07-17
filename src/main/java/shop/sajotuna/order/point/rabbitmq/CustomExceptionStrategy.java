@@ -2,12 +2,15 @@ package shop.sajotuna.order.point.rabbitmq;
 
 import org.springframework.amqp.rabbit.listener.ConditionalRejectingErrorHandler;
 import org.springframework.amqp.rabbit.listener.FatalExceptionStrategy;
+import org.springframework.stereotype.Component;
+import shop.sajotuna.order.common.exception.ApiException;
 import shop.sajotuna.order.point.exception.InvalidPriceException;
 import shop.sajotuna.order.point.exception.InvalidUserIdException;
 import shop.sajotuna.order.point.exception.NegativePointException;
 import shop.sajotuna.order.point.exception.UserPointNotFoundException;
 
-public class CustomPointExceptionStrategy implements FatalExceptionStrategy {
+@Component
+public class CustomExceptionStrategy implements FatalExceptionStrategy {
 
     private final FatalExceptionStrategy fatalExceptionStrategy = new ConditionalRejectingErrorHandler.DefaultExceptionStrategy();
 
@@ -15,9 +18,6 @@ public class CustomPointExceptionStrategy implements FatalExceptionStrategy {
     public boolean isFatal(Throwable t) {
         Throwable cause = t.getCause();
         return fatalExceptionStrategy.isFatal(t)
-                || cause instanceof UserPointNotFoundException
-                || cause instanceof InvalidUserIdException
-                || cause instanceof InvalidPriceException
-                || cause instanceof NegativePointException;
+                || cause instanceof ApiException;
     }
 }

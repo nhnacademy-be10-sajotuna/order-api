@@ -15,6 +15,7 @@ public class PointRabbitMqConfig {
 
     private final PointRabbitProperties pointRabbitProperties;
     private final PointFatalMessageLogger pointFatalMessageLogger;
+    private final CustomExceptionStrategy customExceptionStrategy;
 
     @Bean
     public DirectExchange pointExchange() {
@@ -74,13 +75,8 @@ public class PointRabbitMqConfig {
     }
 
     @Bean
-    public CustomPointExceptionStrategy pointExceptionStrategy() {
-        return new CustomPointExceptionStrategy();
-    }
-
-    @Bean
     public ErrorHandler pointErrorHandler() {
-        return new CustomPointErrorHandler(pointExceptionStrategy(), pointFatalMessageLogger);
+        return new CustomPointErrorHandler(customExceptionStrategy, pointFatalMessageLogger);
     }
 
     @Bean("pointListenerContainerFactory")
