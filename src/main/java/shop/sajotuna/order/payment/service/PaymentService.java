@@ -3,6 +3,7 @@ package shop.sajotuna.order.payment.service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.orders.domain.Order;
 import shop.sajotuna.order.orders.repository.OrderRepository;
 import shop.sajotuna.order.payment.domain.PaymentMethod;
@@ -17,12 +18,14 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final List<ExternalPaymentService> list;
     private final OrderRepository orderRepository;
 
     // 주문 번호에 맞춰 결제 정보 조회
+    @Transactional(readOnly = true)
     public PaymentResponse getPayment(Long paymentId) {
         Payment payment = paymentRepository.findById(paymentId).orElseThrow(EntityNotFoundException::new);
 
@@ -30,6 +33,7 @@ public class PaymentService {
     }
 
     // 모든 결제 정보 조회
+    @Transactional(readOnly = true)
     public List<PaymentResponse> getAllPayments() {
         return paymentRepository.findAll().stream().map(PaymentResponse::from).collect(Collectors.toList());
     }
