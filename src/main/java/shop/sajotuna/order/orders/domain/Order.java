@@ -152,7 +152,7 @@ public class Order {
     }
 
     public void cancelPayment() {
-        if (this.status != OrderStatus.BEFORE_PAYMENT) {
+        if (!this.status.equals(OrderStatus.BEFORE_PAYMENT)) {
             throw new InvalidStatusException();
         }
         this.status = OrderStatus.CANCELLED;
@@ -167,7 +167,7 @@ public class Order {
     }
 
     public void completePayment() {
-        if (this.status != OrderStatus.BEFORE_PAYMENT) {
+        if (!this.status.equals(OrderStatus.BEFORE_PAYMENT)) {
             throw new InvalidStatusException();
         }
         this.status = OrderStatus.PENDING;
