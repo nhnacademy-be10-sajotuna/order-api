@@ -5,9 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.point.domain.PointPolicy;
 import shop.sajotuna.order.point.domain.UserPoint;
-import shop.sajotuna.order.point.repository.UserGradeRepository;
 import shop.sajotuna.order.point.service.dto.event.PointEvent;
 import shop.sajotuna.order.point.repository.UserPointRepository;
 
@@ -19,7 +19,6 @@ public class PointEarnConsumer {
     private final UserPointRepository userPointRepository;
     private final PointHistoryWriter pointHistoryWriter;
     private final PointPolicyService pointPolicyService;
-    private final UserGradeRepository userGradeRepository;
 
     // TODO: 역할 분리 필요
     @RabbitListener(queues = "${rabbitmq.point.queue}", containerFactory = "pointListenerContainerFactory")
@@ -30,14 +29,16 @@ public class PointEarnConsumer {
         UserPoint userPoint = userPointRepository.findByUserId(event.getUserId())
                 .orElseGet(() -> userPointRepository.save(UserPoint.create(event.getUserId())));
 
+        Money amount;
         if (event.getPointAmount() == null) {
             PointPolicy pointPolicy = pointPolicyService.getPointPolicy(event.getType());
-            userPoint.earnPoint(pointPolicy.getFixedPoint());
+            amount = pointPolicy.getFixedPoint();
         } else {
-            userPoint.earnPoint(event.getPointAmount());
+            amount = event.getPointAmount();
         }
+        userPoint.earnPoint(amount);
 
         // 포인트 이력 저장
-        pointHistoryWriter.savePointEarnHistory(event.getUserId(), event.getPointAmount(), event.getType().getDescription());
+        pointHistoryWriter.savePointEarnHistory(event.getUserId(), amount, event.getType().getDescription());
     }
 }
