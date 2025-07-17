@@ -85,7 +85,6 @@ public class UserCouponService {
     // 사용 가능한 책 쿠폰 조회
     @Transactional
     public List<CouponResponse> getAvailableCoupons(Long userId, BookInfo bookInfo) {
-        log.info("bookInfo categoryIds: {}", bookInfo.getCategoryIds().toString());
         List<UserCoupon> userCoupons = userCouponRepository.findByUserId(userId);
 
         userCoupons.forEach(UserCoupon::updateExpiredCoupon);
@@ -99,7 +98,7 @@ public class UserCouponService {
             if (bookCouponRepository.existsByCouponIdAndIsbn(coupon.getId(), bookInfo.getIsbn())) {
                 result.add(CouponResponse.from(coupon));
             }
-            if (categoryCouponRepository.existsByCouponIdAndCategoryIdIn(coupon.getId(), bookInfo.getCategoryIds())) {
+            if (bookInfo.getCategoryIds() != null && categoryCouponRepository.existsByCouponIdAndCategoryIdIn(coupon.getId(), bookInfo.getCategoryIds())) {
                 result.add(CouponResponse.from(coupon));
             }
         }
