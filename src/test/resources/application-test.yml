@@ -39,11 +39,23 @@ rabbitmq:
     parking-lot-queue: sajotuna.point.parking.queue
     parking-lot-exchange: sajotuna.point.parking.exchange
     parking-lot-routing-key: sajotuna.point.earn.dead
-
   coupon:
     queue: sajotuna.coupon.queue
     exchange: sajotuna.coupon.exchange
-    routing-key: sajotuna.coupon.issue
+    routing-key: sajotuna.coupon.earn
+    dlx-queue: sajotuna.coupon.dlq
+    dlx-exchange: sajotuna.coupon.dlx
+    dlx-routing-key: sajotuna.coupon.earn.error
+    parking-lot-queue: sajotuna.coupon.parking.queue
+    parking-lot-exchange: sajotuna.coupon.parking.exchange
+    parking-lot-routing-key: sajotuna.coupon.earn.dead
+  order:
+    queue: sajotuna.order.queue
+    exchange: sajotuna.order.exchange
+    routing-key: sajotuna.order.earn
+    dlx-queue: sajotuna.order.dlq
+    dlx-exchange: sajotuna.order.dlx
+    dlx-routing-key: sajotuna.order.earn.error
 
 
 logging:

@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import shop.sajotuna.order.point.service.dto.event.PointEvent;
+import shop.sajotuna.order.point.service.dto.event.PointEarnRequest;
 import shop.sajotuna.order.point.domain.PointPolicy;
 import shop.sajotuna.order.point.domain.PointPolicyType;
 import shop.sajotuna.order.point.domain.UserPoint;
@@ -46,7 +46,7 @@ public class PointServiceQueueConcurrencyTest {
     @Test
     void concurrentEarningViaQueue_shouldAccumulateWithoutLostUpdates() throws InterruptedException {
 
-        PointEvent event = new PointEvent(USER_ID, PointPolicyType.PURCHASE, Money.of(POINT_AMOUNT));
+        PointEarnRequest event = new PointEarnRequest(USER_ID, PointPolicyType.PURCHASE, Money.of(POINT_AMOUNT));
         PointPolicy pointPolicy = pointPolicyService.getPointPolicy(event.getType());
         Money earnPoint = pointPolicy.calculatePoint(Money.of(POINT_AMOUNT));
         ExecutorService executor = Executors.newFixedThreadPool(THREADS);

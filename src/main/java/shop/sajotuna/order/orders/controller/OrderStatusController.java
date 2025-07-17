@@ -22,10 +22,18 @@ public class OrderStatusController {
         return ResponseEntity.noContent().build();
     }
 
-    // 주문 취소 처리
+    // 결제 취소 처리
     @PutMapping("/cancel")
     public ResponseEntity<Void> cancelOrder(@RequestHeader("X-User-Id") Long userId, @PathVariable("order-id") Long orderId){
         orderStatusService.cancelOrder(userId, orderId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    // 주문 취소 처리(결제 전)
+    @PutMapping("/cancel-order")
+    public ResponseEntity<Void> cancelOrderBeforePayment(@RequestHeader(value = "X-User-Id", required = false) Long userId, @PathVariable("order-id") Long orderId) {
+        orderStatusService.cancelOrderBeforePayment(userId, orderId);
 
         return ResponseEntity.noContent().build();
     }

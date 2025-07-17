@@ -14,7 +14,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 
 import shop.sajotuna.order.point.domain.*;
-import shop.sajotuna.order.point.service.dto.event.PointEvent;
+import shop.sajotuna.order.point.service.dto.event.PointEarnRequest;
 import shop.sajotuna.order.point.repository.UserPointRepository;
 import shop.sajotuna.order.point.repository.PointHistoryRepository;
 import shop.sajotuna.order.common.domain.Money;
@@ -37,7 +37,7 @@ class PointEarnConsumerTest {
     @Test
     void whenExistingUser_thenEarnsAndSavesHistory() {
         Long userId = 42L;
-        PointEvent event = mock(PointEvent.class);
+        PointEarnRequest event = mock(PointEarnRequest.class);
         when(event.getUserId()).thenReturn(userId);
         when(event.getType()).thenReturn(PointPolicyType.REVIEW);
 
@@ -67,7 +67,7 @@ class PointEarnConsumerTest {
     @Test
     void whenNewUser_thenCreatesUserPointAndSavesBoth() {
         Long userId = 99L;
-        PointEvent event = mock(PointEvent.class);
+        PointEarnRequest event = mock(PointEarnRequest.class);
         when(event.getUserId()).thenReturn(userId);
         when(event.getType()).thenReturn(PointPolicyType.REGISTER);
 

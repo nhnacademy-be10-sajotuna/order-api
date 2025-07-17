@@ -8,7 +8,7 @@ import shop.sajotuna.order.point.rabbitmq.PointFatalMessageRepository;
 import shop.sajotuna.order.point.rabbitmq.PointRabbitProperties;
 import org.junit.jupiter.api.Test;
 import org.awaitility.Awaitility;
-import shop.sajotuna.order.point.service.dto.event.PointEvent;
+import shop.sajotuna.order.point.service.dto.event.PointEarnRequest;
 import shop.sajotuna.order.point.domain.PointPolicyType;
 import shop.sajotuna.order.common.domain.Money;
 
@@ -32,7 +32,7 @@ public class FatalExceptionLogTest {
 
     @Test
     void whenFatalException_throwsImmediateAcknowledgeAmqpExceptionAndSaveLog() {
-        PointEvent bad = new PointEvent(null, PointPolicyType.PURCHASE, Money.zero());
+        PointEarnRequest bad = new PointEarnRequest(null, PointPolicyType.PURCHASE, Money.zero());
         pointQueueService.sendEarnPointsMessage(bad);
 
         Awaitility.await()

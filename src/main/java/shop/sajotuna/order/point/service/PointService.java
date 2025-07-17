@@ -5,7 +5,7 @@ import org.springframework.data.domain.Pageable;
 import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.point.controller.response.PointHistoryResponse;
 import shop.sajotuna.order.point.domain.PointPolicyType;
-import shop.sajotuna.order.point.service.dto.event.PointEvent;
+import shop.sajotuna.order.point.service.dto.event.PointEarnRequest;
 
 import java.util.List;
 
@@ -21,5 +21,5 @@ public interface PointService {
 
     void returnPoints(Long userId, Money pointAmount);
 
-    PointEvent earnPoints(Long userId, PointPolicyType purchase, Money pointAmount);
+    PointEarnRequest earnPoints(Long userId, PointPolicyType purchase, Money pointAmount);
 }

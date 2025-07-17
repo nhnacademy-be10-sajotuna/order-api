@@ -3,6 +3,8 @@ package shop.sajotuna.order.payment.service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import shop.sajotuna.order.orders.domain.Order;
+import shop.sajotuna.order.orders.repository.OrderRepository;
 import shop.sajotuna.order.payment.domain.PaymentMethod;
 import shop.sajotuna.order.payment.dto.PaymentConfirmRequest;
 import shop.sajotuna.order.payment.dto.PaymentResponse;
@@ -18,6 +20,7 @@ import java.util.stream.Collectors;
 public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final List<ExternalPaymentService> list;
+    private final OrderRepository orderRepository;
 
     // 주문 번호에 맞춰 결제 정보 조회
     public PaymentResponse getPayment(Long paymentId) {
@@ -32,11 +35,19 @@ public class PaymentService {
     }
 
     private ExternalPaymentService getExternalPaymentService(PaymentMethod paymentMethod) {
-        return list.stream().filter(externalPaymentService -> externalPaymentService.support(paymentMethod)).findFirst().orElseThrow(EntityNotFoundException::new);
+        return list.stream()
+                .filter(externalPaymentService ->
+                        externalPaymentService.support(paymentMethod))
+                .findFirst()
+                .orElseThrow(EntityNotFoundException::new);
     }
 
     public PaymentResponse processUserPayment(PaymentConfirmRequest paymentConfirmRequest) {
         ExternalPaymentService service = getExternalPaymentService(paymentConfirmRequest.getPaymentMethod());
+
+        Order order = orderRepository.findOrderByOrderNumber(paymentConfirmRequest.getOrderNumber());
+        order.completePayment();
+        order.getFinalPrice();
 
         return service.requestPaymentConfirm(paymentConfirmRequest);
     }

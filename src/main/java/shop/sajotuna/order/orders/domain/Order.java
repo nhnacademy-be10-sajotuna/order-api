@@ -77,7 +77,7 @@ public class Order {
                 .shippingInfo(shippingInfo)
                 .orderPrice(orderPrice)
                 .discounts(discounts)
-                .status(OrderStatus.PENDING)
+                .status(OrderStatus.BEFORE_PAYMENT)
                 .build();
         order.addOrderProduct(orderProducts);
         return order;
@@ -133,7 +133,7 @@ public class Order {
 
     // 주문 취소
     public void cancelled() {
-        if (!this.status.equals(OrderStatus.PENDING)) {
+        if (!(this.status.equals(OrderStatus.PENDING) || this.status.equals(OrderStatus.BEFORE_PAYMENT))) {
             throw new InvalidStatusException();
         }
         this.status = OrderStatus.CANCELLED;
@@ -151,11 +151,25 @@ public class Order {
         this.status = OrderStatus.RETURNED;
     }
 
+    public void cancelPayment() {
+        if (this.status != OrderStatus.BEFORE_PAYMENT) {
+            throw new InvalidStatusException();
+        }
+        this.status = OrderStatus.CANCELLED;
+    }
+
     public void setEarnedPoint(Money earnedPoint) {
         discounts.setEarnedPoint(earnedPoint);
     }
 
     public Money getEarnedPoint() {
         return discounts.getEarnedPoint();
+    }
+
+    public void completePayment() {
+        if (this.status != OrderStatus.BEFORE_PAYMENT) {
+            throw new InvalidStatusException();
+        }
+        this.status = OrderStatus.PENDING;
     }
 }

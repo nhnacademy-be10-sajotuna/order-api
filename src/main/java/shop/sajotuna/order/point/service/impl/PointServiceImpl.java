@@ -18,7 +18,7 @@ import shop.sajotuna.order.point.repository.UserGradeRepository;
 import shop.sajotuna.order.point.repository.UserPointRepository;
 import shop.sajotuna.order.point.service.PointPolicyService;
 import shop.sajotuna.order.point.service.PointService;
-import shop.sajotuna.order.point.service.dto.event.PointEvent;
+import shop.sajotuna.order.point.service.dto.event.PointEarnRequest;
 
 import java.util.List;
 
@@ -77,7 +77,7 @@ public class PointServiceImpl implements PointService {
     }
 
     @Override
-    public PointEvent earnPoints(Long userId, PointPolicyType type, Money pointAmount) {
+    public PointEarnRequest earnPoints(Long userId, PointPolicyType type, Money pointAmount) {
         Money amount = pointPolicyService.getPointPolicy(type).calculatePoint(pointAmount);
 
         UserGrade userGrade = userGradeRepository.findByUserId(userId).orElseThrow(UserGradeNotFoundException::new);
@@ -85,7 +85,7 @@ public class PointServiceImpl implements PointService {
 
         amount = amount.plus(gradePoint);
 
-        return new PointEvent(userId, type, amount);
+        return new PointEarnRequest(userId, type, amount);
     }
 
 }

@@ -12,7 +12,7 @@ import shop.sajotuna.order.orders.repository.OrderRepository;
 import shop.sajotuna.order.point.domain.PointPolicyType;
 import shop.sajotuna.order.point.exception.OrderNotFoundException;
 import shop.sajotuna.order.point.service.PointQueueService;
-import shop.sajotuna.order.point.service.dto.event.PointEvent;
+import shop.sajotuna.order.point.service.dto.event.PointEarnRequest;
 import shop.sajotuna.order.stock.service.StockService;
 
 import java.time.LocalDateTime;
@@ -57,7 +57,7 @@ class OrderStatusServiceTest {
         // then
         assertThat(order.getStatus()).isEqualTo(OrderStatus.RETURNED);
         verify(stockService).increaseStock("9781234567890", 2);
-        verify(pointQueueService).sendEarnPointsMessage(any(PointEvent.class));
+        verify(pointQueueService).sendEarnPointsMessage(any(PointEarnRequest.class));
     }
 
     @Test
@@ -80,7 +80,7 @@ class OrderStatusServiceTest {
         // then
         assertThat(order.getStatus()).isEqualTo(OrderStatus.RETURNED);
         verify(stockService).increaseStock("9781234567890", 1);
-        verify(pointQueueService).sendEarnPointsMessage(any(PointEvent.class));
+        verify(pointQueueService).sendEarnPointsMessage(any(PointEarnRequest.class));
     }
 
     @Test
@@ -103,7 +103,7 @@ class OrderStatusServiceTest {
         // then
         assertThat(order.getStatus()).isEqualTo(OrderStatus.RETURNED);
         verify(stockService).increaseStock("9781234567890", 1);
-        verify(pointQueueService).sendEarnPointsMessage(any(PointEvent.class));
+        verify(pointQueueService).sendEarnPointsMessage(any(PointEarnRequest.class));
     }
 
     @Test
@@ -121,7 +121,7 @@ class OrderStatusServiceTest {
                 .isInstanceOf(OrderNotFoundException.class);
         
         verify(stockService, never()).increaseStock(anyString(), anyInt());
-        verify(pointQueueService, never()).sendEarnPointsMessage(any(PointEvent.class));
+        verify(pointQueueService, never()).sendEarnPointsMessage(any(PointEarnRequest.class));
     }
 
     @Test
@@ -146,7 +146,7 @@ class OrderStatusServiceTest {
         assertThat(order.getStatus()).isEqualTo(OrderStatus.RETURNED);
         verify(stockService).increaseStock("9781234567890", 2);
         verify(stockService).increaseStock("9781234567891", 1);
-        verify(pointQueueService).sendEarnPointsMessage(any(PointEvent.class));
+        verify(pointQueueService).sendEarnPointsMessage(any(PointEarnRequest.class));
     }
 
     @Test

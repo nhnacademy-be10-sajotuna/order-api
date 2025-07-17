@@ -9,7 +9,7 @@ import shop.sajotuna.order.point.domain.PointPolicyType;
 @AllArgsConstructor
 @Getter
 @ToString
-public class PointEvent {
+public class PointEarnRequest {
     Long userId;
     PointPolicyType type;
     Money pointAmount;

@@ -10,7 +10,7 @@ import shop.sajotuna.order.orders.service.pricing.DiscountService;
 import shop.sajotuna.order.orders.service.dto.command.CreateOrderCommand;
 import shop.sajotuna.order.point.domain.PointPolicyType;
 import shop.sajotuna.order.point.service.PointService;
-import shop.sajotuna.order.point.service.dto.event.PointEvent;
+import shop.sajotuna.order.point.service.dto.event.PointEarnRequest;
 
 import java.util.List;
 
@@ -34,7 +34,7 @@ public class UserOrderProcessor implements OrderProcessor {
     
     @Override
     public void processPointEarn(CreateOrderCommand command, Order order) {
-        PointEvent event = pointService.earnPoints(command.getUserId(), PointPolicyType.PURCHASE, order.getFinalProductPrice());
+        PointEarnRequest event = pointService.earnPoints(command.getUserId(), PointPolicyType.PURCHASE, order.getFinalProductPrice());
 
         eventPublisher.publishEvent(event);
         order.setEarnedPoint(event.getPointAmount());

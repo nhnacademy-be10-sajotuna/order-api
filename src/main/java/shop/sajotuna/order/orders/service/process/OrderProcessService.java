@@ -3,12 +3,13 @@ package shop.sajotuna.order.orders.service.process;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.orders.domain.Discounts;
 import shop.sajotuna.order.orders.domain.OrderPrice;
 import shop.sajotuna.order.orders.domain.OrderProduct;
 import shop.sajotuna.order.orders.controller.dto.response.OrderResponse;
 import shop.sajotuna.order.orders.domain.Order;
+import shop.sajotuna.order.orders.rabbitmq.OrderEvent;
+import shop.sajotuna.order.orders.rabbitmq.OrderQueueService;
 import shop.sajotuna.order.orders.repository.OrderRepository;
 import shop.sajotuna.order.orders.service.product.OrderProductCreateService;
 import shop.sajotuna.order.orders.service.pricing.PricingService;
@@ -26,6 +27,7 @@ public class OrderProcessService {
     private final OrderProductCreateService orderProductCreateService;
     private final StockService stockService;
     private final OrderProcessorFactory orderProcessorFactory;
+    private final OrderQueueService orderQueueService;
 
     @Transactional
     public OrderResponse processOrder(CreateOrderCommand command) {
@@ -48,6 +50,9 @@ public class OrderProcessService {
 
         // 포인트 적립 처리
         orderProcessor.processPointEarn(command, order);
+
+        // 주문 큐에 메시지 전송
+        orderQueueService.sendOrderMessage(new OrderEvent(order.getId(), command.getUserId()));
 
         return OrderResponse.from(order);
     }

@@ -3,6 +3,7 @@ package shop.sajotuna.order.coupon.scheduler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.coupon.client.BirthdayClient;
 import shop.sajotuna.order.coupon.domain.Coupon;
 import shop.sajotuna.order.coupon.dto.response.BirthdayUserResponse;
@@ -23,6 +24,7 @@ public class BirthdayCouponScheduler {
     private final CouponRepository couponRepository;
 
     @Scheduled(cron = "0 0 0 1 * ?") // 매달 1일 0시
+    @Transactional
     public void issueBirthdayCoupons() {
         List<BirthdayUserResponse> users = birthdayClient.getBirthdayUsers();
         for (BirthdayUserResponse user : users) {
