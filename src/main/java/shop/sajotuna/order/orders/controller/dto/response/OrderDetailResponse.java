@@ -104,9 +104,10 @@ public class OrderDetailResponse {
                 .items(items)
                 
                 // Payment 정보
-                .paymentMethod(payment.getMethod())
-                .paymentAmount(payment.getAmount().getAmount())
-                .paymentCreatedAt(payment.getCreatedAt())
+                .paymentMethod(payment != null ? payment.getMethod() : null)
+                .paymentAmount(payment != null ? payment.getAmount().getAmount() : null)
+                .paymentCreatedAt(payment != null ? payment.getCreatedAt() : null)
+
                 .build();
     }
 }
