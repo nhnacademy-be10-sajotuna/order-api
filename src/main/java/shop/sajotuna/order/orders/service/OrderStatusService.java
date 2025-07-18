@@ -86,6 +86,11 @@ public class OrderStatusService {
     public void cancelOrderBeforePayment(Long userId, Long orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(OrderNotFoundException::new);
         order.cancelPayment();
+
+        refundAndCleanup(order, userId);
+    }
+
+    public void refundAndCleanup(Order order, Long userId) {
         refundService.returnStock(order);
 
         if (userId == null) {

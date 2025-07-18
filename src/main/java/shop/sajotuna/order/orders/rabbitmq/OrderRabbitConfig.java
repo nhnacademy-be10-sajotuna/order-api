@@ -5,14 +5,11 @@ import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.config.RetryInterceptorBuilder;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.retry.RejectAndDontRequeueRecoverer;
 import org.springframework.boot.autoconfigure.amqp.SimpleRabbitListenerContainerFactoryConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.retry.interceptor.RetryOperationsInterceptor;
 import org.springframework.util.ErrorHandler;
 import shop.sajotuna.order.point.rabbitmq.CustomExceptionStrategy;
-import shop.sajotuna.order.point.rabbitmq.CustomPointErrorHandler;
 
 @Configuration
 @RequiredArgsConstructor
@@ -64,6 +61,11 @@ public class OrderRabbitConfig {
                 .with(orderRabbitProperties.getDlxRoutingKey());
     }
 
+    @Bean
+    public ErrorHandler errorHandler() {
+        return new CustomOrderErrorHandler(customExceptionStrategy);
+    }
+
     @Bean("orderListenerContainerFactory")
     public SimpleRabbitListenerContainerFactory orderListenerContainerFactory(
             ConnectionFactory connectionFactory,
@@ -75,6 +77,7 @@ public class OrderRabbitConfig {
         factory.setConcurrentConsumers(5);
         factory.setMaxConcurrentConsumers(10);
         factory.setPrefetchCount(10);
+        factory.setErrorHandler(errorHandler());
 
         return factory;
     }
