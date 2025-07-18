@@ -34,7 +34,7 @@ public class StockController {
 
     @PostMapping
     public ResponseEntity<BookStockResponse> createStock(@RequestBody @Valid CreateStockRequest createStockRequest) {
-        return ResponseEntity.ok(stockService.createStock(createStockRequest.getIsbn(), createStockRequest.getQuantity()));
+        return ResponseEntity.ok(stockService.createStock(createStockRequest.getIsbn(), createStockRequest.getStock()));
     }
 
     @PostMapping("/batch")

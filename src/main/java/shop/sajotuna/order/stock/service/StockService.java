@@ -86,7 +86,7 @@ public class StockService {
         // 중복되지 않은 것만 필터링
         List<BookStock> bookStocks = createStockRequest.stream()
                 .filter(request -> !existingIsbns.contains(request.getIsbn()))
-                .map(request -> new BookStock(request.getIsbn(), Stock.of(request.getQuantity())))
+                .map(request -> new BookStock(request.getIsbn(), Stock.of(request.getStock())))
                 .toList();
 
         List<BookStock> savedStocks = bookStockRepository.saveAll(bookStocks);
