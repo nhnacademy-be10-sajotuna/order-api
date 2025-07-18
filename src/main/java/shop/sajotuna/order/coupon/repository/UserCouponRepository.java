@@ -22,7 +22,7 @@ public interface UserCouponRepository extends JpaRepository<UserCoupon, Long> {
     boolean existsByUserIdAndCouponId(Long userId, Long couponId);
 
     @EntityGraph(attributePaths = {"coupon"})
-    @Query("SELECT uc FROM UserCoupon uc WHERE uc.userId = :userId AND uc.coupon.id = :couponId")
+    @Query("SELECT uc FROM UserCoupon uc WHERE uc.userId = :userId AND uc.coupon.id = :couponId AND uc.type = 'AVAILABLE' ORDER BY uc.id ASC LIMIT 1")
     Optional<UserCoupon> findByUserIdAndCouponIdWithCoupon(Long userId, Long couponId);
 }
 

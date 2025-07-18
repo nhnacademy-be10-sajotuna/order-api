@@ -23,6 +23,8 @@ import shop.sajotuna.order.coupon.exception.CouponNotFoundException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -91,7 +93,7 @@ public class UserCouponService {
 
         List<UserCoupon> availableCoupons = userCoupons.stream().filter(coupon -> coupon.getType() == UserCouponType.AVAILABLE).toList();
 
-        List<Coupon> coupons = availableCoupons.stream().map(UserCoupon::getCoupon).toList();
+        Set<Coupon> coupons = availableCoupons.stream().map(UserCoupon::getCoupon).collect(Collectors.toSet());
         List<CouponResponse> result = new ArrayList<>();
         for (Coupon coupon : coupons) {
 
@@ -116,10 +118,10 @@ public class UserCouponService {
                 .filter(coupon -> coupon.getType() == UserCouponType.AVAILABLE)
                 .toList();
 
-        List<Coupon> coupons = availableCoupons.stream().map(UserCoupon::getCoupon)
+        Set<Coupon> coupons = availableCoupons.stream().map(UserCoupon::getCoupon)
                 .filter(coupon -> coupon.getCouponType() == CouponType.ORDER)
                 .filter(coupon -> totalPrice.isGreaterThan(coupon.getMinOrderAmount()))
-                .toList();
+                .collect(Collectors.toSet());;
         return coupons.stream().map(CouponResponse::from).toList();
     }
 
