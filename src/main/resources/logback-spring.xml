@@ -2,19 +2,17 @@
 <configuration scan="true" scanPeriod="30 seconds">
     <property name="LOG_DIR" value="logs" />
     <property name="SERVER_NAME" value="order" />
-    <property name="SERVER_PORT" value="${server.port:-8080}" />
+    <property name="SERVER_PORT" value="${SERVER_PORT:-unknown}" />
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_DIR}/${SERVER_NAME}/${SERVER_NAME}_${SERVER_PORT}.log</file>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- 일 단위로 롤링, 일주일 보관 -->
             <fileNamePattern>${LOG_DIR}/${SERVER_NAME}/${SERVER_NAME}_${SERVER_PORT}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-            <maxHistory>7</maxHistory> <!-- 7일 보관 -->
+            <maxHistory>7</maxHistory>
             <cleanHistoryOnStart>true</cleanHistoryOnStart>
-            <!-- 용량 제한 + 시간 기준 (선택적) -->
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>10MB</maxFileSize> <!-- 파일 하나당 10MB 넘으면 분할 -->
+                <maxFileSize>10MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
 
@@ -23,8 +21,24 @@
         </encoder>
     </appender>
 
-    <!-- Root logger 설정 -->
-    <root level="INFO">
-        <appender-ref ref="FILE"/>
-    </root>
+    <!-- Profile: local -->
+    <springProfile name="local">
+        <root level="INFO">
+            <appender-ref ref="FILE"/>
+        </root>
+    </springProfile>
+
+    <!-- Profile: prod -->
+    <springProfile name="prod">
+        <root level="INFO">
+            <appender-ref ref="FILE"/>
+        </root>
+    </springProfile>
+
+    <!-- Profile: real -->
+    <springProfile name="real">
+        <root level="ERROR">
+            <appender-ref ref="FILE"/>
+        </root>
+    </springProfile>
 </configuration>
