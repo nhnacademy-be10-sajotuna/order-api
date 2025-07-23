@@ -77,7 +77,7 @@ public class OrderStatusService {
                 )
         );
 
-        pointService.returnPoints(userId, order.getDiscounts().getEarnedPoint());
+        pointService.returnPoints(userId, order.getEarnedPoint());
 
         // 결제 취소 요청
         paymentService.cancelPayment(orderId, "cancel");

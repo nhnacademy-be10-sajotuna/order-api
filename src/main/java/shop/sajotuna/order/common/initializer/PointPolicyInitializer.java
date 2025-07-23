@@ -3,6 +3,7 @@ package shop.sajotuna.order.common.initializer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import shop.sajotuna.order.point.domain.CalculationMode;
 import shop.sajotuna.order.point.domain.PointPolicy;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
+@Profile("!test")
 public class PointPolicyInitializer implements ApplicationRunner {
 
     private final PointPolicyRepository policyRepository;

@@ -6,8 +6,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.point.exception.InvalidPercentageException;
+import shop.sajotuna.order.point.exception.InvalidPointPolicyValueException;
 
-import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 
@@ -53,6 +53,9 @@ public class PointPolicy {
     }
 
     public void update(int value) {
+        if (value < 1) {
+            throw new InvalidPointPolicyValueException();
+        }
         if (calculationMode == CalculationMode.RATE) {
             if (value > MAX_PERCENTAGE) {
                 throw new InvalidPercentageException();

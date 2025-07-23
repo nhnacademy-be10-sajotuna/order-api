@@ -146,7 +146,7 @@ public class Order {
         }
 
         LocalDateTime shippingStartDate = shippingInfo.getShippingStartDate();
-        returnReason.validateReturnPeriod(shippingStartDate);
+        returnReason.validateReturnPeriod(shippingStartDate, LocalDateTime.now());
 
         this.status = OrderStatus.RETURNED;
     }

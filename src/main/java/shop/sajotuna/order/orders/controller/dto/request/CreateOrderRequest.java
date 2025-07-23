@@ -12,7 +12,7 @@ import shop.sajotuna.order.orders.service.dto.command.CreateOrderCommand;
 import shop.sajotuna.order.orders.service.dto.command.CreateOrderProductCommand;
 import shop.sajotuna.order.orders.validation.annotation.PhoneNumber;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,8 +45,8 @@ public class CreateOrderRequest {
     private String recipientAddress;
 
     @Future
-    @JsonFormat(pattern = "yyyyMMddHHmmss")
-    private LocalDateTime expectedDeliveryDate;
+    @JsonFormat(pattern = "yyyyMMdd")
+    private LocalDate expectedDeliveryDate;
 
     private Long orderCouponId;
 

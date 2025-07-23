@@ -5,6 +5,7 @@ import lombok.Getter;
 import shop.sajotuna.order.orders.domain.Order;
 import shop.sajotuna.order.orders.domain.OrderStatus;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -26,7 +27,7 @@ public class OrderResponse {
     private String recipientPhoneNumber;
     private String recipientEmail;
     private String recipientAddress;
-    private LocalDateTime expectedDeliveryDate;
+    private LocalDate expectedDeliveryDate;
     private LocalDateTime shippingStartDate;
     private LocalDateTime shippingEndDate;
     

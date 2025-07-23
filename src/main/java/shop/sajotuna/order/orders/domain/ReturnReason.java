@@ -22,8 +22,8 @@ public enum ReturnReason {
         this.deductShippingFee = deductShippingFee;
     }
 
-    public void validateReturnPeriod(LocalDateTime shippingDate) {
-        long daysPassed = ChronoUnit.DAYS.between(shippingDate, LocalDateTime.now());
+    public void validateReturnPeriod(LocalDateTime shippingDate, LocalDateTime returnRequestDate) {
+        long daysPassed = ChronoUnit.DAYS.between(shippingDate, returnRequestDate);
         if (daysPassed > maxDays) {
             throw new TimeOutException();
         }

@@ -8,6 +8,7 @@ import lombok.ToString;
 import shop.sajotuna.order.common.exception.NullValueException;
 import shop.sajotuna.order.orders.validation.validator.OrderValidationUtils;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Embeddable
@@ -22,11 +23,11 @@ public class ShippingInfo {
     private String recipientEmail;
     private String recipientAddress;
 
-    private LocalDateTime expectedDeliveryDate;
+    private LocalDate expectedDeliveryDate;
     private LocalDateTime shippingStartDate;
     private LocalDateTime shippingEndDate;
 
-    private ShippingInfo(String recipientName, String recipientPhoneNumber, String recipientEmail, String recipientAddress, LocalDateTime expectedDeliveryDate) {
+    private ShippingInfo(String recipientName, String recipientPhoneNumber, String recipientEmail, String recipientAddress, LocalDate expectedDeliveryDate) {
         setRecipientName(recipientName);
         setRecipientPhoneNumber(recipientPhoneNumber);
         setRecipientEmail(recipientEmail);
@@ -36,7 +37,7 @@ public class ShippingInfo {
         this.shippingEndDate = null;
     }
 
-    public static ShippingInfo create(String recipientName, String recipientPhoneNumber, String recipientEmail, String recipientAddress, LocalDateTime expectedDeliveryDate) {
+    public static ShippingInfo create(String recipientName, String recipientPhoneNumber, String recipientEmail, String recipientAddress, LocalDate expectedDeliveryDate) {
         return new ShippingInfo(recipientName, recipientPhoneNumber, recipientEmail, recipientAddress, expectedDeliveryDate);
     }
 
@@ -74,10 +75,10 @@ public class ShippingInfo {
     }
 
     // TODO: 배송 날짜 지정 로직 고도화
-    private void setExpectedDeliveryDate(LocalDateTime expectedDeliveryDate) {
+    private void setExpectedDeliveryDate(LocalDate expectedDeliveryDate) {
         if (expectedDeliveryDate == null) {
-            expectedDeliveryDate = LocalDateTime.now().plusDays(2);
-        } else if (expectedDeliveryDate.isBefore(LocalDateTime.now().plusDays(2))) {
+            expectedDeliveryDate = LocalDate.now().plusDays(2);
+        } else if (expectedDeliveryDate.isBefore(LocalDate.now().plusDays(2))) {
             throw new IllegalArgumentException("배송 날짜는 최소 2일 이후로 설정해야 합니다.");
         }
         this.expectedDeliveryDate = expectedDeliveryDate;

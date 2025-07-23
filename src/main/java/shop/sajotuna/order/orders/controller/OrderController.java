@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import shop.sajotuna.order.orders.controller.dto.response.OrderDetailResponse;
 import shop.sajotuna.order.orders.controller.dto.response.OrderFormResponse;
 import shop.sajotuna.order.orders.controller.dto.response.OrderInfoResponse;
+import shop.sajotuna.order.orders.docs.OrderControllerDocs;
 import shop.sajotuna.order.orders.service.OrderQueryService;
 import shop.sajotuna.order.orders.service.OrderFormService;
 
@@ -16,7 +17,7 @@ import shop.sajotuna.order.orders.service.OrderFormService;
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
-public class OrderController {
+public class OrderController implements OrderControllerDocs {
     private final OrderQueryService orderQueryService;
     private final OrderFormService orderFormService;
 

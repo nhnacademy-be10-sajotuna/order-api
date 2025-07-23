@@ -8,6 +8,7 @@ import shop.sajotuna.order.orders.domain.OrderStatus;
 import shop.sajotuna.order.payment.domain.Payment;
 import shop.sajotuna.order.payment.domain.PaymentMethod;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class OrderDetailResponse {
     private String recipientPhoneNumber;
     private String recipientEmail;
     private String recipientAddress;
-    private LocalDateTime expectedDeliveryDate;
+    private LocalDate expectedDeliveryDate;
     private LocalDateTime shippingStartDate;
     private LocalDateTime shippingEndDate;
 
