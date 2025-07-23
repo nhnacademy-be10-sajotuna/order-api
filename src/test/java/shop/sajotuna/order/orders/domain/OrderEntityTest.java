@@ -5,11 +5,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
 import shop.sajotuna.order.common.domain.Money;
+import shop.sajotuna.order.orders.exception.InvalidStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ActiveProfiles("test")
 public class OrderEntityTest {
@@ -33,6 +35,16 @@ public class OrderEntityTest {
 
         order.delivered();
         assertThat(order.getStatus()).isEqualTo(OrderStatus.DELIVERED);
+    }
+
+    @Test
+    @DisplayName("order 잘못된 상태 전환 시 예외 발생")
+    void testUpdateFail() {
+        assertThrows(InvalidStatusException.class,
+                () -> order.shipped());
+
+        assertThrows(InvalidStatusException.class,
+                () -> order.delivered());
     }
 
     private Order createTestOrder() {
