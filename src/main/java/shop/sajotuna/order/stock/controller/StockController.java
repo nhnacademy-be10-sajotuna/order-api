@@ -22,13 +22,13 @@ public class StockController {
 
     @PutMapping("/increase")
     public ResponseEntity<Void> increaseStock(@RequestBody @Valid StockRequest stockRequest) {
-        stockService.increaseStock(stockRequest.getIsbn(), stockRequest.getQuantity());
+        stockService.increaseStock(stockRequest.getIsbn(), stockRequest.getStock());
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/decrease")
     public ResponseEntity<Void> decreaseStock(@RequestBody @Valid StockRequest decreaseStockRequest) {
-        stockService.decreaseStock(decreaseStockRequest.getIsbn(), decreaseStockRequest.getQuantity());
+        stockService.decreaseStock(decreaseStockRequest.getIsbn(), decreaseStockRequest.getStock());
         return ResponseEntity.ok().build();
     }
 

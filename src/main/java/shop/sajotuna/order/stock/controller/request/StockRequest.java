@@ -13,5 +13,5 @@ public class StockRequest {
     private String isbn;
 
     @Min(1)
-    private int quantity;
+    private int stock;
 }
