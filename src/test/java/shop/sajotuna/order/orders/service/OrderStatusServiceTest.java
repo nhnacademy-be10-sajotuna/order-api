@@ -15,7 +15,7 @@ import shop.sajotuna.order.point.service.PointQueueService;
 import shop.sajotuna.order.point.service.dto.event.PointEarnRequest;
 import shop.sajotuna.order.stock.service.StockService;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,6 +33,8 @@ class OrderStatusServiceTest {
 
     @Mock
     private StockService stockService;
+
+
 
     @InjectMocks
     private OrderStatusService orderStatusService;
@@ -204,12 +206,13 @@ class OrderStatusServiceTest {
         ShippingInfo shippingInfo = ShippingInfo.create(
             "홍길동", "010-1234-5678", "test@example.com",
             "서울시 강남구 테헤란로 123",
-            LocalDateTime.now().plusDays(3)
+            LocalDate.now().plusDays(3)
         );
         OrderPrice orderPrice = OrderPrice.create(Money.of(17000), Money.of(0), Money.of(3000));
         Discounts discounts = new Discounts(Money.of(0), Money.of(0), null);
         
         Order order = Order.createOrder(orderer, shippingInfo, orderPrice, discounts, List.of());
+        order.completePayment();
         order.shipped();
         order.delivered();
         
