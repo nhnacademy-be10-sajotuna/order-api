@@ -23,6 +23,8 @@ public class OrderEntityTest {
     @Test
     @DisplayName("order 메서드 검증")
     void testUpdate() {
+        assertThat(order.getStatus()).isEqualTo(OrderStatus.BEFORE_PAYMENT);
+
         order.completePayment();
         assertThat(order.getStatus()).isEqualTo(OrderStatus.PENDING);
 

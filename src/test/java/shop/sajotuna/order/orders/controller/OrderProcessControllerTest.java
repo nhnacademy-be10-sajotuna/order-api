@@ -80,7 +80,10 @@ public class OrderProcessControllerTest {
                                   ]
                                 }"""))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.userId").value(userId));
+                .andExpect(jsonPath("$.userId").value(userId))
+                .andExpect(jsonPath("$.orderNumber").exists())
+                .andExpect(jsonPath("$.status").exists())
+                .andExpect(jsonPath("$.totalPrice").exists());
     }
 
     @Test
@@ -88,7 +91,7 @@ public class OrderProcessControllerTest {
     void createOrderFail() throws Exception {
         CreateOrderRequest request = new CreateOrderRequest();
 
-        given(orderProcessService.processOrder(any())).willReturn(null);
+        given(orderProcessService.processOrder(any())).willThrow(new IllegalArgumentException("Invalid request"));
 
         // Act & Assert
         mockMvc.perform(post("/api/orders")

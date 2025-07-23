@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -65,18 +66,24 @@ public class OrderControllerTest {
         mockMvc.perform(get("/api/orders/info/{order-number}", orderNumber))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.orderNumber").value(orderNumber));
+                .andExpect(jsonPath("$.orderNumber").value(orderNumber))
+                .andExpect(jsonPath("$.status").value("PENDING"))
+                .andExpect(jsonPath("$.totalProductCount").value(orderInfoResponse.getTotalProductCount()));
     }
 
     @Test
     @DisplayName("GET /api/orders/user - 회원의 주문내역 조회")
     void getUserOrder() throws Exception {
+        Page<OrderInfoResponse> responses = new PageImpl<>(List.of(orderInfoResponse));
 
-        given(orderQueryService.findOrdersByUserId(userId, pageable)).willReturn(Page.empty());
+        given(orderQueryService.findOrdersByUserId(userId, pageable)).willReturn(responses);
 
         mockMvc.perform(get("/api/orders/user").header("X-User-ID", userId).param("page", "0").param("size", "10"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.totalElements").exists())
+                .andExpect(jsonPath("$.totalPages").exists());
     }
 
     @Test

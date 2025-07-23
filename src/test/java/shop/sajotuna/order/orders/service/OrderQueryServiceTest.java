@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
@@ -59,6 +59,21 @@ public class OrderQueryServiceTest {
         assertThat(response).isNotNull();
         assertThat(response.getOrderNumber()).isEqualTo(orderNumber);
         assertThat(response.getStatus()).isEqualTo(OrderStatus.PENDING);
+    }
+
+    @Test
+    @DisplayName("주문 조회 - 주문 번호로 찾을 수 없음")
+    void getOrderInfo_orderNotFoundByOrderNumber() {
+        // given
+        String nonExistentOrderNumber = "NON_EXISTENT";
+
+        // when
+        when(orderRepository.findOrderByOrderNumber(nonExistentOrderNumber))
+                .thenReturn(null); // 또는 적절한 예외 발생
+
+        // then
+        assertThrows(OrderNotFoundException.class,
+                () -> orderQueryService.getOrderInfo(nonExistentOrderNumber));
     }
 
     @Test
