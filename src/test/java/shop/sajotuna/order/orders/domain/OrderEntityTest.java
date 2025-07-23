@@ -7,6 +7,7 @@ import org.springframework.test.context.ActiveProfiles;
 import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.orders.exception.InvalidStatusException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -52,7 +53,7 @@ public class OrderEntityTest {
         ShippingInfo shippingInfo = ShippingInfo.create(
                 "홍길동", "010-1234-5678", "test@example.com",
                 "서울시 강남구 테헤란로 123",
-                LocalDateTime.now().plusDays(3)
+                LocalDate.now().plusDays(3)
         );
         OrderPrice orderPrice = OrderPrice.create(Money.of(17000), Money.of(0), Money.of(3000));
         Discounts discounts = new Discounts(Money.of(0), Money.of(0), null);

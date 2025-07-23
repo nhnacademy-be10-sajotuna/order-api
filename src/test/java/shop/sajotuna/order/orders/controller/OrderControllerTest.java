@@ -21,6 +21,7 @@ import shop.sajotuna.order.orders.service.OrderFormService;
 import shop.sajotuna.order.orders.service.OrderQueryService;
 import shop.sajotuna.order.point.exception.OrderNotFoundException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -101,7 +102,7 @@ public class OrderControllerTest {
         ShippingInfo shippingInfo = ShippingInfo.create(
                 "홍길동", "010-1234-5678", "test@example.com",
                 "서울시 강남구 테헤란로 123",
-                LocalDateTime.now().plusDays(3)
+                LocalDate.now().plusDays(3)
         );
         OrderPrice orderPrice = OrderPrice.create(Money.of(17000), Money.of(0), Money.of(3000));
         Discounts discounts = new Discounts(Money.of(0), Money.of(0), null);

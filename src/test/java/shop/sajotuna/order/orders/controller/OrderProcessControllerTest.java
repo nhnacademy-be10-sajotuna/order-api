@@ -16,7 +16,7 @@ import shop.sajotuna.order.orders.controller.dto.response.OrderResponse;
 import shop.sajotuna.order.orders.domain.*;
 import shop.sajotuna.order.orders.service.process.OrderProcessService;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -67,7 +67,7 @@ public class OrderProcessControllerTest {
                                   "recipientPhoneNumber": "010-9876-5432",
                                   "recipientEmail": "kim@example.com",
                                   "recipientAddress": "서울시 강남구 테헤란로 123",
-                                  "expectedDeliveryDate": "20251230081219",
+                                  "expectedDeliveryDate": "20251230",
                                   "orderCouponId": 6,
                                   "usedPoint": 1000,
                                   "items": [
@@ -106,7 +106,7 @@ public class OrderProcessControllerTest {
         ShippingInfo shippingInfo = ShippingInfo.create(
                 "홍길동", "010-1234-5678", "test@example.com",
                 "서울시 강남구 테헤란로 123",
-                LocalDateTime.now().plusDays(3)
+                LocalDate.now().plusDays(3)
         );
         OrderPrice orderPrice = OrderPrice.create(Money.of(17000), Money.of(0), Money.of(3000));
         Discounts discounts = new Discounts(Money.of(0), Money.of(0), null);
