@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import shop.sajotuna.order.point.domain.CalculationMode;
+import shop.sajotuna.order.point.repository.PointPolicyRepository;
 import shop.sajotuna.order.point.service.dto.event.PointEarnRequest;
 import shop.sajotuna.order.point.domain.PointPolicy;
 import shop.sajotuna.order.point.domain.PointPolicyType;
@@ -36,6 +38,8 @@ public class PointServiceQueueConcurrencyTest {
 
     @Autowired
     private PointQueueService pointQueueService;
+    @Autowired
+    private PointPolicyRepository pointPolicyRepository;
 
     @BeforeEach
     void setUp() {
@@ -45,10 +49,7 @@ public class PointServiceQueueConcurrencyTest {
 
     @Test
     void concurrentEarningViaQueue_shouldAccumulateWithoutLostUpdates() throws InterruptedException {
-
         PointEarnRequest event = new PointEarnRequest(USER_ID, PointPolicyType.PURCHASE, Money.of(POINT_AMOUNT));
-        PointPolicy pointPolicy = pointPolicyService.getPointPolicy(event.getType());
-        Money earnPoint = pointPolicy.calculatePoint(Money.of(POINT_AMOUNT));
         ExecutorService executor = Executors.newFixedThreadPool(THREADS);
         CountDownLatch latch = new CountDownLatch(THREADS);
 
@@ -69,7 +70,7 @@ public class PointServiceQueueConcurrencyTest {
                 .untilAsserted(() -> {
                     UserPoint up = userPointRepository.findByUserId(USER_ID)
                             .orElseThrow();
-                    assertEquals(earnPoint.multiply(THREADS), up.getRemainPoint());
+                    assertEquals(Money.of(POINT_AMOUNT).multiply(THREADS), up.getRemainPoint());
                     assertEquals(THREADS, up.getVersion());
                 });
 

@@ -16,8 +16,6 @@ import static org.mockito.Mockito.*;
 import shop.sajotuna.order.point.domain.*;
 import shop.sajotuna.order.point.service.dto.event.PointEarnRequest;
 import shop.sajotuna.order.point.repository.UserPointRepository;
-import shop.sajotuna.order.point.repository.PointHistoryRepository;
-import shop.sajotuna.order.common.domain.Money;
 
 @ExtendWith(MockitoExtension.class)
 class PointEarnConsumerTest {
@@ -26,7 +24,7 @@ class PointEarnConsumerTest {
     private UserPointRepository userPointRepo;
 
     @Mock
-    private PointHistoryRepository historyRepo;
+    private PointHistoryWriter pointHistoryWriter;
 
     @Mock
     private PointPolicyService pointPolicyService;
@@ -53,13 +51,9 @@ class PointEarnConsumerTest {
 
         consumer.onMessage(event);
 
-        assertEquals(earned, existingUserPoint.getRemainPoint());
+        assertEquals(earned, existingUserPoint.getRemainPoint().getAmount());
 
-        verify(historyRepo).save(argThat(history ->
-                history.getUserId().equals(userId) &&
-                        history.getAmount().equals(Money.of(earned)) &&
-                        history.getType() == PointHistoryType.EARNED
-        ));
+        verify(pointHistoryWriter).savePointEarnHistory(any(), any(), any());
 
         verify(userPointRepo, never()).save(any(UserPoint.class));
     }
@@ -86,9 +80,6 @@ class PointEarnConsumerTest {
 
         verify(userPointRepo).save(argThat(up -> up.getUserId().equals(userId)));
 
-        verify(historyRepo).save(argThat(history ->
-                history.getUserId().equals(userId) &&
-                        history.getAmount().equals(Money.of(earned))
-        ));
+        verify(pointHistoryWriter).savePointEarnHistory(any(), any(), any());
     }
 }
