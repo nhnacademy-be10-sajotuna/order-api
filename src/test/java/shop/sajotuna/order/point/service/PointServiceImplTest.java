@@ -54,8 +54,8 @@ class PointServiceImplTest{
         // then
         assertThat(pointsByUserId).hasSize(2)
                 .extracting("userId", "amount", "type")
-                .contains(tuple(userId, Money.of(1000), PointHistoryType.EARNED),
-                        tuple(userId, Money.of(500), PointHistoryType.REDEEMED));
+                .contains(tuple(userId, 1000, PointHistoryType.EARNED),
+                        tuple(userId, 500, PointHistoryType.REDEEMED));
     }
 
     @Test
@@ -75,7 +75,7 @@ class PointServiceImplTest{
         // then
         assertThat(response).isNotNull();
         assertThat(response.getUserId()).isEqualTo(userId);
-        assertThat(response.getAmount()).isEqualTo(Money.of(pointAmount));
+        assertThat(response.getAmount()).isEqualTo(pointAmount);
         assertThat(response.getType()).isEqualTo(PointHistoryType.REDEEMED);
         verify(userPointRepository).findByUserId(userId);
     }

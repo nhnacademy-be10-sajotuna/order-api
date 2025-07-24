@@ -6,14 +6,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.orders.domain.*;
 import shop.sajotuna.order.orders.repository.OrderRepository;
+import shop.sajotuna.order.payment.service.PaymentService;
 import shop.sajotuna.order.point.domain.PointPolicyType;
 import shop.sajotuna.order.point.exception.OrderNotFoundException;
-import shop.sajotuna.order.point.service.PointQueueService;
+import shop.sajotuna.order.point.service.PointService;
 import shop.sajotuna.order.point.service.dto.event.PointEarnRequest;
-import shop.sajotuna.order.stock.service.StockService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -29,10 +30,16 @@ class OrderStatusServiceTest {
     private OrderRepository orderRepository;
 
     @Mock
-    private PointQueueService pointQueueService;
+    private ApplicationEventPublisher eventPublisher;
 
     @Mock
-    private StockService stockService;
+    private PaymentService paymentService;
+
+    @Mock
+    private PointService pointService;
+
+    @Mock
+    private RefundService refundService;
 
 
 
@@ -58,8 +65,10 @@ class OrderStatusServiceTest {
 
         // then
         assertThat(order.getStatus()).isEqualTo(OrderStatus.RETURNED);
-        verify(stockService).increaseStock("9781234567890", 2);
-        verify(pointQueueService).sendEarnPointsMessage(any(PointEarnRequest.class));
+        verify(refundService).returnStock(order);
+        verify(refundService).returnCoupon(order);
+        verify(pointService).returnPoints(userId, order.getEarnedPoint());
+        verify(eventPublisher).publishEvent(any(PointEarnRequest.class));
     }
 
     @Test
@@ -81,8 +90,10 @@ class OrderStatusServiceTest {
 
         // then
         assertThat(order.getStatus()).isEqualTo(OrderStatus.RETURNED);
-        verify(stockService).increaseStock("9781234567890", 1);
-        verify(pointQueueService).sendEarnPointsMessage(any(PointEarnRequest.class));
+        verify(refundService).returnStock(order);
+        verify(refundService).returnCoupon(order);
+        verify(pointService).returnPoints(userId, order.getEarnedPoint());
+        verify(eventPublisher).publishEvent(any(PointEarnRequest.class));
     }
 
     @Test
@@ -104,8 +115,10 @@ class OrderStatusServiceTest {
 
         // then
         assertThat(order.getStatus()).isEqualTo(OrderStatus.RETURNED);
-        verify(stockService).increaseStock("9781234567890", 1);
-        verify(pointQueueService).sendEarnPointsMessage(any(PointEarnRequest.class));
+        verify(refundService).returnStock(order);
+        verify(refundService).returnCoupon(order);
+        verify(pointService).returnPoints(userId, order.getEarnedPoint());
+        verify(eventPublisher).publishEvent(any(PointEarnRequest.class));
     }
 
     @Test
@@ -122,8 +135,10 @@ class OrderStatusServiceTest {
         assertThatThrownBy(() -> orderStatusService.returnOrder(userId, orderId, returnReason))
                 .isInstanceOf(OrderNotFoundException.class);
         
-        verify(stockService, never()).increaseStock(anyString(), anyInt());
-        verify(pointQueueService, never()).sendEarnPointsMessage(any(PointEarnRequest.class));
+        verify(refundService, never()).returnStock(any(Order.class));
+        verify(refundService, never()).returnCoupon(any(Order.class));
+        verify(pointService, never()).returnPoints(anyLong(), any());
+        verify(eventPublisher, never()).publishEvent(any(PointEarnRequest.class));
     }
 
     @Test
@@ -146,9 +161,10 @@ class OrderStatusServiceTest {
 
         // then
         assertThat(order.getStatus()).isEqualTo(OrderStatus.RETURNED);
-        verify(stockService).increaseStock("9781234567890", 2);
-        verify(stockService).increaseStock("9781234567891", 1);
-        verify(pointQueueService).sendEarnPointsMessage(any(PointEarnRequest.class));
+        verify(refundService).returnStock(order);
+        verify(refundService).returnCoupon(order);
+        verify(pointService).returnPoints(userId, order.getEarnedPoint());
+        verify(eventPublisher).publishEvent(any(PointEarnRequest.class));
     }
 
     @Test
@@ -169,7 +185,7 @@ class OrderStatusServiceTest {
         orderStatusService.returnOrder(userId, orderId, returnReason);
 
         // then
-        verify(pointQueueService).sendEarnPointsMessage(argThat(pointEvent -> 
+        verify(eventPublisher).publishEvent(argThat((PointEarnRequest pointEvent) -> 
             pointEvent.getUserId().equals(userId) &&
             pointEvent.getType().equals(PointPolicyType.RETURNED) &&
             pointEvent.getPointAmount().equals(order.getReturnPrice(returnReason))
@@ -194,7 +210,7 @@ class OrderStatusServiceTest {
         orderStatusService.returnOrder(userId, orderId, returnReason);
 
         // then
-        verify(pointQueueService).sendEarnPointsMessage(argThat(pointEvent -> 
+        verify(eventPublisher).publishEvent(argThat((PointEarnRequest pointEvent) -> 
             pointEvent.getUserId().equals(userId) &&
             pointEvent.getType().equals(PointPolicyType.RETURNED) &&
             pointEvent.getPointAmount().equals(order.getReturnPrice(returnReason))

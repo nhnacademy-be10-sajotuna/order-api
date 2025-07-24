@@ -3,6 +3,7 @@ package shop.sajotuna.order.common.initializer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.orders.domain.DeliveryPrice;
@@ -10,6 +11,7 @@ import shop.sajotuna.order.orders.repository.DeliveryPriceRepository;
 
 @Component
 @RequiredArgsConstructor
+@Profile("!test")
 public class DeliveryPriceInitializer implements ApplicationRunner {
 
     private final DeliveryPriceRepository deliveryPriceRepository;
