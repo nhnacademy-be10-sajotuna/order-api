@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "user_coupon")
-//TODO: UserCoupon 금액 관련 필드 Money로 변경
 public class UserCoupon {
 
     @Id

@@ -15,6 +15,7 @@ import shop.sajotuna.order.point.domain.PointPolicyType;
 import shop.sajotuna.order.point.exception.OrderNotFoundException;
 import shop.sajotuna.order.point.service.PointService;
 import shop.sajotuna.order.point.service.dto.event.PointEarnRequest;
+import shop.sajotuna.order.point.exception.InvalidUserIdException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -40,8 +41,6 @@ class OrderStatusServiceTest {
 
     @Mock
     private RefundService refundService;
-
-
 
     @InjectMocks
     private OrderStatusService orderStatusService;
@@ -217,6 +216,154 @@ class OrderStatusServiceTest {
         ));
     }
 
+    @Test
+    @DisplayName("주문 배송 완료 처리 성공")
+    void shippedOrder_success() {
+        // given
+        Long orderId = 1L;
+        Order order = createOrderAfterPayment();
+        // createTestOrder()에서 이미 completePayment()를 호출하므로 PENDING 상태임
+        
+        when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+
+        // when
+        orderStatusService.shippedOrder(orderId);
+
+        // then
+        assertThat(order.getStatus()).isEqualTo(OrderStatus.SHIPPED);
+    }
+
+    @Test
+    @DisplayName("주문 배송 완료 처리 실패 - 주문을 찾을 수 없음")
+    void shippedOrder_orderNotFound() {
+        // given
+        Long orderId = 999L;
+        
+        when(orderRepository.findById(orderId)).thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> orderStatusService.shippedOrder(orderId))
+                .isInstanceOf(OrderNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("주문 취소 성공")
+    void cancelOrder_success() {
+        // given
+        Long userId = 1L;
+        Long orderId = 1L;
+        Order order = createOrderAfterPayment();
+        OrderProduct orderProduct = createTestOrderProduct("9781234567890", 2);
+        order.getOrderProducts().add(orderProduct);
+        
+        when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+
+        // when
+        orderStatusService.cancelOrder(userId, orderId);
+
+        // then
+        assertThat(order.getStatus()).isEqualTo(OrderStatus.CANCELLED);
+        verify(refundService).returnStock(order);
+        verify(refundService).returnCoupon(order);
+        verify(pointService).returnPoints(userId, order.getEarnedPoint());
+        verify(paymentService).cancelPayment(orderId, "cancel");
+    }
+
+    @Test
+    @DisplayName("주문 취소 실패 - 잘못된 사용자")
+    void cancelOrder_invalidUserId() {
+        // given
+        Long userId = 2L; // 다른 사용자 ID
+        Long orderId = 1L;
+        Order order = createTestOrder(); // 이 주문의 주문자는 userId = 1L
+        
+        when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+
+        // when & then
+        assertThatThrownBy(() -> orderStatusService.cancelOrder(userId, orderId))
+                .isInstanceOf(InvalidUserIdException.class);
+                
+        verify(refundService, never()).returnStock(any(Order.class));
+        verify(refundService, never()).returnCoupon(any(Order.class));
+        verify(pointService, never()).returnPoints(anyLong(), any());
+        verify(paymentService, never()).cancelPayment(anyLong(), anyString());
+    }
+
+    @Test
+    @DisplayName("주문 취소 실패 - 주문을 찾을 수 없음")
+    void cancelOrder_orderNotFound() {
+        // given
+        Long userId = 1L;
+        Long orderId = 999L;
+        
+        // when & then
+        assertThatThrownBy(() -> orderStatusService.cancelOrder(userId, orderId))
+                .isInstanceOf(OrderNotFoundException.class);
+                
+        verify(refundService, never()).returnStock(any(Order.class));
+        verify(refundService, never()).returnCoupon(any(Order.class));
+        verify(pointService, never()).returnPoints(anyLong(), any());
+        verify(paymentService, never()).cancelPayment(anyLong(), anyString());
+    }
+
+    @Test
+    @DisplayName("결제 전 주문 취소 성공")
+    void cancelOrderBeforePayment_success() {
+        // given
+        Long userId = 1L;
+        Long orderId = 1L;
+        Order order = createOrderBeforePayment();
+        OrderProduct orderProduct = createTestOrderProduct("9781234567890", 1);
+        order.getOrderProducts().add(orderProduct);
+        
+        when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+
+        // when
+        orderStatusService.cancelOrderBeforePayment(userId, orderId);
+
+        // then
+        assertThat(order.getStatus()).isEqualTo(OrderStatus.CANCELLED);
+        verify(refundService).returnStock(order);
+        verify(refundService).returnCoupon(order);
+        verify(pointService).returnPoints(userId, order.getEarnedPoint());
+    }
+
+    @Test
+    @DisplayName("결제 전 주문 취소 실패 - 주문을 찾을 수 없음")
+    void cancelOrderBeforePayment_orderNotFound() {
+        // given
+        Long userId = 1L;
+        Long orderId = 999L;
+        
+        // when & then
+        assertThatThrownBy(() -> orderStatusService.cancelOrderBeforePayment(userId, orderId))
+                .isInstanceOf(OrderNotFoundException.class);
+                
+        verify(refundService, never()).returnStock(any(Order.class));
+        verify(refundService, never()).returnCoupon(any(Order.class));
+        verify(pointService, never()).returnPoints(anyLong(), any());
+    }
+
+    @Test
+    @DisplayName("환불 및 정리 작업 성공 - 사용자 ID 있음")
+    void refundAndCleanup_withUserId() {
+        // given
+        Long userId = 1L;
+        Order order = createTestOrder();
+        OrderProduct orderProduct = createTestOrderProduct("9781234567890", 1);
+        order.getOrderProducts().add(orderProduct);
+
+        // when
+        orderStatusService.refundAndCleanup(order, userId);
+
+        // then
+        verify(refundService).returnStock(order);
+        verify(refundService).returnCoupon(order);
+        verify(pointService).returnPoints(userId, order.getEarnedPoint());
+        verify(eventPublisher).publishEvent(any(PointEarnRequest.class));
+        verify(orderRepository, never()).delete(order);
+    }
+
     private Order createTestOrder() {
         Orderer orderer = new Orderer(1L, "홍길동", "010-1234-5678", "test@example.com");
         ShippingInfo shippingInfo = ShippingInfo.create(
@@ -242,5 +389,35 @@ class OrderStatusServiceTest {
             .amount(Money.of(10000))
             .packagingRequest(false)
             .build();
+    }
+
+    private Order createOrderBeforePayment() {
+        Orderer orderer = new Orderer(1L, "홍길동", "010-1234-5678", "test@example.com");
+        ShippingInfo shippingInfo = ShippingInfo.create(
+            "홍길동", "010-1234-5678", "test@example.com",
+            "서울시 강남구 테헤란로 123",
+            LocalDate.now().plusDays(3)
+        );
+        OrderPrice orderPrice = OrderPrice.create(Money.of(17000), Money.of(0), Money.of(3000));
+        Discounts discounts = new Discounts(Money.of(0), Money.of(0), null);
+        
+        // completePayment()를 호출하지 않아서 BEFORE_PAYMENT 상태 유지
+        return Order.createOrder(orderer, shippingInfo, orderPrice, discounts, List.of());
+    }
+
+    private Order createOrderAfterPayment() {
+        Orderer orderer = new Orderer(1L, "홍길동", "010-1234-5678", "test@example.com");
+        ShippingInfo shippingInfo = ShippingInfo.create(
+                "홍길동", "010-1234-5678", "test@example.com",
+                "서울시 강남구 테헤란로 123",
+                LocalDate.now().plusDays(3)
+        );
+        OrderPrice orderPrice = OrderPrice.create(Money.of(17000), Money.of(0), Money.of(3000));
+        Discounts discounts = new Discounts(Money.of(0), Money.of(0), null);
+
+
+        Order order = Order.createOrder(orderer, shippingInfo, orderPrice, discounts, List.of());
+        order.completePayment();
+        return order;
     }
 }
