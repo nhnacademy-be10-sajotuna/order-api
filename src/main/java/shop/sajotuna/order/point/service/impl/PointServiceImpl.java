@@ -73,7 +73,7 @@ public class PointServiceImpl implements PointService {
                 .orElseThrow(UserPointNotFoundException::new);
 
         userPoint.redeemPoint(pointAmount);
-        PointHistory pointHistory = pointHistoryRepository.save(PointHistory.createRedeemHistory(userId, pointAmount, RETURN_MESSAGE));
+        pointHistoryRepository.save(PointHistory.createRedeemHistory(userId, pointAmount, RETURN_MESSAGE));
     }
 
     @Override
