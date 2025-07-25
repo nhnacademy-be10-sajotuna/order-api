@@ -69,6 +69,31 @@ public class PaymentServiceTest {
     }
 
     @Test
+    @DisplayName("모든 결제 정보 조회 성공")
+    void getAllPayments_success() {
+        // given
+        Payment payment1 = mock(Payment.class);
+        Payment payment2 = mock(Payment.class);
+
+        when(payment1.getId()).thenReturn(1L);
+        when(payment1.getAmount()).thenReturn(Money.of(10000));
+        when(payment1.getMethod()).thenReturn(PaymentMethod.CARD);
+
+        when(payment2.getId()).thenReturn(1L);
+        when(payment2.getAmount()).thenReturn(Money.of(10000));
+        when(payment2.getMethod()).thenReturn(PaymentMethod.CARD);
+
+        when(paymentRepository.findAll()).thenReturn(List.of(payment1, payment2));
+
+        // when
+        List<PaymentResponse> responses = paymentService.getAllPayments();
+
+        // then
+        assertEquals(2, responses.size());
+        verify(paymentRepository).findAll();
+    }
+
+    @Test
     @DisplayName("결제 완료")
     void processUserPayment_card() {
         // given
@@ -95,5 +120,23 @@ public class PaymentServiceTest {
         assertEquals(expectedResponse, actualResponse);
         verify(order).completePayment();
         verify(cardPaymentService).requestPaymentConfirm(request);
+    }
+
+    @Test
+    @DisplayName("결제 취소 처리 성공")
+    void cancelPayment_success() {
+        // given
+        Long orderId = 100L;
+        Payment payment = mock(Payment.class);
+
+        when(paymentRepository.getPaymentByOrder_Id(orderId)).thenReturn(payment);
+        when(payment.getMethod()).thenReturn(PaymentMethod.CARD);
+        when(cardPaymentService.support(PaymentMethod.CARD)).thenReturn(true);
+
+        // when
+        paymentService.cancelPayment(orderId, "사용자 요청");
+
+        // then
+        verify(cardPaymentService).requestPaymentCancel(payment, "사용자 요청");
     }
 }
