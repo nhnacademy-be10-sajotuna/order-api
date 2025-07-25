@@ -57,12 +57,9 @@ public class TossPaymentServiceTest {
         Order order = mock(Order.class);
         lenient().when(order.getOrderNumber()).thenReturn("order123");
         lenient().when(order.getFinalPrice()).thenReturn(Money.of(10000));
-
         lenient().when(orderRepository.findOrderByOrderNumber("order123")).thenReturn(order);
 
         Payment payment = new Payment(order, PaymentMethod.TOSS);
-
-        lenient().when(orderRepository.findOrderByOrderNumber("order123")).thenReturn(order);
         lenient().when(paymentRepository.save(any())).thenReturn(payment);
 
         // HttpClient mocking - Java 기본 API는 직접 Mock 어려우므로 스파이 또는 래핑 필요
