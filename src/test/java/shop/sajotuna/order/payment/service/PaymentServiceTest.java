@@ -39,15 +39,16 @@ public class PaymentServiceTest {
     @Mock
     private CardPaymentService cardPaymentService;
 
-    @Mock
-    private TossPaymentService tossPaymentService;
 
     @InjectMocks
     private PaymentService paymentService;
 
+    @Mock
+    private ExternalPaymentServiceFactory externalPaymentServiceFactory;
+
     @BeforeEach
     void setup() {
-        paymentService = new PaymentService(paymentRepository, List.of(cardPaymentService, tossPaymentService), orderRepository);
+        paymentService = new PaymentService(paymentRepository, externalPaymentServiceFactory, orderRepository);
     }
 
     @Test
@@ -103,7 +104,7 @@ public class PaymentServiceTest {
         lenient().when(order.getStatus()).thenReturn(OrderStatus.BEFORE_PAYMENT);
         lenient().when(order.getFinalPrice()).thenReturn(Money.of(10000));
 
-        when(cardPaymentService.support(PaymentMethod.CARD)).thenReturn(true);
+        when(externalPaymentServiceFactory.getService(PaymentMethod.CARD)).thenReturn(cardPaymentService);
         when(orderRepository.findOrderByOrderNumber("testtest")).thenReturn(order);
 
         PaymentConfirmRequest request = new PaymentConfirmRequest(
@@ -131,7 +132,7 @@ public class PaymentServiceTest {
 
         when(paymentRepository.getPaymentByOrder_Id(orderId)).thenReturn(payment);
         when(payment.getMethod()).thenReturn(PaymentMethod.CARD);
-        when(cardPaymentService.support(PaymentMethod.CARD)).thenReturn(true);
+        when(externalPaymentServiceFactory.getService(PaymentMethod.CARD)).thenReturn(cardPaymentService);
 
         // when
         paymentService.cancelPayment(orderId, "사용자 요청");

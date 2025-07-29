@@ -67,8 +67,7 @@ public class CardPaymentServiceTest {
     @Test
     @DisplayName("지원하는 결제 방식: CARD")
     void support_card() {
-        assertTrue(cardPaymentService.support(PaymentMethod.CARD));
-        assertFalse(cardPaymentService.support(PaymentMethod.TOSS));
+        assertEquals(PaymentMethod.CARD, cardPaymentService.getPaymentMethod());
     }
 
     @Test

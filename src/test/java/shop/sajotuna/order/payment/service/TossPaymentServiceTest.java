@@ -114,7 +114,6 @@ public class TossPaymentServiceTest {
     @Test
     @DisplayName("지원하는 결제 방식 확인")
     void support_shouldReturnTrueForToss() {
-        assertTrue(tossPaymentService.support(PaymentMethod.TOSS));
-        assertFalse(tossPaymentService.support(PaymentMethod.CARD));
+        assertEquals(PaymentMethod.TOSS, tossPaymentService.getPaymentMethod());
     }
 }
