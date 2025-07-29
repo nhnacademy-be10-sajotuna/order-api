@@ -10,5 +10,5 @@ public interface ExternalPaymentService {
 
     void requestPaymentCancel(Payment payment, String cancelReason);
 
-    boolean support(PaymentMethod paymentMethod);
+    PaymentMethod getPaymentMethod();
 }

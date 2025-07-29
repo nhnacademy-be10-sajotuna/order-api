@@ -78,8 +78,8 @@ public class TossPaymentService implements ExternalPaymentService{
     }
 
     @Override
-    public boolean support(PaymentMethod paymentMethod) {
-        return paymentMethod == PaymentMethod.TOSS;
+    public PaymentMethod getPaymentMethod() {
+        return PaymentMethod.TOSS;
     }
 
     // 토스 결제 취소 요청

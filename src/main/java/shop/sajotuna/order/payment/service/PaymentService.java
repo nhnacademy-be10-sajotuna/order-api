@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.orders.domain.Order;
 import shop.sajotuna.order.orders.repository.OrderRepository;
-import shop.sajotuna.order.payment.domain.PaymentMethod;
 import shop.sajotuna.order.payment.dto.PaymentConfirmRequest;
 import shop.sajotuna.order.payment.dto.PaymentResponse;
 import shop.sajotuna.order.payment.domain.Payment;
@@ -21,7 +20,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class PaymentService {
     private final PaymentRepository paymentRepository;
-    private final List<ExternalPaymentService> list;
+    private final ExternalPaymentServiceFactory externalPaymentServiceFactory;
     private final OrderRepository orderRepository;
 
     // 주문 번호에 맞춰 결제 정보 조회
@@ -38,16 +37,8 @@ public class PaymentService {
         return paymentRepository.findAll().stream().map(PaymentResponse::from).collect(Collectors.toList());
     }
 
-    private ExternalPaymentService getExternalPaymentService(PaymentMethod paymentMethod) {
-        return list.stream()
-                .filter(externalPaymentService ->
-                        externalPaymentService.support(paymentMethod))
-                .findFirst()
-                .orElseThrow(EntityNotFoundException::new);
-    }
-
     public PaymentResponse processUserPayment(PaymentConfirmRequest paymentConfirmRequest) {
-        ExternalPaymentService service = getExternalPaymentService(paymentConfirmRequest.getPaymentMethod());
+        ExternalPaymentService service = externalPaymentServiceFactory.getService(paymentConfirmRequest.getPaymentMethod());
 
         Order order = orderRepository.findOrderByOrderNumber(paymentConfirmRequest.getOrderNumber());
         order.completePayment();
@@ -62,7 +53,7 @@ public class PaymentService {
         if(payment == null){
             throw new PaymentNotFoundException();
         }
-        ExternalPaymentService service = getExternalPaymentService(payment.getMethod());
+        ExternalPaymentService service = externalPaymentServiceFactory.getService(payment.getMethod());
 
         service.requestPaymentCancel(payment, cancelReason);
     }

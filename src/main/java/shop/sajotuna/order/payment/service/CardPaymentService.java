@@ -39,7 +39,7 @@ public class CardPaymentService implements ExternalPaymentService {
     }
 
     @Override
-    public boolean support(PaymentMethod paymentMethod) {
-        return paymentMethod == PaymentMethod.CARD;
+    public PaymentMethod getPaymentMethod() {
+        return PaymentMethod.CARD;
     }
 }
