@@ -33,7 +33,7 @@ import shop.sajotuna.order.coupon.repository.CouponRepository;
 import shop.sajotuna.order.coupon.repository.UserCouponRepository;
 
 @ExtendWith(MockitoExtension.class)
-public class UserCouponServiceTest {
+class UserCouponServiceTest {
 
     @Mock
     private BookCouponRepository bookCouponRepository;
