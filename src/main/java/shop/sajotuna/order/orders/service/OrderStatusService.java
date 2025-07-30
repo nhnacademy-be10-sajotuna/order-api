@@ -92,6 +92,7 @@ public class OrderStatusService {
 
     public void refundAndCleanup(Order order, Long userId) {
         refundService.returnStock(order);
+        order.cancelPayment();
 
         if (userId == null) {
             orderRepository.delete(order);
