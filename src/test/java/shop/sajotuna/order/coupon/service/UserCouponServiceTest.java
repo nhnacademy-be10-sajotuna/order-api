@@ -213,13 +213,12 @@ class UserCouponServiceTest {
 // mocking
         when(userCouponRepository.findByUserId(userId))
                 .thenReturn(List.of(userBookCoupon, userCategoryCoupon));
+        when(userCouponRepository.findAvailableCouponIdsByUserId(userId)).thenReturn(Set.of(bookCoupon.getId(), categoryCoupon.getId()));
 
-        when(bookCouponRepository.existsByCouponIdAndIsbn(bookCoupon.getId(), isbn)).thenReturn(true);
-        when(bookCouponRepository.existsByCouponIdAndIsbn(categoryCoupon.getId(), isbn)).thenReturn(false);
-
-        when(categoryCouponRepository.existsByCouponIdAndCategoryIdIn(categoryCoupon.getId(), categoryIds)).thenReturn(true);
-        when(categoryCouponRepository.existsByCouponIdAndCategoryIdIn(bookCoupon.getId(), categoryIds)).thenReturn(false);
-
+        when(bookCouponRepository.findCouponIdsByCouponIdsAndIsbn(Set.of(bookCoupon.getId(), categoryCoupon.getId()), isbn))
+                .thenReturn(Set.of(bookCoupon.getId()));
+        when(categoryCouponRepository.findCouponIdsByCouponIdsAndCategoryIds(Set.of(bookCoupon.getId(), categoryCoupon.getId()), categoryIds))
+                .thenReturn(Set.of(categoryCoupon.getId()));
 
         // when
         List<CouponResponse> result = userCouponService.getAvailableCoupons(userId, bookInfo);
@@ -231,11 +230,55 @@ class UserCouponServiceTest {
                 .containsExactlyInAnyOrder("책 전용 쿠폰", "카테고리 쿠폰");
 
         verify(userCouponRepository).findByUserId(userId);
-        verify(bookCouponRepository).existsByCouponIdAndIsbn(bookCoupon.getId(), isbn);
-        verify(bookCouponRepository).existsByCouponIdAndIsbn(categoryCoupon.getId(), isbn);
+        verify(userCouponRepository).findAvailableCouponIdsByUserId(userId);
+        verify(bookCouponRepository).findCouponIdsByCouponIdsAndIsbn(Set.of(bookCoupon.getId(), categoryCoupon.getId()), isbn);
+        verify(categoryCouponRepository).findCouponIdsByCouponIdsAndCategoryIds(Set.of(bookCoupon.getId(), categoryCoupon.getId()), categoryIds);
+        verify(bookCouponRepository, never()).existsByCouponIdAndIsbn(anyLong(), anyString());
+        verify(categoryCouponRepository, never()).existsByCouponIdAndCategoryIdIn(anyLong(), anySet());
+    }
 
-        verify(categoryCouponRepository).existsByCouponIdAndCategoryIdIn(categoryCoupon.getId(), categoryIds);
-        verify(categoryCouponRepository).existsByCouponIdAndCategoryIdIn(bookCoupon.getId(), categoryIds);
+
+    @Test
+    @DisplayName("사용 가능한 책 쿠폰 조회 - 쿠폰 수가 늘어나도 벌크 조회는 1회씩만 수행")
+    void getAvailableCoupons_bulkLookupOnceEvenWithManyCoupons() {
+        Long userId = 1L;
+        String isbn = "1234567890";
+        Set<Long> categoryIds = Set.of(10L, 20L);
+        BookInfo bookInfo = new BookInfo(isbn, categoryIds);
+
+        List<UserCoupon> userCoupons = java.util.stream.LongStream.rangeClosed(1, 30)
+                .mapToObj(id -> {
+                    Coupon coupon = Coupon.builder()
+                            .id(id)
+                            .name("쿠폰" + id)
+                            .couponType(CouponType.BOOK)
+                            .policyType(CouponPolicyType.FIXED)
+                            .discountAmount(1000)
+                            .validDays(30)
+                            .build();
+                    ReflectionTestUtils.setField(coupon, "minOrderAmount", Money.of(0));
+                    ReflectionTestUtils.setField(coupon, "maxDiscountAmount", Money.of(1000));
+                    UserCoupon userCoupon = new UserCoupon(coupon, userId, LocalDateTime.now(), 30);
+                    userCoupon.setType(UserCouponType.AVAILABLE);
+                    return userCoupon;
+                })
+                .toList();
+
+        Set<Long> availableCouponIds = userCoupons.stream().map(uc -> uc.getCoupon().getId()).collect(java.util.stream.Collectors.toSet());
+
+        when(userCouponRepository.findByUserId(userId)).thenReturn(userCoupons);
+        when(userCouponRepository.findAvailableCouponIdsByUserId(userId)).thenReturn(availableCouponIds);
+        when(bookCouponRepository.findCouponIdsByCouponIdsAndIsbn(availableCouponIds, isbn)).thenReturn(Set.of(1L, 2L, 3L));
+        when(categoryCouponRepository.findCouponIdsByCouponIdsAndCategoryIds(availableCouponIds, categoryIds)).thenReturn(Set.of(3L, 4L));
+
+        List<CouponResponse> result = userCouponService.getAvailableCoupons(userId, bookInfo);
+
+        assertThat(result).extracting(CouponResponse::getId).containsExactlyInAnyOrder(1L, 2L, 3L, 4L);
+
+        verify(bookCouponRepository, times(1)).findCouponIdsByCouponIdsAndIsbn(availableCouponIds, isbn);
+        verify(categoryCouponRepository, times(1)).findCouponIdsByCouponIdsAndCategoryIds(availableCouponIds, categoryIds);
+        verify(bookCouponRepository, never()).existsByCouponIdAndIsbn(anyLong(), anyString());
+        verify(categoryCouponRepository, never()).existsByCouponIdAndCategoryIdIn(anyLong(), anySet());
     }
 
     @Test

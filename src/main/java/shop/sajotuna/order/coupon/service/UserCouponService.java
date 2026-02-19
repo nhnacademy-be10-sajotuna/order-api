@@ -21,7 +21,6 @@ import shop.sajotuna.order.coupon.repository.CouponRepository;
 import shop.sajotuna.order.coupon.exception.CouponNotFoundException;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -88,23 +87,28 @@ public class UserCouponService {
     @Transactional
     public List<CouponResponse> getAvailableCoupons(Long userId, BookInfo bookInfo) {
         List<UserCoupon> userCoupons = userCouponRepository.findByUserId(userId);
-
         userCoupons.forEach(UserCoupon::updateExpiredCoupon);
 
-        List<UserCoupon> availableCoupons = userCoupons.stream().filter(coupon -> coupon.getType() == UserCouponType.AVAILABLE).toList();
-
-        Set<Coupon> coupons = availableCoupons.stream().map(UserCoupon::getCoupon).collect(Collectors.toSet());
-        List<CouponResponse> result = new ArrayList<>();
-        for (Coupon coupon : coupons) {
-
-            if (bookCouponRepository.existsByCouponIdAndIsbn(coupon.getId(), bookInfo.getIsbn())) {
-                result.add(CouponResponse.from(coupon));
-            }
-            if (bookInfo.getCategoryIds() != null && categoryCouponRepository.existsByCouponIdAndCategoryIdIn(coupon.getId(), bookInfo.getCategoryIds())) {
-                result.add(CouponResponse.from(coupon));
-            }
+        Set<Long> availableCouponIds = userCouponRepository.findAvailableCouponIdsByUserId(userId);
+        if (availableCouponIds.isEmpty()) {
+            return List.of();
         }
-        return result;
+
+        Set<Long> matchedBookCouponIds = bookCouponRepository.findCouponIdsByCouponIdsAndIsbn(availableCouponIds, bookInfo.getIsbn());
+        Set<Long> matchedCategoryCouponIds = (bookInfo.getCategoryIds() == null || bookInfo.getCategoryIds().isEmpty())
+                ? Set.of()
+                : categoryCouponRepository.findCouponIdsByCouponIdsAndCategoryIds(availableCouponIds, bookInfo.getCategoryIds());
+
+        Set<Long> matchedCouponIds = new java.util.HashSet<>(matchedBookCouponIds);
+        matchedCouponIds.addAll(matchedCategoryCouponIds);
+
+        return userCoupons.stream()
+                .filter(userCoupon -> userCoupon.getType() == UserCouponType.AVAILABLE)
+                .map(UserCoupon::getCoupon)
+                .filter(coupon -> matchedCouponIds.contains(coupon.getId()))
+                .distinct()
+                .map(CouponResponse::from)
+                .toList();
     }
 
     // 사용 가능한 오더 쿠폰 조회
