@@ -184,10 +184,11 @@ class OrderStatusServiceTest {
         orderStatusService.returnOrder(userId, orderId, returnReason);
 
         // then
-        verify(eventPublisher).publishEvent(argThat((PointEarnRequest pointEvent) -> 
-            pointEvent.getUserId().equals(userId) &&
-            pointEvent.getType().equals(PointPolicyType.RETURNED) &&
-            pointEvent.getPointAmount().equals(order.getReturnPrice(returnReason))
+        verify(eventPublisher).publishEvent((Object) argThat(event ->
+            event instanceof PointEarnRequest pointEvent &&
+                    pointEvent.getUserId().equals(userId) &&
+                    pointEvent.getType().equals(PointPolicyType.RETURNED) &&
+                    pointEvent.getPointAmount().equals(order.getReturnPrice(returnReason))
         ));
     }
 
@@ -209,10 +210,11 @@ class OrderStatusServiceTest {
         orderStatusService.returnOrder(userId, orderId, returnReason);
 
         // then
-        verify(eventPublisher).publishEvent(argThat((PointEarnRequest pointEvent) -> 
-            pointEvent.getUserId().equals(userId) &&
-            pointEvent.getType().equals(PointPolicyType.RETURNED) &&
-            pointEvent.getPointAmount().equals(order.getReturnPrice(returnReason))
+        verify(eventPublisher).publishEvent((Object) argThat(event ->
+            event instanceof PointEarnRequest pointEvent &&
+                    pointEvent.getUserId().equals(userId) &&
+                    pointEvent.getType().equals(PointPolicyType.RETURNED) &&
+                    pointEvent.getPointAmount().equals(order.getReturnPrice(returnReason))
         ));
     }
 

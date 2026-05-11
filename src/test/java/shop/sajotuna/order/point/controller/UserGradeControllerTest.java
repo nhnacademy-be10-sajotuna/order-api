@@ -38,7 +38,7 @@ class UserGradeControllerTest {
                 5
         );
 
-        given(userGradeService.findAndUpdateGrade(userId)).willReturn(response);
+        given(userGradeService.getUserGrade(userId)).willReturn(response);
 
         mockMvc.perform(get("/api/grade/{user-id}", userId))
                 .andExpect(status().isOk())
@@ -48,7 +48,7 @@ class UserGradeControllerTest {
                 .andExpect(jsonPath("$.maxTotalOrderPrice").value(10000))
                 .andExpect(jsonPath("$.pointRate").value(5));
 
-        verify(userGradeService).findAndUpdateGrade(userId);
+        verify(userGradeService).getUserGrade(userId);
     }
 
     @Test
@@ -59,7 +59,7 @@ class UserGradeControllerTest {
         mockMvc.perform(get("/api/grade/{user-id}", invalidUserId))
                 .andExpect(status().isOk());
 
-        verify(userGradeService).findAndUpdateGrade(invalidUserId);
+        verify(userGradeService).getUserGrade(invalidUserId);
     }
 
     @Test
@@ -73,13 +73,13 @@ class UserGradeControllerTest {
                 5
         );
 
-        given(userGradeService.findAndUpdateGrade(nonExistentUserId)).willReturn(response);
+        given(userGradeService.getUserGrade(nonExistentUserId)).willReturn(response);
 
         mockMvc.perform(get("/api/grade/{user-id}", nonExistentUserId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.grade").value("GENERAL"));
 
-        verify(userGradeService).findAndUpdateGrade(nonExistentUserId);
+        verify(userGradeService).getUserGrade(nonExistentUserId);
     }
 }

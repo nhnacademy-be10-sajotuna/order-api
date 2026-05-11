@@ -8,8 +8,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.orders.domain.Order;
+import shop.sajotuna.order.orders.domain.Orderer;
 import shop.sajotuna.order.orders.domain.OrderStatus;
 import shop.sajotuna.order.orders.repository.OrderRepository;
 import shop.sajotuna.order.payment.domain.Payment;
@@ -17,6 +19,7 @@ import shop.sajotuna.order.payment.domain.PaymentMethod;
 import shop.sajotuna.order.payment.dto.PaymentConfirmRequest;
 import shop.sajotuna.order.payment.dto.PaymentResponse;
 import shop.sajotuna.order.payment.repository.PaymentRepository;
+import shop.sajotuna.order.point.service.dto.event.UserGradeRefreshEvent;
 
 import java.util.List;
 import java.util.Optional;
@@ -46,9 +49,12 @@ public class PaymentServiceTest {
     @Mock
     private ExternalPaymentServiceFactory externalPaymentServiceFactory;
 
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
+
     @BeforeEach
     void setup() {
-        paymentService = new PaymentService(paymentRepository, externalPaymentServiceFactory, orderRepository);
+        paymentService = new PaymentService(paymentRepository, externalPaymentServiceFactory, orderRepository, eventPublisher);
     }
 
     @Test
@@ -103,6 +109,7 @@ public class PaymentServiceTest {
         lenient().when(order.getOrderNumber()).thenReturn("testtest");
         lenient().when(order.getStatus()).thenReturn(OrderStatus.BEFORE_PAYMENT);
         lenient().when(order.getFinalPrice()).thenReturn(Money.of(10000));
+        lenient().when(order.getOrderer()).thenReturn(new Orderer(1L, "tester", "010-1234-5678", "test@example.com"));
 
         when(externalPaymentServiceFactory.getService(PaymentMethod.CARD)).thenReturn(cardPaymentService);
         when(orderRepository.findOrderByOrderNumber("testtest")).thenReturn(order);
@@ -121,6 +128,7 @@ public class PaymentServiceTest {
         assertEquals(expectedResponse, actualResponse);
         verify(order).completePayment();
         verify(cardPaymentService).requestPaymentConfirm(request);
+        verify(eventPublisher).publishEvent(any(UserGradeRefreshEvent.class));
     }
 
     @Test

@@ -28,6 +28,23 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     List<Order> findByOrdererUserIdAndCreatedAtAfter(Long userId, LocalDateTime createdAt);
 
+    @Query("""
+            SELECT COALESCE(SUM(
+                o.orderPrice.totalProductPrice.amount
+                - o.discounts.couponDiscountAmount.amount
+                - o.discounts.usedPoint.amount
+            ), 0)
+            FROM Order o
+            WHERE o.orderer.userId = :userId
+              AND o.createdAt >= :createdAt
+              AND o.status IN :statuses
+            """)
+    Long sumRecentOrderAmount(
+            @Param("userId") Long userId,
+            @Param("createdAt") LocalDateTime createdAt,
+            @Param("statuses") List<OrderStatus> statuses
+    );
+
     @Query("SELECT o FROM Order o JOIN FETCH o.orderProducts WHERE o.id = :orderId")
     Optional<Order> findByIdWithOrderProducts(@Param("orderId") Long orderId);
 }

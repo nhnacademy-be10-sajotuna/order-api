@@ -5,6 +5,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.orders.domain.Order;
+import shop.sajotuna.order.orders.domain.OrderStatus;
 import shop.sajotuna.order.orders.domain.ReturnReason;
 import shop.sajotuna.order.orders.repository.OrderRepository;
 import shop.sajotuna.order.payment.service.PaymentService;
@@ -13,6 +14,7 @@ import shop.sajotuna.order.point.exception.InvalidUserIdException;
 import shop.sajotuna.order.point.exception.OrderNotFoundException;
 import shop.sajotuna.order.point.service.PointService;
 import shop.sajotuna.order.point.service.dto.event.PointEarnRequest;
+import shop.sajotuna.order.point.service.dto.event.UserGradeRefreshEvent;
 
 import java.util.Objects;
 
@@ -52,6 +54,7 @@ public class OrderStatusService {
                         order.getReturnPrice(returnReason)
                 )
         );
+        publishUserGradeRefreshEvent(userId);
     }
 
     // 주문 취소 처리
@@ -81,18 +84,19 @@ public class OrderStatusService {
 
         // 결제 취소 요청
         paymentService.cancelPayment(orderId, "cancel");
+        publishUserGradeRefreshEvent(userId);
     }
 
     public void cancelOrderBeforePayment(Long userId, Long orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(OrderNotFoundException::new);
-        order.cancelPayment();
-
         refundAndCleanup(order, userId);
     }
 
     public void refundAndCleanup(Order order, Long userId) {
         refundService.returnStock(order);
-        order.cancelPayment();
+        if (order.getStatus() == OrderStatus.BEFORE_PAYMENT) {
+            order.cancelPayment();
+        }
 
         if (userId == null) {
             orderRepository.delete(order);
@@ -110,5 +114,12 @@ public class OrderStatusService {
                         order.getDiscounts().getUsedPoint()
                 )
         );
+        publishUserGradeRefreshEvent(userId);
+    }
+
+    private void publishUserGradeRefreshEvent(Long userId) {
+        if (userId != null) {
+            eventPublisher.publishEvent(new UserGradeRefreshEvent(userId));
+        }
     }
 }
