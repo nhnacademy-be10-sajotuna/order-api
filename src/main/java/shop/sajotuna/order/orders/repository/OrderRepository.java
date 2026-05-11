@@ -45,6 +45,20 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             @Param("statuses") List<OrderStatus> statuses
     );
 
+    @Query("""
+            SELECT DISTINCT o.orderer.userId
+            FROM Order o
+            WHERE o.orderer.userId IS NOT NULL
+              AND o.createdAt >= :from
+              AND o.createdAt < :to
+              AND o.status IN :statuses
+            """)
+    List<Long> findUserIdsWithOrdersExpiringFromGradeWindow(
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to,
+            @Param("statuses") List<OrderStatus> statuses
+    );
+
     @Query("SELECT o FROM Order o JOIN FETCH o.orderProducts WHERE o.id = :orderId")
     Optional<Order> findByIdWithOrderProducts(@Param("orderId") Long orderId);
 }

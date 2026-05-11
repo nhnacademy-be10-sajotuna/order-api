@@ -17,7 +17,13 @@ import java.util.ArrayList;
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
 @Entity
-@Table(name = "orders")
+@Table(
+        name = "orders",
+        indexes = {
+                @Index(name = "idx_orders_created_user_status", columnList = "created_at, user_id, status"),
+                @Index(name = "idx_orders_user_created_status", columnList = "user_id, created_at, status")
+        }
+)
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
