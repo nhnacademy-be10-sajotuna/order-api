@@ -28,6 +28,10 @@ public class StockService {
     private final BookStockRepository bookStockRepository;
 
     public void decreaseStock(String isbn, int quantity) {
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Stock decrease quantity must be greater than zero.");
+        }
+
         int affectedRows = bookStockRepository.decreaseStockAtomically(isbn, quantity);
         if (affectedRows == 1) {
             return;

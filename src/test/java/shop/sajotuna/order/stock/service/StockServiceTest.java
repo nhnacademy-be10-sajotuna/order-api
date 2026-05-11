@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -80,6 +81,24 @@ class StockServiceTest {
 
         verify(bookStockRepository).decreaseStockAtomically(isbn, quantity);
         verify(bookStockRepository).existsByIsbn(isbn);
+    }
+
+    @Test
+    @DisplayName("decrease stock rejects zero quantity before atomic update")
+    void decreaseStock_zeroQuantity() {
+        assertThatThrownBy(() -> stockService.decreaseStock("9781234567890", 0))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        verifyNoInteractions(bookStockRepository);
+    }
+
+    @Test
+    @DisplayName("decrease stock rejects negative quantity before atomic update")
+    void decreaseStock_negativeQuantity() {
+        assertThatThrownBy(() -> stockService.decreaseStock("9781234567890", -1))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        verifyNoInteractions(bookStockRepository);
     }
 
     @Test

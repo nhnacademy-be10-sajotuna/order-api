@@ -17,7 +17,8 @@ public interface BookStockRepository extends JpaRepository<BookStock, Long> {
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("""
             update BookStock bs
-            set bs.stock.quantity = bs.stock.quantity - :quantity
+            set bs.stock.quantity = bs.stock.quantity - :quantity,
+                bs.version = bs.version + 1
             where bs.isbn = :isbn
               and bs.stock.quantity >= :quantity
             """)
