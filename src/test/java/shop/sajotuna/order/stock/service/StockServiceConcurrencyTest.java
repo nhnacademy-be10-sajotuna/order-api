@@ -129,6 +129,18 @@ public class StockServiceConcurrencyTest {
     }
 
     @Test
+    void decreaseStock_shouldIncrementVersion() {
+        BookStock initialStock = bookStockRepository.findByIsbn(TEST_ISBN).orElseThrow();
+        Long initialVersion = initialStock.getVersion();
+
+        stockService.decreaseStock(TEST_ISBN, 10);
+
+        BookStock finalStock = bookStockRepository.findByIsbn(TEST_ISBN).orElseThrow();
+        assertEquals(INITIAL_STOCK - 10, finalStock.getStock().getQuantity());
+        assertEquals(initialVersion + 1, finalStock.getVersion());
+    }
+
+    @Test
     void stockProcessingFailedException_shouldBeThrownAfterMaxRetries() {
         // 존재하지 않는 ISBN으로 테스트 (재시도 대상이 아님)
         assertThrows(Exception.class, () -> {

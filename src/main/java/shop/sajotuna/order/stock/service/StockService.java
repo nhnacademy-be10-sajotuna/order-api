@@ -13,6 +13,7 @@ import shop.sajotuna.order.stock.controller.response.BookStockResponse;
 import shop.sajotuna.order.stock.domain.BookStock;
 import shop.sajotuna.order.stock.domain.Stock;
 import shop.sajotuna.order.stock.exception.BookStockNotFoundException;
+import shop.sajotuna.order.stock.exception.InsufficientStockException;
 import shop.sajotuna.order.stock.exception.StockProcessingFailedException;
 import shop.sajotuna.order.stock.repository.BookStockRepository;
 
@@ -26,19 +27,20 @@ public class StockService {
 
     private final BookStockRepository bookStockRepository;
 
-    @Retryable(
-            maxAttempts = 5,
-            backoff = @Backoff(delay = 100, multiplier = 1.5),
-            retryFor = OptimisticLockingFailureException.class
-    )
     public void decreaseStock(String isbn, int quantity) {
-        BookStock bookStock = bookStockRepository.findByIsbn(isbn)
-                .orElseThrow(BookStockNotFoundException::new);
-        bookStock.decreaseStock(Stock.of(quantity));
-
-        if (bookStock.isSoldOut()) {
-            // TODO: Book-API에 품절 상태 업데이트 요청
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Stock decrease quantity must be greater than zero.");
         }
+
+        int affectedRows = bookStockRepository.decreaseStockAtomically(isbn, quantity);
+        if (affectedRows == 1) {
+            return;
+        }
+
+        if (!bookStockRepository.existsByIsbn(isbn)) {
+            throw new BookStockNotFoundException();
+        }
+        throw new InsufficientStockException();
     }
 
     @Retryable(
@@ -62,14 +64,8 @@ public class StockService {
     }
 
     @Recover
-    public void recoverDecreaseStock(OptimisticLockingFailureException ex, String isbn, int quantity) {
-        log.error("재고 차감 최종 실패 - ISBN: {}, 수량: {}, 재시도 횟수 초과", isbn, quantity, ex);
-        throw new StockProcessingFailedException(isbn, quantity);
-    }
-
-    @Recover
     public void recoverIncreaseStock(OptimisticLockingFailureException ex, String isbn, int quantity) {
-        log.error("재고 증가 최종 실패 - ISBN: {}, 수량: {}, 재시도 횟수 초과", isbn, quantity, ex);
+        log.error("stock increase failed after retry - ISBN: {}, quantity: {}", isbn, quantity, ex);
         throw new StockProcessingFailedException(isbn, quantity);
     }
 
@@ -78,12 +74,10 @@ public class StockService {
                 .map(CreateStockRequest::getIsbn)
                 .toList();
 
-        // 이미 존재하는 ISBN 조회
         List<String> existingIsbns = bookStockRepository.findByIsbnIn(isbns).stream()
                 .map(BookStock::getIsbn)
                 .toList();
 
-        // 중복되지 않은 것만 필터링
         List<BookStock> bookStocks = createStockRequest.stream()
                 .filter(request -> !existingIsbns.contains(request.getIsbn()))
                 .map(request -> new BookStock(request.getIsbn(), Stock.of(request.getStock())))
