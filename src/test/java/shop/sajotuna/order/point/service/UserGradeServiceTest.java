@@ -18,8 +18,11 @@ import shop.sajotuna.order.point.repository.UserGradeRepository;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserGradeServiceTest {
@@ -40,155 +43,89 @@ class UserGradeServiceTest {
 
     @BeforeEach
     void setUp() {
-        userGradeService = new UserGradeService(gradePointPolicyRepository, orderTotalPriceService, gradePointPolicyQueryRepository, userGradeRepository);
+        userGradeService = new UserGradeService(
+                gradePointPolicyRepository,
+                orderTotalPriceService,
+                gradePointPolicyQueryRepository,
+                userGradeRepository
+        );
     }
 
     @Test
-    @DisplayName("findAndUpdateGrade - 기존 사용자 등급 업데이트 성공")
-    void findAndUpdateGrade_existingUser_success() {
-        // given
+    @DisplayName("getUserGrade returns stored grade without recalculation")
+    void getUserGrade_existingUser_success() {
         Long userId = 1L;
-        Money totalOrderAmount = Money.of(100000);
-        
-        GradePointPolicy generalPolicy = new GradePointPolicy(1L, Grade.GENERAL, Money.of(0), Money.of(100000), 1);
-        GradePointPolicy royalPolicy = new GradePointPolicy(2L, Grade.ROYAL, Money.of(100000), Money.of(200000), 2);
-        
-        UserGrade existingUserGrade = UserGrade.builder()
-                .id(1L)
-                .userId(userId)
-                .grade(generalPolicy)
-                .build();
-        
-        UserGrade updatedUserGrade = UserGrade.builder()
+        GradePointPolicy royalPolicy = new GradePointPolicy(2L, Grade.ROYAL, Money.of(100_000), Money.of(200_000), 2);
+        UserGrade userGrade = UserGrade.builder()
                 .id(1L)
                 .userId(userId)
                 .grade(royalPolicy)
                 .build();
 
-        when(userGradeRepository.findByUserId(userId)).thenReturn(Optional.of(existingUserGrade));
-        when(orderTotalPriceService.calculateTotalOrderAmount(userId)).thenReturn(totalOrderAmount);
-        when(gradePointPolicyQueryRepository.findApplicablePolicy(totalOrderAmount.getAmount())).thenReturn(royalPolicy);
-        when(userGradeRepository.save(any(UserGrade.class))).thenReturn(updatedUserGrade);
+        when(userGradeRepository.findByUserId(userId)).thenReturn(Optional.of(userGrade));
 
-        // when
-        GradePointPolicyResponse response = userGradeService.findAndUpdateGrade(userId);
+        GradePointPolicyResponse response = userGradeService.getUserGrade(userId);
 
-        // then
-        assertThat(response).isNotNull();
         assertThat(response.getGrade()).isEqualTo(Grade.ROYAL);
         assertThat(response.getPointRate()).isEqualTo(2);
-        assertThat(response.getMinTotalOrderPrice()).isEqualTo(100000);
-        assertThat(response.getMaxTotalOrderPrice()).isEqualTo(200000);
-
-        verify(userGradeRepository).findByUserId(userId);
-        verify(orderTotalPriceService).calculateTotalOrderAmount(userId);
-        verify(gradePointPolicyQueryRepository).findApplicablePolicy(totalOrderAmount.getAmount());
-        verify(userGradeRepository).save(any(UserGrade.class));
+        verify(orderTotalPriceService, never()).calculateTotalOrderAmount(userId);
+        verify(gradePointPolicyQueryRepository, never()).findApplicablePolicy(any(Integer.class));
+        verify(userGradeRepository, never()).save(any(UserGrade.class));
     }
 
     @Test
-    @DisplayName("findAndUpdateGrade - 신규 사용자 기본 등급 설정")
-    void findAndUpdateGrade_newUser_createWithDefaultGrade() {
-        // given
+    @DisplayName("getUserGrade returns default grade when user grade is not stored")
+    void getUserGrade_newUser_defaultGrade() {
         Long userId = 2L;
-        Money totalOrderAmount = Money.of(10000);
-        
-        GradePointPolicy generalPolicy = new GradePointPolicy(1L, Grade.GENERAL, Money.of(0), Money.of(100000), 1);
-        
-        UserGrade newUserGrade = UserGrade.builder()
-                .id(2L)
-                .userId(userId)
-                .grade(generalPolicy)
-                .build();
+        GradePointPolicy generalPolicy = new GradePointPolicy(1L, Grade.GENERAL, Money.of(0), Money.of(100_000), 1);
 
         when(userGradeRepository.findByUserId(userId)).thenReturn(Optional.empty());
         when(gradePointPolicyRepository.findByGrade(Grade.GENERAL)).thenReturn(generalPolicy);
-        when(orderTotalPriceService.calculateTotalOrderAmount(userId)).thenReturn(totalOrderAmount);
-        when(gradePointPolicyQueryRepository.findApplicablePolicy(totalOrderAmount.getAmount())).thenReturn(generalPolicy);
-        when(userGradeRepository.save(any(UserGrade.class))).thenReturn(newUserGrade);
 
-        // when
-        GradePointPolicyResponse response = userGradeService.findAndUpdateGrade(userId);
+        GradePointPolicyResponse response = userGradeService.getUserGrade(userId);
 
-        // then
-        assertThat(response).isNotNull();
         assertThat(response.getGrade()).isEqualTo(Grade.GENERAL);
         assertThat(response.getPointRate()).isEqualTo(1);
-        assertThat(response.getMinTotalOrderPrice()).isEqualTo(0);
-        assertThat(response.getMaxTotalOrderPrice()).isEqualTo(100000);
-
-        verify(userGradeRepository).findByUserId(userId);
-        verify(gradePointPolicyRepository).findByGrade(Grade.GENERAL);
-        verify(orderTotalPriceService).calculateTotalOrderAmount(userId);
-        verify(gradePointPolicyQueryRepository).findApplicablePolicy(totalOrderAmount.getAmount());
-        verify(userGradeRepository).save(any(UserGrade.class));
+        verify(orderTotalPriceService, never()).calculateTotalOrderAmount(userId);
+        verify(userGradeRepository, never()).save(any(UserGrade.class));
     }
 
     @Test
-    @DisplayName("findAndUpdateGrade - 등급 변경 없는 경우")
-    void findAndUpdateGrade_noGradeChange() {
-        // given
-        Long userId = 4L;
-        Money totalOrderAmount = Money.of(30000);
-        
-        GradePointPolicy generalPolicy = new GradePointPolicy(1L, Grade.GENERAL, Money.of(0), Money.of(100000), 1);
-        
-        UserGrade existingUserGrade = UserGrade.builder()
-                .id(4L)
+    @DisplayName("updateGrade recalculates grade from recent order amount")
+    void updateGrade_existingUser_success() {
+        Long userId = 1L;
+        GradePointPolicy generalPolicy = new GradePointPolicy(1L, Grade.GENERAL, Money.of(0), Money.of(100_000), 1);
+        GradePointPolicy royalPolicy = new GradePointPolicy(2L, Grade.ROYAL, Money.of(100_000), Money.of(200_000), 2);
+        UserGrade userGrade = UserGrade.builder()
+                .id(1L)
                 .userId(userId)
                 .grade(generalPolicy)
                 .build();
 
-        when(userGradeRepository.findByUserId(userId)).thenReturn(Optional.of(existingUserGrade));
-        when(orderTotalPriceService.calculateTotalOrderAmount(userId)).thenReturn(totalOrderAmount);
-        when(gradePointPolicyQueryRepository.findApplicablePolicy(totalOrderAmount.getAmount())).thenReturn(generalPolicy);
-        when(userGradeRepository.save(any(UserGrade.class))).thenReturn(existingUserGrade);
+        when(userGradeRepository.findByUserId(userId)).thenReturn(Optional.of(userGrade));
+        when(orderTotalPriceService.calculateTotalOrderAmount(userId)).thenReturn(Money.of(100_000));
+        when(gradePointPolicyQueryRepository.findApplicablePolicy(100_000)).thenReturn(royalPolicy);
 
-        // when
-        GradePointPolicyResponse response = userGradeService.findAndUpdateGrade(userId);
+        userGradeService.updateGrade(userId);
 
-        // then
-        assertThat(response).isNotNull();
-        assertThat(response.getGrade()).isEqualTo(Grade.GENERAL);
-        assertThat(response.getPointRate()).isEqualTo(1);
+        assertThat(userGrade.getGrade()).isEqualTo(royalPolicy);
+        verify(userGradeRepository).save(userGrade);
     }
 
     @Test
-    @DisplayName("findAndUpdateGrade - 최고 등급(PLATINUM) 달성")
-    void findAndUpdateGrade_platinumGrade() {
-        // given
-        Long userId = 5L;
-        Money totalOrderAmount = Money.of(500000);
-        
-        GradePointPolicy royalPolicy = new GradePointPolicy(2L, Grade.ROYAL, Money.of(100000), Money.of(200000), 2);
-        GradePointPolicy platinumPolicy = new GradePointPolicy(4L, Grade.PLATINUM, Money.of(300000), Money.of(Integer.MAX_VALUE), 3);
-        
-        UserGrade existingUserGrade = UserGrade.builder()
-                .id(5L)
-                .userId(userId)
-                .grade(royalPolicy)
-                .build();
-        
-        UserGrade platinumUserGrade = UserGrade.builder()
-                .id(5L)
-                .userId(userId)
-                .grade(platinumPolicy)
-                .build();
+    @DisplayName("updateGrade creates default user grade before recalculation")
+    void updateGrade_newUser_success() {
+        Long userId = 2L;
+        GradePointPolicy generalPolicy = new GradePointPolicy(1L, Grade.GENERAL, Money.of(0), Money.of(100_000), 1);
+        UserGrade newUserGrade = UserGrade.createForRegisterUser(userId, generalPolicy);
 
-        when(userGradeRepository.findByUserId(userId)).thenReturn(Optional.of(existingUserGrade));
-        when(orderTotalPriceService.calculateTotalOrderAmount(userId)).thenReturn(totalOrderAmount);
-        when(gradePointPolicyQueryRepository.findApplicablePolicy(totalOrderAmount.getAmount())).thenReturn(platinumPolicy);
-        when(userGradeRepository.save(any(UserGrade.class))).thenReturn(platinumUserGrade);
+        when(userGradeRepository.findByUserId(userId)).thenReturn(Optional.empty());
+        when(gradePointPolicyRepository.findByGrade(Grade.GENERAL)).thenReturn(generalPolicy);
+        when(orderTotalPriceService.calculateTotalOrderAmount(userId)).thenReturn(Money.zero());
+        when(gradePointPolicyQueryRepository.findApplicablePolicy(0)).thenReturn(generalPolicy);
 
-        // when
-        GradePointPolicyResponse response = userGradeService.findAndUpdateGrade(userId);
+        userGradeService.updateGrade(userId);
 
-        // then
-        assertThat(response).isNotNull();
-        assertThat(response.getGrade()).isEqualTo(Grade.PLATINUM);
-        assertThat(response.getPointRate()).isEqualTo(3);
-        assertThat(response.getMinTotalOrderPrice()).isEqualTo(300000);
-        assertThat(response.getMaxTotalOrderPrice()).isEqualTo(Integer.MAX_VALUE);
+        verify(userGradeRepository).save(any(UserGrade.class));
     }
-
 }
