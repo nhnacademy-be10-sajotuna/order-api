@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -18,6 +19,7 @@ import shop.sajotuna.order.payment.domain.Payment;
 import shop.sajotuna.order.payment.domain.PaymentMethod;
 import shop.sajotuna.order.payment.dto.PaymentConfirmRequest;
 import shop.sajotuna.order.payment.dto.PaymentResponse;
+import shop.sajotuna.order.payment.exception.PaymentFailException;
 import shop.sajotuna.order.payment.repository.PaymentRepository;
 import shop.sajotuna.order.point.service.dto.event.UserGradeRefreshEvent;
 
@@ -26,6 +28,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
@@ -126,9 +129,29 @@ public class PaymentServiceTest {
 
         // then
         assertEquals(expectedResponse, actualResponse);
-        verify(order).completePayment();
-        verify(cardPaymentService).requestPaymentConfirm(request);
-        verify(eventPublisher).publishEvent(any(UserGradeRefreshEvent.class));
+        InOrder inOrder = inOrder(cardPaymentService, order, eventPublisher);
+        inOrder.verify(cardPaymentService).requestPaymentConfirm(request);
+        inOrder.verify(order).completePayment();
+        inOrder.verify(eventPublisher).publishEvent(any(UserGradeRefreshEvent.class));
+    }
+
+    @Test
+    @DisplayName("결제 승인 실패 시 주문 완료와 등급 갱신 이벤트를 실행하지 않는다")
+    void processUserPayment_paymentConfirmFailed_doesNotCompleteOrder() {
+        Order order = Mockito.mock(Order.class);
+        PaymentConfirmRequest request = new PaymentConfirmRequest(
+                PaymentMethod.CARD, "testtest", 10000, UUID.randomUUID().toString()
+        );
+
+        when(externalPaymentServiceFactory.getService(PaymentMethod.CARD)).thenReturn(cardPaymentService);
+        when(orderRepository.findOrderByOrderNumber("testtest")).thenReturn(order);
+        when(cardPaymentService.requestPaymentConfirm(request)).thenThrow(new PaymentFailException());
+
+        assertThatThrownBy(() -> paymentService.processUserPayment(request))
+                .isInstanceOf(PaymentFailException.class);
+
+        verify(order, never()).completePayment();
+        verify(eventPublisher, never()).publishEvent(any(UserGradeRefreshEvent.class));
     }
 
     @Test

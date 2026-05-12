@@ -44,11 +44,12 @@ public class PaymentService {
         ExternalPaymentService service = externalPaymentServiceFactory.getService(paymentConfirmRequest.getPaymentMethod());
 
         Order order = orderRepository.findOrderByOrderNumber(paymentConfirmRequest.getOrderNumber());
+        PaymentResponse paymentResponse = service.requestPaymentConfirm(paymentConfirmRequest);
+
         order.completePayment();
-        order.getFinalPrice();
         publishUserGradeRefreshEvent(order);
 
-        return service.requestPaymentConfirm(paymentConfirmRequest);
+        return paymentResponse;
     }
 
     // 결제 취소 요청
