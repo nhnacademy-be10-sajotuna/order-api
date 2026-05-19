@@ -32,7 +32,7 @@ public class OrderFormService {
 
         if (userId == null) {
             return OrderFormResponse.builder()
-                    .packages(packageService.getPackages())
+                    .packages(packages)
                     .deliveryPrice(DeliveryPriceResponse.of(deliveryPrice))
                     .build();
         }

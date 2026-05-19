@@ -88,7 +88,7 @@ public class OrderQueryServiceTest {
         Order fakeOrder = createTestOrder();
 
         // when
-        when(orderRepository.findById(1L)).thenReturn(Optional.of(fakeOrder));
+        when(orderRepository.findByIdWithOrderProducts(1L)).thenReturn(Optional.of(fakeOrder));
 
         OrderDetailResponse response = orderQueryService.findOrderDetail(1L);
 
@@ -102,7 +102,7 @@ public class OrderQueryServiceTest {
     @Test
     @DisplayName("주문 조회 - 주문 찾을 수 없음")
     void getOrderInfo_orderNotFound() {
-        lenient().when(orderRepository.findById(anyLong()))
+        lenient().when(orderRepository.findByIdWithOrderProducts(anyLong()))
                 .thenReturn(Optional.empty());
 
         assertThrows(OrderNotFoundException.class,
@@ -117,8 +117,8 @@ public class OrderQueryServiceTest {
         String orderNumber = fakeOrder.getOrderNumber();
 
         // when
-        when(orderRepository.findOrderByOrderNumber(orderNumber))
-                .thenReturn(fakeOrder);
+        when(orderRepository.findByOrderNumberWithOrderProducts(orderNumber))
+                .thenReturn(Optional.of(fakeOrder));
 
         OrderDetailResponse response = orderQueryService.findOrderDetailByOrderNumber(orderNumber);
 
@@ -135,8 +135,8 @@ public class OrderQueryServiceTest {
         String nonExistentOrderNumber = "NON_EXISTENT";
 
         // when
-        when(orderRepository.findOrderByOrderNumber(nonExistentOrderNumber))
-                .thenReturn(null);
+        when(orderRepository.findByOrderNumberWithOrderProducts(nonExistentOrderNumber))
+                .thenReturn(Optional.empty());
 
         // then
         assertThrows(OrderNotFoundException.class,

@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.orders.controller.dto.response.*;
 import shop.sajotuna.order.orders.domain.*;
 import shop.sajotuna.order.orders.repository.*;
-import shop.sajotuna.order.orders.service.product.OrderProductService;
 import shop.sajotuna.order.payment.domain.Payment;
 import shop.sajotuna.order.payment.repository.PaymentRepository;
 import shop.sajotuna.order.point.exception.OrderNotFoundException;
@@ -22,7 +21,6 @@ import java.util.List;
 public class OrderQueryService {
     private final OrderRepository orderRepository;
     private final PaymentRepository paymentRepository;
-    private final OrderProductService orderProductService;
 
     public OrderInfoResponse getOrderInfo(String orderNumber){
         Order order = orderRepository.findOrderByOrderNumber(orderNumber);
@@ -35,9 +33,11 @@ public class OrderQueryService {
 
     // 주문 조회
     public OrderDetailResponse findOrderDetail(long orderId){
-        Order order = orderRepository.findById(orderId).orElseThrow(OrderNotFoundException::new);
+        Order order = orderRepository.findByIdWithOrderProducts(orderId).orElseThrow(OrderNotFoundException::new);
 
-        List<OrderProductResponse> orderProducts = orderProductService.findByOrderId(orderId);
+        List<OrderProductResponse> orderProducts = order.getOrderProducts().stream()
+                .map(OrderProductResponse::from)
+                .toList();
 
         Payment payment = paymentRepository.getPaymentByOrder_Id(orderId);
 
@@ -46,12 +46,12 @@ public class OrderQueryService {
 
     // 비회원 주문 조회
     public OrderDetailResponse findOrderDetailByOrderNumber(String orderNumber){
-        Order order = orderRepository.findOrderByOrderNumber(orderNumber);
-        if(order == null){
-            throw new OrderNotFoundException();
-        }
+        Order order = orderRepository.findByOrderNumberWithOrderProducts(orderNumber)
+                .orElseThrow(OrderNotFoundException::new);
 
-        List<OrderProductResponse> orderProducts = orderProductService.findByOrderId(order.getId());
+        List<OrderProductResponse> orderProducts = order.getOrderProducts().stream()
+                .map(OrderProductResponse::from)
+                .toList();
         Payment payment = paymentRepository.getPaymentByOrder_Id(order.getId());
 
         return OrderDetailResponse.from(order, orderProducts, payment);
