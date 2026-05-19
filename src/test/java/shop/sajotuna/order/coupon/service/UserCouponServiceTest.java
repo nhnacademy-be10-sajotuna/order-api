@@ -214,11 +214,10 @@ class UserCouponServiceTest {
         when(userCouponRepository.findByUserId(userId))
                 .thenReturn(List.of(userBookCoupon, userCategoryCoupon));
 
-        when(bookCouponRepository.existsByCouponIdAndIsbn(bookCoupon.getId(), isbn)).thenReturn(true);
-        when(bookCouponRepository.existsByCouponIdAndIsbn(categoryCoupon.getId(), isbn)).thenReturn(false);
-
-        when(categoryCouponRepository.existsByCouponIdAndCategoryIdIn(categoryCoupon.getId(), categoryIds)).thenReturn(true);
-        when(categoryCouponRepository.existsByCouponIdAndCategoryIdIn(bookCoupon.getId(), categoryIds)).thenReturn(false);
+        when(bookCouponRepository.findCouponIdsByCouponIdInAndIsbn(Set.of(bookCoupon.getId(), categoryCoupon.getId()), isbn))
+                .thenReturn(Set.of(bookCoupon.getId()));
+        when(categoryCouponRepository.findCouponIdsByCouponIdInAndCategoryIdIn(Set.of(bookCoupon.getId(), categoryCoupon.getId()), categoryIds))
+                .thenReturn(Set.of(categoryCoupon.getId()));
 
 
         // when
@@ -231,11 +230,8 @@ class UserCouponServiceTest {
                 .containsExactlyInAnyOrder("책 전용 쿠폰", "카테고리 쿠폰");
 
         verify(userCouponRepository).findByUserId(userId);
-        verify(bookCouponRepository).existsByCouponIdAndIsbn(bookCoupon.getId(), isbn);
-        verify(bookCouponRepository).existsByCouponIdAndIsbn(categoryCoupon.getId(), isbn);
-
-        verify(categoryCouponRepository).existsByCouponIdAndCategoryIdIn(categoryCoupon.getId(), categoryIds);
-        verify(categoryCouponRepository).existsByCouponIdAndCategoryIdIn(bookCoupon.getId(), categoryIds);
+        verify(bookCouponRepository).findCouponIdsByCouponIdInAndIsbn(Set.of(bookCoupon.getId(), categoryCoupon.getId()), isbn);
+        verify(categoryCouponRepository).findCouponIdsByCouponIdInAndCategoryIdIn(Set.of(bookCoupon.getId(), categoryCoupon.getId()), categoryIds);
     }
 
     @Test

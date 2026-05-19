@@ -21,7 +21,7 @@ import shop.sajotuna.order.coupon.repository.CouponRepository;
 import shop.sajotuna.order.coupon.exception.CouponNotFoundException;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -94,17 +94,28 @@ public class UserCouponService {
         List<UserCoupon> availableCoupons = userCoupons.stream().filter(coupon -> coupon.getType() == UserCouponType.AVAILABLE).toList();
 
         Set<Coupon> coupons = availableCoupons.stream().map(UserCoupon::getCoupon).collect(Collectors.toSet());
-        List<CouponResponse> result = new ArrayList<>();
-        for (Coupon coupon : coupons) {
-
-            if (bookCouponRepository.existsByCouponIdAndIsbn(coupon.getId(), bookInfo.getIsbn())) {
-                result.add(CouponResponse.from(coupon));
-            }
-            if (bookInfo.getCategoryIds() != null && categoryCouponRepository.existsByCouponIdAndCategoryIdIn(coupon.getId(), bookInfo.getCategoryIds())) {
-                result.add(CouponResponse.from(coupon));
-            }
+        if (coupons.isEmpty()) {
+            return List.of();
         }
-        return result;
+
+        Set<Long> couponIds = coupons.stream()
+                .map(Coupon::getId)
+                .collect(Collectors.toSet());
+        Set<Long> matchedCouponIds = new HashSet<>(
+                bookCouponRepository.findCouponIdsByCouponIdInAndIsbn(couponIds, bookInfo.getIsbn())
+        );
+
+        if (bookInfo.getCategoryIds() != null && !bookInfo.getCategoryIds().isEmpty()) {
+            matchedCouponIds.addAll(categoryCouponRepository.findCouponIdsByCouponIdInAndCategoryIdIn(
+                    couponIds,
+                    bookInfo.getCategoryIds()
+            ));
+        }
+
+        return coupons.stream()
+                .filter(coupon -> matchedCouponIds.contains(coupon.getId()))
+                .map(CouponResponse::from)
+                .toList();
     }
 
     // 사용 가능한 오더 쿠폰 조회
