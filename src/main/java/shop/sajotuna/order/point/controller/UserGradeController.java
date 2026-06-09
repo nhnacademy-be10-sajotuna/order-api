@@ -16,12 +16,9 @@ public class UserGradeController {
 
     private final UserGradeService userGradeService;
 
-    /**
-     * 등급 조회 시 없으면 새로 삽입. 조회 시 등급 업데이트도 동시에 진행
-     */
     @GetMapping("/{user-id}")
-    public ResponseEntity<GradePointPolicyResponse> getUserGradeAndUpdate(@PathVariable(name = "user-id") Long userId) {
-        GradePointPolicyResponse gradePointPolicyResponse = userGradeService.findAndUpdateGrade(userId);
+    public ResponseEntity<GradePointPolicyResponse> getUserGrade(@PathVariable(name = "user-id") Long userId) {
+        GradePointPolicyResponse gradePointPolicyResponse = userGradeService.getUserGrade(userId);
         return ResponseEntity.ok(gradePointPolicyResponse);
     }
 }

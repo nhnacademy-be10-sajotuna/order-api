@@ -5,24 +5,31 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.orders.domain.Order;
+import shop.sajotuna.order.orders.domain.Orderer;
 import shop.sajotuna.order.orders.domain.OrderStatus;
+import shop.sajotuna.order.orders.exception.InvalidStatusException;
 import shop.sajotuna.order.orders.repository.OrderRepository;
 import shop.sajotuna.order.payment.domain.Payment;
 import shop.sajotuna.order.payment.domain.PaymentMethod;
 import shop.sajotuna.order.payment.dto.PaymentConfirmRequest;
 import shop.sajotuna.order.payment.dto.PaymentResponse;
+import shop.sajotuna.order.payment.exception.PaymentFailException;
 import shop.sajotuna.order.payment.repository.PaymentRepository;
+import shop.sajotuna.order.point.service.dto.event.UserGradeRefreshEvent;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
@@ -46,9 +53,12 @@ public class PaymentServiceTest {
     @Mock
     private ExternalPaymentServiceFactory externalPaymentServiceFactory;
 
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
+
     @BeforeEach
     void setup() {
-        paymentService = new PaymentService(paymentRepository, externalPaymentServiceFactory, orderRepository);
+        paymentService = new PaymentService(paymentRepository, externalPaymentServiceFactory, orderRepository, eventPublisher);
     }
 
     @Test
@@ -103,6 +113,7 @@ public class PaymentServiceTest {
         lenient().when(order.getOrderNumber()).thenReturn("testtest");
         lenient().when(order.getStatus()).thenReturn(OrderStatus.BEFORE_PAYMENT);
         lenient().when(order.getFinalPrice()).thenReturn(Money.of(10000));
+        lenient().when(order.getOrderer()).thenReturn(new Orderer(1L, "tester", "010-1234-5678", "test@example.com"));
 
         when(externalPaymentServiceFactory.getService(PaymentMethod.CARD)).thenReturn(cardPaymentService);
         when(orderRepository.findOrderByOrderNumber("testtest")).thenReturn(order);
@@ -119,8 +130,51 @@ public class PaymentServiceTest {
 
         // then
         assertEquals(expectedResponse, actualResponse);
-        verify(order).completePayment();
-        verify(cardPaymentService).requestPaymentConfirm(request);
+        InOrder inOrder = inOrder(order, cardPaymentService, eventPublisher);
+        inOrder.verify(order).getStatus();
+        inOrder.verify(cardPaymentService).requestPaymentConfirm(request);
+        inOrder.verify(order).completePayment();
+        inOrder.verify(eventPublisher).publishEvent(any(UserGradeRefreshEvent.class));
+    }
+
+    @Test
+    @DisplayName("결제 승인 실패 시 주문 완료와 등급 갱신 이벤트를 실행하지 않는다")
+    void processUserPayment_paymentConfirmFailed_doesNotCompleteOrder() {
+        Order order = Mockito.mock(Order.class);
+        PaymentConfirmRequest request = new PaymentConfirmRequest(
+                PaymentMethod.CARD, "testtest", 10000, UUID.randomUUID().toString()
+        );
+
+        when(externalPaymentServiceFactory.getService(PaymentMethod.CARD)).thenReturn(cardPaymentService);
+        when(orderRepository.findOrderByOrderNumber("testtest")).thenReturn(order);
+        when(order.getStatus()).thenReturn(OrderStatus.BEFORE_PAYMENT);
+        when(cardPaymentService.requestPaymentConfirm(request)).thenThrow(new PaymentFailException());
+
+        assertThatThrownBy(() -> paymentService.processUserPayment(request))
+                .isInstanceOf(PaymentFailException.class);
+
+        verify(order, never()).completePayment();
+        verify(eventPublisher, never()).publishEvent(any(UserGradeRefreshEvent.class));
+    }
+
+    @Test
+    @DisplayName("결제 전 상태가 아니면 외부 결제 승인 요청을 보내지 않는다")
+    void processUserPayment_invalidOrderStatus_doesNotConfirmPayment() {
+        Order order = Mockito.mock(Order.class);
+        PaymentConfirmRequest request = new PaymentConfirmRequest(
+                PaymentMethod.CARD, "testtest", 10000, UUID.randomUUID().toString()
+        );
+
+        when(externalPaymentServiceFactory.getService(PaymentMethod.CARD)).thenReturn(cardPaymentService);
+        when(orderRepository.findOrderByOrderNumber("testtest")).thenReturn(order);
+        when(order.getStatus()).thenReturn(OrderStatus.CANCELLED);
+
+        assertThatThrownBy(() -> paymentService.processUserPayment(request))
+                .isInstanceOf(InvalidStatusException.class);
+
+        verify(cardPaymentService, never()).requestPaymentConfirm(request);
+        verify(order, never()).completePayment();
+        verify(eventPublisher, never()).publishEvent(any(UserGradeRefreshEvent.class));
     }
 
     @Test

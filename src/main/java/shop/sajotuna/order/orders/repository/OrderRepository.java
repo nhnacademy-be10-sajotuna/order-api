@@ -28,6 +28,40 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     List<Order> findByOrdererUserIdAndCreatedAtAfter(Long userId, LocalDateTime createdAt);
 
-    @Query("SELECT o FROM Order o JOIN FETCH o.orderProducts WHERE o.id = :orderId")
+    @Query("""
+            SELECT COALESCE(SUM(
+                o.orderPrice.totalProductPrice.amount
+                - o.discounts.couponDiscountAmount.amount
+                - o.discounts.usedPoint.amount
+            ), 0)
+            FROM Order o
+            WHERE o.orderer.userId = :userId
+              AND o.createdAt >= :createdAt
+              AND o.status IN :statuses
+            """)
+    Long sumRecentOrderAmount(
+            @Param("userId") Long userId,
+            @Param("createdAt") LocalDateTime createdAt,
+            @Param("statuses") List<OrderStatus> statuses
+    );
+
+    @Query("""
+            SELECT DISTINCT o.orderer.userId
+            FROM Order o
+            WHERE o.orderer.userId IS NOT NULL
+              AND o.createdAt >= :from
+              AND o.createdAt < :to
+              AND o.status IN :statuses
+            """)
+    List<Long> findUserIdsWithOrdersExpiringFromGradeWindow(
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to,
+            @Param("statuses") List<OrderStatus> statuses
+    );
+
+    @Query("SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.orderProducts WHERE o.id = :orderId")
     Optional<Order> findByIdWithOrderProducts(@Param("orderId") Long orderId);
+
+    @Query("SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.orderProducts WHERE o.orderNumber = :orderNumber")
+    Optional<Order> findByOrderNumberWithOrderProducts(@Param("orderNumber") String orderNumber);
 }

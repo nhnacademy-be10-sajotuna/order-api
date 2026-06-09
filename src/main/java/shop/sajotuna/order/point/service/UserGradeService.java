@@ -2,6 +2,7 @@ package shop.sajotuna.order.point.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.orders.service.pricing.OrderTotalPriceService;
 import shop.sajotuna.order.point.controller.response.GradePointPolicyResponse;
@@ -21,18 +22,28 @@ public class UserGradeService {
     private final GradePointPolicyQueryRepository gradePointPolicyQueryRepository;
     private final UserGradeRepository userGradeRepository;
 
-    public GradePointPolicyResponse findAndUpdateGrade(Long userId) {
-        // 회원 등급 정보가 없다면 기본 등급 지정
-        UserGrade userGrade = userGradeRepository.findByUserId(userId)
-                .orElse(UserGrade.createForRegisterUser(userId, gradePointPolicyRepository.findByGrade(Grade.GENERAL)));
+    @Transactional(readOnly = true)
+    public GradePointPolicyResponse getUserGrade(Long userId) {
+        UserGrade userGrade = findOrCreateDefaultGrade(userId);
+        return GradePointPolicyResponse.from(userGrade.getGrade());
+    }
 
+    @Transactional
+    public void updateGrade(Long userId) {
+        UserGrade userGrade = findOrCreateDefaultGrade(userId);
         Money totalOrderAmount = orderTotalPriceService.calculateTotalOrderAmount(userId);
-
-        GradePointPolicy applicablePolicy = gradePointPolicyQueryRepository.findApplicablePolicy(totalOrderAmount.getAmount());
+        GradePointPolicy applicablePolicy =
+                gradePointPolicyQueryRepository.findApplicablePolicy(totalOrderAmount.getAmount());
 
         userGrade.updateGrade(applicablePolicy);
-        UserGrade save = userGradeRepository.save(userGrade);
+        userGradeRepository.save(userGrade);
+    }
 
-        return GradePointPolicyResponse.from(save.getGrade());
+    private UserGrade findOrCreateDefaultGrade(Long userId) {
+        return userGradeRepository.findByUserId(userId)
+                .orElseGet(() -> UserGrade.createForRegisterUser(
+                        userId,
+                        gradePointPolicyRepository.findByGrade(Grade.GENERAL)
+                ));
     }
 }
