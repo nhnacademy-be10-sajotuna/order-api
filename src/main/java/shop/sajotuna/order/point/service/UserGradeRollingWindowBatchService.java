@@ -9,6 +9,7 @@ import shop.sajotuna.order.orders.repository.OrderRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @Slf4j
@@ -17,6 +18,8 @@ import java.util.List;
 public class UserGradeRollingWindowBatchService {
 
     private static final String DAILY_GRADE_REFRESH_CRON = "0 0 3 * * *";
+    private static final String GRADE_REFRESH_ZONE = "Asia/Seoul";
+    private static final ZoneId GRADE_REFRESH_ZONE_ID = ZoneId.of(GRADE_REFRESH_ZONE);
     private static final List<OrderStatus> GRADE_TARGET_STATUSES = List.of(
             OrderStatus.PENDING,
             OrderStatus.SHIPPED,
@@ -26,9 +29,9 @@ public class UserGradeRollingWindowBatchService {
     private final OrderRepository orderRepository;
     private final UserGradeService userGradeService;
 
-    @Scheduled(cron = DAILY_GRADE_REFRESH_CRON)
+    @Scheduled(cron = DAILY_GRADE_REFRESH_CRON, zone = GRADE_REFRESH_ZONE)
     public void refreshExpiredWindowUserGrades() {
-        refreshExpiredWindowUserGrades(LocalDate.now());
+        refreshExpiredWindowUserGrades(LocalDate.now(GRADE_REFRESH_ZONE_ID));
     }
 
     public void refreshExpiredWindowUserGrades(LocalDate today) {

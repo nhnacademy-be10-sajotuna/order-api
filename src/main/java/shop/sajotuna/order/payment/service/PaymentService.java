@@ -6,6 +6,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.sajotuna.order.orders.domain.Order;
+import shop.sajotuna.order.orders.domain.OrderStatus;
+import shop.sajotuna.order.orders.exception.InvalidStatusException;
 import shop.sajotuna.order.orders.repository.OrderRepository;
 import shop.sajotuna.order.payment.dto.PaymentConfirmRequest;
 import shop.sajotuna.order.payment.dto.PaymentResponse;
@@ -44,12 +46,20 @@ public class PaymentService {
         ExternalPaymentService service = externalPaymentServiceFactory.getService(paymentConfirmRequest.getPaymentMethod());
 
         Order order = orderRepository.findOrderByOrderNumber(paymentConfirmRequest.getOrderNumber());
+        validateBeforePayment(order);
+
         PaymentResponse paymentResponse = service.requestPaymentConfirm(paymentConfirmRequest);
 
         order.completePayment();
         publishUserGradeRefreshEvent(order);
 
         return paymentResponse;
+    }
+
+    private void validateBeforePayment(Order order) {
+        if (!OrderStatus.BEFORE_PAYMENT.equals(order.getStatus())) {
+            throw new InvalidStatusException();
+        }
     }
 
     // 결제 취소 요청

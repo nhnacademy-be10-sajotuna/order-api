@@ -24,6 +24,6 @@ public class OrderTotalPriceService {
                 threeMonthsAgo,
                 List.of(OrderStatus.PENDING, OrderStatus.SHIPPED, OrderStatus.DELIVERED)
         );
-        return Money.of(totalAmount.intValue());
+        return Money.of(Math.toIntExact(totalAmount));
     }
 }

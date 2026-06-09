@@ -14,6 +14,7 @@ import shop.sajotuna.order.common.domain.Money;
 import shop.sajotuna.order.orders.domain.Order;
 import shop.sajotuna.order.orders.domain.Orderer;
 import shop.sajotuna.order.orders.domain.OrderStatus;
+import shop.sajotuna.order.orders.exception.InvalidStatusException;
 import shop.sajotuna.order.orders.repository.OrderRepository;
 import shop.sajotuna.order.payment.domain.Payment;
 import shop.sajotuna.order.payment.domain.PaymentMethod;
@@ -129,7 +130,8 @@ public class PaymentServiceTest {
 
         // then
         assertEquals(expectedResponse, actualResponse);
-        InOrder inOrder = inOrder(cardPaymentService, order, eventPublisher);
+        InOrder inOrder = inOrder(order, cardPaymentService, eventPublisher);
+        inOrder.verify(order).getStatus();
         inOrder.verify(cardPaymentService).requestPaymentConfirm(request);
         inOrder.verify(order).completePayment();
         inOrder.verify(eventPublisher).publishEvent(any(UserGradeRefreshEvent.class));
@@ -145,11 +147,32 @@ public class PaymentServiceTest {
 
         when(externalPaymentServiceFactory.getService(PaymentMethod.CARD)).thenReturn(cardPaymentService);
         when(orderRepository.findOrderByOrderNumber("testtest")).thenReturn(order);
+        when(order.getStatus()).thenReturn(OrderStatus.BEFORE_PAYMENT);
         when(cardPaymentService.requestPaymentConfirm(request)).thenThrow(new PaymentFailException());
 
         assertThatThrownBy(() -> paymentService.processUserPayment(request))
                 .isInstanceOf(PaymentFailException.class);
 
+        verify(order, never()).completePayment();
+        verify(eventPublisher, never()).publishEvent(any(UserGradeRefreshEvent.class));
+    }
+
+    @Test
+    @DisplayName("결제 전 상태가 아니면 외부 결제 승인 요청을 보내지 않는다")
+    void processUserPayment_invalidOrderStatus_doesNotConfirmPayment() {
+        Order order = Mockito.mock(Order.class);
+        PaymentConfirmRequest request = new PaymentConfirmRequest(
+                PaymentMethod.CARD, "testtest", 10000, UUID.randomUUID().toString()
+        );
+
+        when(externalPaymentServiceFactory.getService(PaymentMethod.CARD)).thenReturn(cardPaymentService);
+        when(orderRepository.findOrderByOrderNumber("testtest")).thenReturn(order);
+        when(order.getStatus()).thenReturn(OrderStatus.CANCELLED);
+
+        assertThatThrownBy(() -> paymentService.processUserPayment(request))
+                .isInstanceOf(InvalidStatusException.class);
+
+        verify(cardPaymentService, never()).requestPaymentConfirm(request);
         verify(order, never()).completePayment();
         verify(eventPublisher, never()).publishEvent(any(UserGradeRefreshEvent.class));
     }
